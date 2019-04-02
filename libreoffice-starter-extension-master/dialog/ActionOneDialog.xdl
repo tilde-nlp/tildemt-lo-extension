@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dlg:window PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "dialog.dtd">
+<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="translateDialog" dlg:left="146" dlg:top="23" dlg:width="330" dlg:height="160" dlg:closeable="true" dlg:moveable="true" dlg:title="Translate">
+ <dlg:bulletinboard>
+  <dlg:menulist dlg:id="ListBox1" dlg:tab-index="0" dlg:left="15" dlg:top="10" dlg:width="60" dlg:height="12" dlg:spin="true">
+   <dlg:menupopup>
+    <dlg:menuitem dlg:value="Latvian"/>
+    <dlg:menuitem dlg:value="English"/>
+   </dlg:menupopup>
+  </dlg:menulist>
+  <dlg:menulist dlg:id="ListBox2" dlg:tab-index="1" dlg:left="80" dlg:top="10" dlg:width="60" dlg:height="12" dlg:spin="true">
+   <dlg:menupopup>
+    <dlg:menuitem dlg:value="English"/>
+    <dlg:menuitem dlg:value="Latvian"/>
+   </dlg:menupopup>
+  </dlg:menulist>
+  <dlg:button dlg:id="TranslateButton" dlg:tab-index="4" dlg:left="230" dlg:top="8" dlg:width="40" dlg:height="15" dlg:value="Translate">
+   <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:translateNow" script:language="UNO"/>
+  </dlg:button>
+  <dlg:button dlg:id="CloseButton" dlg:tab-index="6" dlg:left="275" dlg:top="8" dlg:width="40" dlg:height="15" dlg:value="Close">
+   <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:actionOk" script:language="UNO"/>
+  </dlg:button>
+  <dlg:textfield dlg:id="TextFieldFrom" dlg:tab-index="2" dlg:left="15" dlg:top="30" dlg:width="150" dlg:height="115" dlg:multiline="true"/>
+  <dlg:textfield dlg:id="TextFieldTo" dlg:left="165" dlg:top="30" dlg:width="150" dlg:height="115" dlg:multiline="true" dlg:readonly="true"/>
+ </dlg:bulletinboard>
+</dlg:window>

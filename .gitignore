@@ -21,3 +21,11 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# stuff from the original project's gitignore
+bin/
+build/
+dist/
+types.rdb
+starterproject.jar
+.classpath
