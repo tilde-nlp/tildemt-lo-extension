@@ -7,82 +7,78 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-//import org.json.JSONException;
-//import org.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class TranslateAPI {
 
 	public TranslateAPI() throws IOException {
- 	}
-	
-	public String connPOST (String clientID, String systemID, String text) throws IOException {
+	}
 
+	public String translate (String clientID, String systemID, String text){
 		String answer = null;
 		try {
-			//TODO: ends with return -> null
-			//set parameters
-			String POST_PARAMS = 	"{ \"systemID\": \"" 	+ 	systemID +
-									"\", \"text\": \"" 		+ 	text + "\" }";
-			URL obj = new URL("https://letsmtdev.tilde.lv/ws/service.svc/json/TranslateEx");
-			
-			//configure connection
-			HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
-		    postConnection.setRequestMethod("POST");
-		    postConnection.setRequestProperty("client-id", clientID);
-		    postConnection.setRequestProperty("Content-Type", "application/json");
-			
-		    //sending data
-		    postConnection.setDoOutput(true);
-		    OutputStream os = postConnection.getOutputStream();
-		    os.write(POST_PARAMS.getBytes());
-		    os.flush();
-		    os.close();
-		    
+			//TODO: ends with return -> null -> translate
+
+			HttpURLConnection postConnection = getConnection(clientID, systemID, text);
 		    int responseCode = postConnection.getResponseCode();
-		    System.out.println("POST Response:\t" + responseCode 
+		    System.out.println("POST Response:\t" + responseCode
 		    		+ " " + postConnection.getResponseMessage());
 
 		    // 200 is a response code for successful connection. Receiving data:
-		    if (responseCode == 200) { 
+		    if (responseCode == 200) {
 		    	BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
 	            String inputLine;
 	            StringBuffer response = new StringBuffer();
-	            
+
 	            while ((inputLine = in .readLine()) != null) {
 	                response.append(inputLine);
 	            } in .close();
-	            
+
 	            //extract and save the translation
 	            answer = response.toString();
 	            System.out.println("Full response:\t" + answer);
-//	            answer = getTranslationFromJSON(answer);
-//	            System.out.println("Back in game:\t" + answer);
+	            answer = getTranslationFromJSON(answer);
 		    } else {
 		        System.out.println("POST did not work");
 		    }
-		} catch (IOException e) {//nope
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return answer;
 	}
-	
-//	private String getTranslationFromJSON (String str) {
-//		String translation = null;
-//		String json = "{\"translation\":\"ye!\"}";
-//		System.out.println("  JSONtest1 =\t" + json);
-//		try {
-//			JSONObject obj = new JSONObject(str);
-//			translation = obj.getString("translation");
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//			System.out.println(e.getMessage());
-//		}
-////			System.out.println("  JSONtest2 =\t" + translation + "......." + obj);
-//		
-//			System.out.println("  JSONtest3 =\t" + translation);
-//		return translation;
-//	}
-	
+
+	private HttpURLConnection getConnection(String clientID, String systemID, String text) throws Exception {
+		String POST_PARAMS = 	"{	\"systemID\": \"" 	+ 	systemID +
+									"\", \"text\": \"" 		+ 	text + "\" }";
+		URL obj = new URL("https://letsmtdev.tilde.lv/ws/service.svc/json/TranslateEx");
+
+		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+	    connection.setRequestMethod("POST");
+	    connection.setRequestProperty("client-id", clientID);
+	    connection.setRequestProperty("Content-Type", "application/json");
+
+	    //sending data
+	    connection.setDoOutput(true);
+	    OutputStream os = connection.getOutputStream();
+	    os.write(POST_PARAMS.getBytes());
+	    os.flush();
+	    os.close();
+
+		return connection;
+	}
+
+	private String getTranslationFromJSON (String str) {
+		String translation = "";
+		try {
+			JSONObject obj = new JSONObject(str);
+			translation = obj.getString("translation");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return translation;
+	}
+
 }
 
 

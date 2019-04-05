@@ -1,13 +1,13 @@
 package org.libreoffice.example.comp;
 
-import com.sun.star.uno.XComponentContext;
-import com.sun.star.lib.uno.helper.Factory;
-
 import org.libreoffice.example.dialog.ActionOneDialog;
 import org.libreoffice.example.helper.DialogHelper;
+
 import com.sun.star.lang.XSingleComponentFactory;
-import com.sun.star.registry.XRegistryKey;
+import com.sun.star.lib.uno.helper.Factory;
 import com.sun.star.lib.uno.helper.WeakBase;
+import com.sun.star.registry.XRegistryKey;
+import com.sun.star.uno.XComponentContext;
 
 
 public final class StarterProjectImpl extends WeakBase
@@ -40,11 +40,13 @@ public final class StarterProjectImpl extends WeakBase
     }
 
     // com.sun.star.lang.XServiceInfo:
-    public String getImplementationName() {
+    @Override
+	public String getImplementationName() {
          return m_implementationName;
     }
 
-    public boolean supportsService( String sService ) {
+    @Override
+	public boolean supportsService( String sService ) {
         int len = m_serviceNames.length;
 
         for( int i=0; i < len; i++) {
@@ -54,23 +56,25 @@ public final class StarterProjectImpl extends WeakBase
         return false;
     }
 
-    public String[] getSupportedServiceNames() {
+    @Override
+	public String[] getSupportedServiceNames() {
         return m_serviceNames;
     }
 
     // com.sun.star.task.XJobExecutor:
-    public void trigger(String action)
+    @Override
+	public void trigger(String action)
     {
     	switch (action) {
     	case "actionOne":
     		ActionOneDialog actionOneDialog = new ActionOneDialog(m_xContext);
     		actionOneDialog.show();
-    		System.out.println("Done");
+    		System.out.println("Dialog done");
     		break;
     	default:
     		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
     	}
-        
+
     }
 
 }

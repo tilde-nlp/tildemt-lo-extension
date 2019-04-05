@@ -1,20 +1,24 @@
 package org.libreoffice.example.helper;
 
+import com.sun.star.beans.XPropertySet;
+import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XFrame;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
+import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XReplaceable;
 
 public class DocumentHelper {
-	
+
 	/** Returns the current XDesktop */
 	public static XDesktop getCurrentDesktop(XComponentContext xContext) {
-		XMultiComponentFactory xMCF = (XMultiComponentFactory) UnoRuntime.queryInterface(XMultiComponentFactory.class,
+		XMultiComponentFactory xMCF = UnoRuntime.queryInterface(XMultiComponentFactory.class,
 				xContext.getServiceManager());
         Object desktop = null;
 		try {
@@ -22,28 +26,48 @@ public class DocumentHelper {
 		} catch (Exception e) {
 			return null;
 		}
-        return (XDesktop) UnoRuntime.queryInterface(com.sun.star.frame.XDesktop.class, desktop);
+        return UnoRuntime.queryInterface(com.sun.star.frame.XDesktop.class, desktop);
 	}
-	
+
 	/** Returns the current XComponent */
     private static XComponent getCurrentComponent(XComponentContext xContext) {
-        return (XComponent) getCurrentDesktop(xContext).getCurrentComponent();
+        return getCurrentDesktop(xContext).getCurrentComponent();
     }
-    
+
     /** Returns the current frame */
     public static XFrame getCurrentFrame(XComponentContext xContext) {
-    	XModel xModel = (XModel) UnoRuntime.queryInterface(XModel.class, getCurrentComponent(xContext));
+    	XModel xModel = UnoRuntime.queryInterface(XModel.class, getCurrentComponent(xContext));
     	return xModel.getCurrentController().getFrame();
     }
-    
+
     /** Returns the current text document (if any) */
     public static XTextDocument getCurrentDocument(XComponentContext xContext) {
-        return (XTextDocument) UnoRuntime.queryInterface(XTextDocument.class, getCurrentComponent(xContext));
+        return UnoRuntime.queryInterface(XTextDocument.class, getCurrentComponent(xContext));
     }
-    
-    /** Returns replaceable text document */
+
+    /** Returns the replaceable text document */
     public static XReplaceable getReplaceableDocument (XTextDocument xTextDocument) {
-    	return (XReplaceable)  UnoRuntime.queryInterface(com.sun.star.util.XReplaceable.class, xTextDocument);
-    } 
-    
+    	return UnoRuntime.queryInterface(XReplaceable.class, xTextDocument);
+    }
+
+    public static XComponentLoader getComponentLoader (XDesktop xDesktop) {
+    	return UnoRuntime.queryInterface(com.sun.star.frame.XComponentLoader.class, xDesktop);
+    }
+
+    public static XTextDocument getTextDocument(XComponent xComp) {
+    	return UnoRuntime.queryInterface(com.sun.star.text.XTextDocument.class, xComp);
+    }
+
+    public static XMultiServiceFactory getMSF (XTextDocument xTextDoc) {
+    	return UnoRuntime.queryInterface(com.sun.star.lang.XMultiServiceFactory.class, xTextDoc);
+    }
+
+    public static XTextContent getContent(Object oGraphic) {
+    	return UnoRuntime.queryInterface(com.sun.star.text.XTextContent.class, oGraphic);
+	}
+
+	public static XPropertySet getPropertySet(Object oGraphic) {
+		return UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, oGraphic);
+	}
+
 }

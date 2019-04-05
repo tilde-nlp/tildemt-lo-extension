@@ -29,7 +29,7 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 public class DialogHelper {
-	
+
 	/**
 	 * Create a dialog from an xdl file.
 	 *
@@ -43,7 +43,7 @@ public class DialogHelper {
 		try {
 			oDialogProvider = context.getServiceManager().createInstanceWithContext("com.sun.star.awt.DialogProvider2",
 					context);
-			XDialogProvider2 xDialogProv = (XDialogProvider2) UnoRuntime.queryInterface(XDialogProvider2.class,
+			XDialogProvider2 xDialogProv = UnoRuntime.queryInterface(XDialogProvider2.class,
 					oDialogProvider);
 			File dialogFile = FileHelper.getDialogFilePath(xdlFile, context);
 			return xDialogProv.createDialogWithHandler(convertToURL(context, dialogFile), handler);
@@ -56,7 +56,7 @@ public class DialogHelper {
 	public static String convertToURL(XComponentContext xContext, File dialogFile) {
 		String sURL = null;
 		try {
-			com.sun.star.ucb.XFileIdentifierConverter xFileConverter = (com.sun.star.ucb.XFileIdentifierConverter) UnoRuntime
+			com.sun.star.ucb.XFileIdentifierConverter xFileConverter = UnoRuntime
 					.queryInterface(com.sun.star.ucb.XFileIdentifierConverter.class, xContext.getServiceManager()
 							.createInstanceWithContext("com.sun.star.ucb.FileContentProvider", xContext));
 			sURL = xFileConverter.getFileURLFromSystemPath("", dialogFile.getAbsolutePath());
@@ -68,46 +68,46 @@ public class DialogHelper {
 
 	/** Returns a button (XButton) from a dialog */
 	public static XButton getButton(XDialog dialog, String componentId) {
-		XControlContainer xDlgContainer = (XControlContainer) UnoRuntime.queryInterface(XControlContainer.class,
+		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
 		Object control = xDlgContainer.getControl(componentId);
-		return (XButton) UnoRuntime.queryInterface(XButton.class, control);
+		return UnoRuntime.queryInterface(XButton.class, control);
 	}
 
 	/** Returns a text field (XTextComponent) from a dialog */
 	public static XTextComponent getEditField(XDialog dialog, String componentId) {
-		XControlContainer xDlgContainer = (XControlContainer) UnoRuntime.queryInterface(XControlContainer.class,
+		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
 		Object control = xDlgContainer.getControl(componentId);
-		return (XTextComponent) UnoRuntime.queryInterface(XTextComponent.class, control);
+		return UnoRuntime.queryInterface(XTextComponent.class, control);
 	}
 
 	/** Returns a Combo box (XComboBox) from a dialog */
 	public static XComboBox getCombobox(XDialog dialog, String componentId) {
-		XControlContainer xDlgContainer = (XControlContainer) UnoRuntime.queryInterface(XControlContainer.class,
+		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
 		Object control = xDlgContainer.getControl(componentId);
-		return (XComboBox) UnoRuntime.queryInterface(XComboBox.class, control);
+		return UnoRuntime.queryInterface(XComboBox.class, control);
 	}
-	
+
 	/** Returns a List box (XListBox) from a dialog XDispatchProvider */
 	public static XListBox getListBox(XDialog dialog, String componentId) {
-		XControlContainer xDlgContainer = (XControlContainer) UnoRuntime.queryInterface(XControlContainer.class,
+		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
 		Object control = xDlgContainer.getControl(componentId);
-		return (XListBox) UnoRuntime.queryInterface(XListBox.class, control);
+		return UnoRuntime.queryInterface(XListBox.class, control);
 	}
 
 	/** Returns a label (XFixedText) from a dialog */
 	public static XFixedText getLabel(XDialog dialog, String componentId) {
-		XControlContainer xDlgContainer = (XControlContainer) UnoRuntime.queryInterface(XControlContainer.class,
+		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
 		Object control = xDlgContainer.getControl(componentId);
-		return (XFixedText) UnoRuntime.queryInterface(XFixedText.class, control);
+		return UnoRuntime.queryInterface(XFixedText.class, control);
 	}
 
 	public static void EnableButton(XDialog dialog, String componentId, boolean enable) {
-		XControlContainer xDlgContainer = (XControlContainer) UnoRuntime.queryInterface(XControlContainer.class,
+		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
 		// retrieve the control that we want to disable or enable
 		XControl xControl = UnoRuntime.queryInterface(XControl.class, xDlgContainer.getControl(componentId));
@@ -119,7 +119,7 @@ public class DialogHelper {
 			return;
 		}
 	}
-	
+
 	/** Set the focus to an input field */
 	public static void SetFocus(XTextComponent editField) {
 		XWindow xControlWindow = UnoRuntime.queryInterface(XWindow.class, editField);
@@ -150,11 +150,11 @@ public class DialogHelper {
 		}
 		return new Point(posX, posY);
 	}
-	
+
 	public static void showInfoMessage(XComponentContext context, XDialog dialog, String message) {
 		showMessageBox(context, dialog, MessageBoxType.INFOBOX, "Info", message);
 	}
-	
+
 	public static void showWarningMessage(XComponentContext context, XDialog dialog, String message) {
 		showMessageBox(context, dialog, MessageBoxType.WARNINGBOX, "Warnung", message);
 	}
@@ -177,7 +177,7 @@ public class DialogHelper {
         		com.sun.star.awt.MessageBoxButtons.BUTTONS_OK, sTitle, sMessage);
         if (xMessageBox == null)
         	return;
-        
+
         xMessageBox.execute();
 	}
 
