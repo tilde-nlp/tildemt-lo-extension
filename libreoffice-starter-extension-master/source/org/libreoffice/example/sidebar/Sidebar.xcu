@@ -24,19 +24,19 @@
 <oor:component-data
 	oor:name="Sidebar"
 	oor:package="org.openoffice.Office.UI"
-	xmlns:install="http://openoffice.org/2004/installation" 
+	xmlns:install="http://openoffice.org/2004/installation"
 	xmlns:oor="http://openoffice.org/2001/registry"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <node oor:name="Content">
 		<node oor:name="DeckList">
 	
-			<node oor:name="TranslationDeck" oor:op="replace">
+			<node oor:name="ToolsDeck" oor:op="replace">
 	    	    <prop oor:name="Title" oor:type="xs:string">
-            	   	<value xml:lang="en-US">Translate</value>
+            	   	<value xml:lang="en-US">Tools</value>
 	            </prop>
 	            <prop oor:name="Id" oor:type="xs:string">
-	               	<value>TranslationDeck</value>
+	               	<value>ToolsDeck</value>
 	            </prop>
 	            <prop oor:name="IconURL" oor:type="xs:string">
 	               	<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/actionOne_26.png</value>
@@ -47,39 +47,42 @@
 	               	</value>
 	           	</prop>
 	       	</node>
-
 	    </node>
+	    
     	<node oor:name="PanelList">
         	
         	<node oor:name="TranslationPanel" oor:op="replace">
 	        	<prop oor:name="Title" oor:type="xs:string">
-                	<value xml:lang="en-US">translate</value>
+                	<value xml:lang="en-US">Analog Clock</value>
             	</prop>
             	<prop oor:name="Id" oor:type="xs:string">
                 	<value>TranslationPanel</value>
             	</prop>
             	<prop oor:name="DeckId" oor:type="xs:string">
-                	<value>TranslationDeck</value>
+                	<value>ToolsDeck</value>
             	</prop>
             	<prop oor:name="ContextList">
             		<value oor:separator=";">
-            			any, any, hidden ;
+            			any, any, visible ;
                 	</value>
             	</prop>
+            	<prop oor:name="TitleBarIconURL" oor:type="xs:string">
+	               	<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/actionOne_26.png</value>
+	            </prop>
             	<prop oor:name="ImplementationURL" oor:type="xs:string">
-            		<value>private:resource/toolpanel/TranslationPanelFactory/TranslationPanel</value>
+            		<value>private:resource/toolpanel/PanelFactory/TranslationPanel</value>
             	</prop>
             	<prop oor:name="OrderIndex" oor:type="xs:int">
-            		<value>100</value>
+            		<value>2</value>
             	</prop>
             	<prop oor:name="WantsCanvas" oor:type="xs:boolean">
             		<value>false</value>
             	</prop>
-      		    <prop oor:name="DefaultMenuCommand">
-          			<value>org.libreoffice.example.dialog:ShowActionOneDialog </value> <!-- ??? how to pass -->
-        		</prop>
+            	<prop oor:name="DefaultMenuCommand">
+          			<value>org.libreoffice.example.sidebar:ShowDetailsDialog</value>
+        		</prop>  <!--  vnd.sun.star.extension:// -->
         	</node>
-        	
+        	 
     	</node>
     </node>
 </oor:component-data>

@@ -62,6 +62,7 @@ public final class StarterProjectImpl extends WeakBase
     }
 
     // com.sun.star.task.XJobExecutor:
+
     @Override
 	public void trigger(String action)
     {

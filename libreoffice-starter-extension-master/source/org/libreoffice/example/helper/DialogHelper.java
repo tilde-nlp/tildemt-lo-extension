@@ -46,6 +46,11 @@ public class DialogHelper {
 			XDialogProvider2 xDialogProv = UnoRuntime.queryInterface(XDialogProvider2.class,
 					oDialogProvider);
 			File dialogFile = FileHelper.getDialogFilePath(xdlFile, context);
+			try {
+			} catch (java.lang.Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return xDialogProv.createDialogWithHandler(convertToURL(context, dialogFile), handler);
 		} catch (Exception e) {
 			return null;

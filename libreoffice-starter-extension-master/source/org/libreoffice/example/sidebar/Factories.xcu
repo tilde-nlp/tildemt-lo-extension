@@ -18,9 +18,10 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- * 
+ *  
  **************************************************************
 -->
+<!-- <!DOCTYPE oor:component-data SYSTEM "../../../../../component-update.dtd">  -->
 <oor:component-data
 	oor:name="Factories" 
 	oor:package="org.openoffice.Office.UI"
@@ -35,13 +36,13 @@
                     <value>toolpanel</value>
                 </prop>
                 <prop oor:name="Name">
-                    <value>TranslationPanelFactory</value>
+                    <value>PanelFactory</value>
                 </prop>
                 <prop oor:name="Module">
                     <value/>
                 </prop>
                 <prop oor:name="FactoryImplementation">
-                    <value>org.apache.openoffice.sidebar.TranslationPanelFactory</value>
+                    <value>org.libreoffice.example.sidebar.PanelFactory</value>
                 </prop>
             </node>
             

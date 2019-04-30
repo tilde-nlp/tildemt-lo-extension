@@ -2,14 +2,18 @@ package org.libreoffice.example.helper;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.frame.XComponentLoader;
+import com.sun.star.frame.XController;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XFrame;
 import com.sun.star.frame.XModel;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
+import com.sun.star.text.XPageCursor;
 import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextDocument;
+import com.sun.star.text.XTextViewCursor;
+import com.sun.star.text.XTextViewCursorSupplier;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XReplaceable;
@@ -68,6 +72,14 @@ public class DocumentHelper {
 
 	public static XPropertySet getPropertySet(Object oGraphic) {
 		return UnoRuntime.queryInterface(com.sun.star.beans.XPropertySet.class, oGraphic);
+	}
+
+	public static XTextViewCursorSupplier getCursorSupplier (XController xController) {
+		return UnoRuntime.queryInterface(XTextViewCursorSupplier.class, xController);
+	}
+
+	public static XPageCursor getPageCursor(XTextViewCursor xTextViewCursor) {
+		return UnoRuntime.queryInterface(XPageCursor.class, xTextViewCursor);
 	}
 
 }
