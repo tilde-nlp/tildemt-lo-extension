@@ -36,7 +36,7 @@ public final class SidebarImpl extends WeakBase
         XSingleComponentFactory xFactory = null;
 
         if ( sImplementationName.equals( m_implementationName ) )
-            xFactory = Factory.createComponentFactory(SidebarImpl.class, m_serviceNames);
+            xFactory = Factory.createComponentFactory(PanelFactory.class, m_serviceNames);
         return xFactory;
     }
 

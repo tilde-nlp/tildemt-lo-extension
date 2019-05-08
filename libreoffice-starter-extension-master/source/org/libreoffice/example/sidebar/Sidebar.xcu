@@ -70,7 +70,7 @@
 	               	<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/actionOne_26.png</value>
 	            </prop>
             	<prop oor:name="ImplementationURL" oor:type="xs:string">
-            		<value>private:resource/toolpanel/PanelFactory/TranslationPanel</value>
+            		<value>private:resource/toolpanel/PanelFactory/TranslationPanel/AnalogClockPanel</value>
             	</prop>
             	<prop oor:name="OrderIndex" oor:type="xs:int">
             		<value>2</value>
