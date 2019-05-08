@@ -42,7 +42,7 @@ public class ActionOneDialog implements XDialogEventHandler {
 		System.out.println("Close button is pressed");
 		dialog.endExecute();
 		textFieldTo.setText(""); // Clean memory for insert button
-		System.out.println("TEXTFIELD HAS BEEN EMPTIED"); //TODO not working in the beginning
+		System.out.println("Textfield has been emptied"); //TODO not working in the beginning
 	}
 
 	private void onTranslateButtonPressed() throws Exception {

@@ -34,6 +34,7 @@ public final class StarterProjectImpl extends WeakBase
     }
 
     public static boolean __writeRegistryServiceInfo( XRegistryKey xRegistryKey ) {
+    	System.out.println(">> StarterProjectImpl writeRegistry <<");
         return Factory.writeRegistryServiceInfo(m_implementationName,
                                                 m_serviceNames,
                                                 xRegistryKey);
@@ -66,6 +67,7 @@ public final class StarterProjectImpl extends WeakBase
     @Override
 	public void trigger(String action)
     {
+    	System.out.println(">>> StarterProjectImpl trigger ON <<<");
     	switch (action) {
     	case "actionOne":
     		ActionOneDialog actionOneDialog = new ActionOneDialog(m_xContext);
