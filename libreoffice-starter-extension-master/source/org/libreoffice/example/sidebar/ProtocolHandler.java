@@ -3,7 +3,7 @@ package org.libreoffice.example.sidebar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.libreoffice.example.dialog.ActionOneDialog;
+import org.libreoffice.example.dialog.ActionOne;
 
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.frame.DispatchDescriptor;
@@ -117,7 +117,7 @@ public class ProtocolHandler
         final URL aURL,
         final PropertyValue[] aArguments)
     {
-    	ActionOneDialog actionOneDialog = new ActionOneDialog(null);//TODO: get context instead of null
+    	ActionOne actionOneDialog = new ActionOne(null);//TODO: get context instead of null
 		if (aURL.Complete.endsWith(msShowCommand))
     		actionOneDialog.show();
 

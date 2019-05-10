@@ -1,6 +1,7 @@
 package org.libreoffice.example.comp;
 
-import org.libreoffice.example.dialog.ActionOneDialog;
+import org.libreoffice.example.dialog.ActionOne;
+import org.libreoffice.example.dialog.ActionTwoAndThree;
 import org.libreoffice.example.helper.DialogHelper;
 
 import com.sun.star.lang.XSingleComponentFactory;
@@ -19,10 +20,26 @@ public final class StarterProjectImpl extends WeakBase
     private static final String[] m_serviceNames = {
         "org.libreoffice.example.StarterProject" };
 
+    private ActionOne m_dialog;
+
+    private ActionOne getDialog() {
+    	if (m_dialog == null) {
+    		return new ActionOne(m_xContext);
+    	}
+    	else {
+    		return m_dialog;
+    	}
+    }
 
     public StarterProjectImpl( XComponentContext context )
     {
         m_xContext = context;
+    };
+
+    public StarterProjectImpl( XComponentContext context, ActionOne dialog )
+    {
+        m_xContext = context;
+        m_dialog = dialog;
     };
 
     public static XSingleComponentFactory __getComponentFactory( String sImplementationName ) {
@@ -34,7 +51,6 @@ public final class StarterProjectImpl extends WeakBase
     }
 
     public static boolean __writeRegistryServiceInfo( XRegistryKey xRegistryKey ) {
-    	System.out.println(">> StarterProjectImpl writeRegistry <<");
         return Factory.writeRegistryServiceInfo(m_implementationName,
                                                 m_serviceNames,
                                                 xRegistryKey);
@@ -64,15 +80,31 @@ public final class StarterProjectImpl extends WeakBase
 
     // com.sun.star.task.XJobExecutor:
 
+
+
     @Override
 	public void trigger(String action)
     {
-    	System.out.println(">>> StarterProjectImpl trigger ON <<<");
     	switch (action) {
     	case "actionOne":
-    		ActionOneDialog actionOneDialog = new ActionOneDialog(m_xContext);
+    		ActionOne actionOneDialog = getDialog();
     		actionOneDialog.show();
-    		System.out.println("Dialog done");
+    		break;
+    	case "actionTwo":
+    		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
+    		try {
+				actionTwo.insertAction();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    		break;
+    	case "actionThree":
+    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
+    		try {
+				actionThree.replaceAction();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
     		break;
     	default:
     		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);

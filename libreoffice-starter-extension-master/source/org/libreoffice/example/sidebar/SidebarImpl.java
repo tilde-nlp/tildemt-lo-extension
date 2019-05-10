@@ -1,6 +1,6 @@
 package org.libreoffice.example.sidebar;
 
-import org.libreoffice.example.dialog.ActionOneDialog;
+import org.libreoffice.example.dialog.ActionOne;
 import org.libreoffice.example.helper.DialogHelper;
 
 import com.sun.star.comp.loader.FactoryHelper;
@@ -130,7 +130,7 @@ public final class SidebarImpl extends WeakBase
     	System.out.println(">>> SidebarImpl trigger ON <<<");
     	switch (action) {
     	case "actionOne":
-    		ActionOneDialog actionOneDialog = new ActionOneDialog(m_xContext);
+    		ActionOne actionOneDialog = new ActionOne(m_xContext);
     		actionOneDialog.show();
     		System.out.println("Dialog done");
     		break;

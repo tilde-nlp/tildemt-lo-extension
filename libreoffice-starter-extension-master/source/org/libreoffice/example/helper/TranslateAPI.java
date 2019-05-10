@@ -68,7 +68,7 @@ public class TranslateAPI {
 		return connection;
 	}
 
-	private String getTranslationFromJSON (String str) {
+	public String getTranslationFromJSON (String str) {
 		String translation = "";
 		try {
 			JSONObject obj = new JSONObject(str);
