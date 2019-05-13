@@ -2,6 +2,7 @@ package org.libreoffice.example.helper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -16,10 +17,9 @@ public class TranslateAPI {
 	}
 
 	public String translate (String clientID, String systemID, String text){
-		String answer = null;
+		String answer = "";
 		try {
-			//TODO: ends with return -> null -> translate
-
+			//TODO: if starts/ends with return -> null -> translate
 			HttpURLConnection postConnection = getConnection(clientID, systemID, text);
 		    int responseCode = postConnection.getResponseCode();
 		    System.out.println("POST Response:\t" + responseCode
@@ -27,12 +27,13 @@ public class TranslateAPI {
 
 		    // 200 is a response code for successful connection. Receiving data:
 		    if (responseCode == 200) {
-		    	BufferedReader in = new BufferedReader(new InputStreamReader(postConnection.getInputStream()));
+		    	InputStream inputStream = postConnection.getInputStream();
+		    	BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 	            String inputLine;
 	            StringBuffer response = new StringBuffer();
 
 	            while ((inputLine = in .readLine()) != null) {
-	                response.append(inputLine);
+	                response.append(inputLine); // TODO: atbilde nesatur garumzīmes
 	            } in .close();
 
 	            //extract and save the translation

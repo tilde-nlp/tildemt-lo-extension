@@ -21,33 +21,36 @@ public class ActionTwoAndThree {
 	}
 
 	public void insertAction() throws Exception {
-		// get text, translate it, insert it
 		String selectedText = getSelectedText();
 		if(selectedText != "") {
 			Translate translate = new Translate();
-		String translated = translate.getTranslation(
+			String translated = translate.getTranslation(
 				null,
 				null,
 				selectedText);
-		insertAfter(selectedText, translated);
+			if(translated != "") {
+				insertAfter(selectedText, translated);
+			}
 		}
 	}
 
 	private void insertAfter(String selected, String translation) {
 		System.out.println("insertAfter:\t" + translation);
-		xTextViewCursor.goRight((short) 0, false);
-		xTextViewCursor.setString(" " + translation + " ");
+		xTextViewCursor.collapseToEnd();
+		xTextViewCursor.setString(" " + translation);
 	}
 
 	public void replaceAction() throws Exception {
 		String selectedText = getSelectedText();
 		if(selectedText != "") {
 			Translate translate = new Translate();
-		String translated = translate.getTranslation(
+			String translated = translate.getTranslation(
 				null,
 				null,
 				selectedText);
-		replace(selectedText, translated);
+			if(translated != "") {
+				replace(selectedText, translated);
+			}
 		}
 	}
 

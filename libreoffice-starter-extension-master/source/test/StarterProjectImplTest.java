@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.libreoffice.example.comp.StarterProjectImpl;
-
+import org.mockito.junit.MockitoJUnitRunner;
+@RunWith(MockitoJUnitRunner.class)
 class StarterProjectImplTest {
 
 	@Test
@@ -24,5 +26,8 @@ class StarterProjectImplTest {
 		fail("Not yet implemented");
 //		assertEquals(true, true);
 	}
+
+
+
 
 }
