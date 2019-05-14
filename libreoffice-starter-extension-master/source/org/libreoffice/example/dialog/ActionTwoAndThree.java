@@ -14,6 +14,7 @@ public class ActionTwoAndThree {
 
 	private XComponentContext xContext;
 	private static com.sun.star.text.XTextViewCursor xTextViewCursor;
+	private static String combined = "";
 
 	public ActionTwoAndThree (XComponentContext xContext) {
 		System.out.println(">> ActionTwoAndThree constructor");
@@ -21,40 +22,26 @@ public class ActionTwoAndThree {
 	}
 
 	public void insertAction() throws Exception {
-		String selectedText = getSelectedText();
-		if(selectedText != "") {
-			Translate translate = new Translate();
-			String translated = translate.getTranslation(
-				null,
-				null,
-				selectedText);
-			if(translated != "") {
-				insertAfter(selectedText, translated);
-			}
-		}
+		combineTranslatedParagraphs();
+		insertAfter(combined);
+		combined = "";
+
 	}
 
-	private void insertAfter(String selected, String translation) {
-		System.out.println("insertAfter:\t" + translation);
+	private void insertAfter(String translation) {
 		xTextViewCursor.collapseToEnd();
-		xTextViewCursor.setString(" " + translation);
+		xTextViewCursor.setString(translation);
 	}
 
 	public void replaceAction() throws Exception {
-		String selectedText = getSelectedText();
-		if(selectedText != "") {
-			Translate translate = new Translate();
-			String translated = translate.getTranslation(
-				null,
-				null,
-				selectedText);
-			if(translated != "") {
-				replace(selectedText, translated);
-			}
-		}
+		combineTranslatedParagraphs();
+		combined = combined.substring(1); //remove unnecessary "\n" at the beginning
+		replace(combined);
+		combined = "";
+
 	}
 
-	private void replace(String selected, String translation) {
+	private void replace(String translation) {
 		System.out.println("replace with:\t" + translation);
 		xTextViewCursor.setString(translation);
 	}
@@ -64,8 +51,43 @@ public class ActionTwoAndThree {
 		com.sun.star.frame.XController xController = xTextDoc.getCurrentController();
 		com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier = DocumentHelper.getCursorSupplier(xController);
 		xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
-
 		return xTextViewCursor.getString();
+	}
+
+	// translates each paragraph seperately, combines them in "combine" variable
+	private void combineTranslatedParagraphs() throws Exception {
+		String selectedText = getSelectedText();
+		if(selectedText.length() > 0) {
+			Translate translate = new Translate();
+			String translated = null;
+
+			String paragraphs[] = selectedText.split("\\r?\\n");
+			int paralength = paragraphs.length;
+			for(int i = 0; i != paralength; i++) {
+				translated = translate.getTranslation(
+						null,
+						null,
+						paragraphs[i] );
+				combine(paralength, i, translated);
+			}
+		}
+	}
+
+	private static void combine(int full, int now, String par){
+		//if only one paragraph is translated, put space before
+		if (full == 1) {
+			combined = combined.concat(" ");
+			combined = combined.concat(par);
+		}
+		// if more than one paragraph is translated, start new paragraph
+		if (full > 1 && now == 0) {
+			combined = combined.concat("\n");
+		}
+		// if more than one paragraph is translated, split translations too
+		if (full > 1) {
+			combined = combined.concat(par);
+			combined = combined.concat("\n");
+		}
 	}
 
 }

@@ -85,6 +85,10 @@ public final class StarterProjectImpl extends WeakBase
     @Override
 	public void trigger(String action)
     {
+//    	ClientIDHelper clientIDHelper = new ClientIDHelper();
+//    	String id = clientIDHelper.getClientID();
+//    	System.out.println("ClientID from the file:\t" + id);
+
     	switch (action) {
     	case "actionOne":
     		ActionOne actionOneDialog = getDialog();

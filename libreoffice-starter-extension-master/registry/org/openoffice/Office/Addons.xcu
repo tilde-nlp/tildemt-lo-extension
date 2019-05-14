@@ -10,10 +10,10 @@
 				</prop>
 				<node oor:name="UserDefinedImages">
 					<prop oor:name="ImageSmallURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/actionOne_16.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-16.png</value>
 					</prop>
 					<prop oor:name="ImageBigURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/actionOne_26.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-26.png</value>
 					</prop>
 				</node>
 			</node>
@@ -21,27 +21,31 @@
 				<prop oor:name="URL" oor:type="xs:string">
 					<value>service:org.libreoffice.example.StarterProject?actionTwo</value>
 				</prop>
+				<!--  
 				<node oor:name="UserDefinedImages">
 					<prop oor:name="ImageSmallURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/actionOne_16.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-16.png</value>
 					</prop>
 					<prop oor:name="ImageBigURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/translate_icon_26.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-26.png</value>
 					</prop>
 				</node>
+				-->
 			</node>
 			<node oor:name="org.libreoffice.example.StarterProject.imageActionThree" oor:op="replace">
 				<prop oor:name="URL" oor:type="xs:string">
 					<value>service:org.libreoffice.example.StarterProject?actionThree</value>
 				</prop>
+				<!-- 
 				<node oor:name="UserDefinedImages">
 					<prop oor:name="ImageSmallURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/actionOne_16.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-16.png</value>
 					</prop>
 					<prop oor:name="ImageBigURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/replace_icon_26.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-26.png</value>
 					</prop>
 				</node>
+				-->
 			</node>
 		</node>
 
@@ -77,7 +81,7 @@
 					</prop>
 					<prop oor:name="Title" oor:type="xs:string">
 						<value xml:lang="en-US">Join</value>
-						<value xml:lang="lv">Pievienot galā</value>
+						<value xml:lang="lv">Pievienot</value>
 					</prop>
 				</node>
 				<node oor:name="t03" oor:op="replace">

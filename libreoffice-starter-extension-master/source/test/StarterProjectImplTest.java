@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.libreoffice.example.comp.StarterProjectImpl;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 class StarterProjectImplTest {
@@ -20,11 +21,11 @@ class StarterProjectImplTest {
 
 	@Test
 	void testTrigger() {
-//		StarterProjectImpl mStart = Mockito.mock(StarterProjectImpl.class);
+		StarterProjectImpl mStart = Mockito.mock(StarterProjectImpl.class);
 //		mStart.trigger("actionOne");
-
+		StarterProjectImpl test = new StarterProjectImpl(null);
+		//...
 		fail("Not yet implemented");
-//		assertEquals(true, true);
 	}
 
 
