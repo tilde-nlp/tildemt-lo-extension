@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <description xmlns="http://openoffice.org/extensions/description/2006" xmlns:d="http://openoffice.org/extensions/description/2006" xmlns:xlink="http://www.w3.org/1999/xlink">
 	<version value="0.1"/>
-	<identifier value="org.libreoffice.example.starterproject"/>
+	<identifier value="org.libreoffice.example.tildetranslator"/>
 	<display-name>
-		<name lang="en">StarterProject</name>
+		<name lang="en">TildeTranslator</name>
 	</display-name>
 	<icon>
-		<default xlink:href="images/actionOne_26.png"/>
+		<default xlink:href="images/tilde-logo-42.png"/>
 	</icon>
 	<extension-description>
 		<src lang="en" xlink:href="description/desc_en.txt"/>

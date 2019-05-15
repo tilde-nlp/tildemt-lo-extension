@@ -1,5 +1,5 @@
 #UNO project configuration file
-#Wed Mar 20 15:51:58 EET 2019
+#Wed May 15 14:33:12 EEST 2019
 project.srcdir=/source
 regclassname=org.libreoffice.example.comp.RegistrationHandler
 javaversion=java5
