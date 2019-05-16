@@ -5,25 +5,25 @@ import static org.junit.Assert.fail;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.libreoffice.example.comp.StarterProjectImpl;
+import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
-class StarterProjectImplTest {
+class TildeTranslatorImplTest {
 
 	@Test
 //	@DisplayName("test1")
 	void testSupportsService() {
-		StarterProjectImpl spi = new StarterProjectImpl(null);
-		String sService = "org.libreoffice.example.StarterProject";
+		TildeTranslatorImpl spi = new TildeTranslatorImpl(null);
+		String sService = "org.libreoffice.example.TildeTranslator";
 		assertEquals(true, spi.supportsService(sService));
 	}
 
 	@Test
 	void testTrigger() {
-		StarterProjectImpl mStart = Mockito.mock(StarterProjectImpl.class);
+		TildeTranslatorImpl mStart = Mockito.mock(TildeTranslatorImpl.class);
 //		mStart.trigger("actionOne");
-		StarterProjectImpl test = new StarterProjectImpl(null);
+		TildeTranslatorImpl test = new TildeTranslatorImpl(null);
 		//...
 		fail("Not yet implemented");
 	}

@@ -17,14 +17,14 @@ import com.sun.star.registry.XRegistryKey;
 import com.sun.star.uno.XComponentContext;
 
 
-public final class StarterProjectImpl extends WeakBase
+public final class TildeTranslatorImpl extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
               com.sun.star.task.XJobExecutor
 {
     private final XComponentContext m_xContext;
-    private static final String m_implementationName = StarterProjectImpl.class.getName();
+    private static final String m_implementationName = TildeTranslatorImpl.class.getName();
     private static final String[] m_serviceNames = {
-        "org.libreoffice.example.StarterProject" };
+        "org.libreoffice.example.TildeTranslator" };
     private static String clientID = null;
 
     private ActionOne m_dialog;
@@ -47,9 +47,9 @@ public final class StarterProjectImpl extends WeakBase
     	}
     }
 
-    public StarterProjectImpl( XComponentContext context )
+    public TildeTranslatorImpl( XComponentContext context )
     {
-    	System.out.println("~~~~~ StarterProjectImpl constructor");
+    	System.out.println("~~~~~ TildeTranslatorImpl constructor");
         m_xContext = context;
     };
 
@@ -80,7 +80,7 @@ public final class StarterProjectImpl extends WeakBase
     	}
     }
 
-    public StarterProjectImpl( XComponentContext context, ActionOne dialog )
+    public TildeTranslatorImpl( XComponentContext context, ActionOne dialog )
     {
         m_xContext = context;
         m_dialog = dialog;
@@ -90,7 +90,7 @@ public final class StarterProjectImpl extends WeakBase
         XSingleComponentFactory xFactory = null;
 
         if ( sImplementationName.equals( m_implementationName ) )
-            xFactory = Factory.createComponentFactory(StarterProjectImpl.class, m_serviceNames);
+            xFactory = Factory.createComponentFactory(TildeTranslatorImpl.class, m_serviceNames);
         return xFactory;
     }
 

@@ -4,39 +4,29 @@
 	<node oor:name="AddonUI">
 
 		<node oor:name="Images">
-			<node oor:name="org.libreoffice.example.StarterProject.imageActionOne" oor:op="replace">
+			<node oor:name="org.libreoffice.example.TildeTranslator.imageActionOne" oor:op="replace">
 				<prop oor:name="URL" oor:type="xs:string">
-					<value>service:org.libreoffice.example.StarterProject?actionOne</value>
+					<value>service:org.libreoffice.example.TildeTranslator?actionOne</value>
 				</prop>
 				<node oor:name="UserDefinedImages">
 					<prop oor:name="ImageSmallURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-16.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.tildetranslator/images/tilde-logo-16.png</value>
 					</prop>
 					<prop oor:name="ImageBigURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.starterproject/images/tilde-logo-26.png</value>
+						<value>vnd.sun.star.extension://org.libreoffice.example.tildetranslator/images/tilde-logo-26.png</value>
 					</prop>
 				</node>
-			</node>
-			<node oor:name="org.libreoffice.example.StarterProject.imageActionTwo" oor:op="replace">
-				<prop oor:name="URL" oor:type="xs:string">
-					<value>service:org.libreoffice.example.StarterProject?actionTwo</value>
-				</prop>
-			</node>
-			<node oor:name="org.libreoffice.example.StarterProject.imageActionThree" oor:op="replace">
-				<prop oor:name="URL" oor:type="xs:string">
-					<value>service:org.libreoffice.example.StarterProject?actionThree</value>
-				</prop>
 			</node>
 		</node>
 
 		<node oor:name="OfficeToolBar">
-			<node oor:name="org.libreoffice.example.StarterProject.toolbar" oor:op="replace">
+			<node oor:name="org.libreoffice.example.TildeTranslator.toolbar" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
-					<value>Starter Project</value>
+					<value>Tilde Translator</value>
 				</prop>
 				<node oor:name="t01" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:org.libreoffice.example.StarterProject?actionOne</value>
+						<value>service:org.libreoffice.example.TildeTranslator?actionOne</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -51,7 +41,7 @@
 				</node>
 				<node oor:name="t02" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:org.libreoffice.example.StarterProject?actionTwo</value>
+						<value>service:org.libreoffice.example.TildeTranslator?actionTwo</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -66,7 +56,7 @@
 				</node>
 				<node oor:name="t03" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:org.libreoffice.example.StarterProject?actionThree</value>
+						<value>service:org.libreoffice.example.TildeTranslator?actionThree</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -83,7 +73,7 @@
 		</node>
 
 		<node oor:name="OfficeMenuBar">
-			<node oor:name="org.libreoffice.example.StarterProject.menubar" oor:op="replace">
+			<node oor:name="org.libreoffice.example.TildeTranslator.menubar" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
 					<value xml:lang="en-US">Tilde Translator</value>
 					<value xml:lang="lv">Tildes Tuklkotājs</value>
@@ -98,7 +88,7 @@
 							<value xml:lang="lv">Tulkot</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:org.libreoffice.example.StarterProject?actionOne</value>
+							<value>service:org.libreoffice.example.TildeTranslator?actionOne</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>
@@ -110,7 +100,7 @@
 							<value xml:lang="lv">Pievienot galā</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:org.libreoffice.example.StarterProject?actionTwo</value>
+							<value>service:org.libreoffice.example.TildeTranslator?actionTwo</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>
@@ -122,7 +112,7 @@
 							<value xml:lang="lv">Aizvietot</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:org.libreoffice.example.StarterProject?actionThree</value>
+							<value>service:org.libreoffice.example.TildeTranslator?actionThree</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>
