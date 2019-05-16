@@ -4,14 +4,18 @@
  <dlg:bulletinboard>
   <dlg:menulist dlg:id="ListBox1" dlg:tab-index="3" dlg:left="15" dlg:top="10" dlg:width="60" dlg:height="12" dlg:spin="true">
    <dlg:menupopup>
-    <dlg:menuitem dlg:value="Latvian" dlg:selected="true"/>
-    <dlg:menuitem dlg:value="English"/>
+    <dlg:menuitem dlg:value="English" dlg:selected="true"/>
+    <dlg:menuitem dlg:value="Lithuanian"/>
    </dlg:menupopup>
   </dlg:menulist>
   <dlg:menulist dlg:id="ListBox2" dlg:tab-index="4" dlg:left="80" dlg:top="10" dlg:width="60" dlg:height="12" dlg:spin="true">
    <dlg:menupopup>
+    <dlg:menuitem dlg:value="Lithuanian" dlg:selected="true"/>
+    <dlg:menuitem dlg:value="English"/>
+    <!-- 
     <dlg:menuitem dlg:value="Latvian"/>
-    <dlg:menuitem dlg:value="English" dlg:selected="true"/>
+    <dlg:menuitem dlg:value="Estonian"/>
+     -->
    </dlg:menupopup>
   </dlg:menulist>
   <dlg:button dlg:id="TranslateButton" dlg:tab-index="1" dlg:left="230" dlg:top="8" dlg:width="40" dlg:height="15" dlg:value="Translate">

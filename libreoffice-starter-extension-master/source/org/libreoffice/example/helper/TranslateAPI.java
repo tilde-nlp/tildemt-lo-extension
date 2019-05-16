@@ -16,10 +16,15 @@ public class TranslateAPI {
 	public TranslateAPI() throws IOException {
 	}
 
+	/**
+	 * @param clientID is individual user's ClientID
+	 * @param systemID is MT system's ID for specified languages
+	 * @param text is text that user wants to translate
+	 * @return translation
+	 */
 	public String translate (String clientID, String systemID, String text){
 		String answer = "";
 		try {
-			//TODO: if starts/ends with return -> null -> translate
 			HttpURLConnection postConnection = getConnection(clientID, systemID, text);
 		    int responseCode = postConnection.getResponseCode();
 		    System.out.println("POST Response:\t" + responseCode
@@ -28,7 +33,7 @@ public class TranslateAPI {
 		    // 200 is a response code for successful connection. Receiving data:
 		    if (responseCode == 200) {
 		    	InputStream inputStream = postConnection.getInputStream();
-		    	BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		    	BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 	            String inputLine;
 	            StringBuffer response = new StringBuffer();
 
@@ -38,7 +43,6 @@ public class TranslateAPI {
 
 	            //extract and save the translation
 	            answer = response.toString();
-	            System.out.println("Full response:\t" + answer);
 	            answer = getTranslationFromJSON(answer);
 		    } else {
 		        System.out.println("POST did not work");
@@ -69,11 +73,17 @@ public class TranslateAPI {
 		return connection;
 	}
 
+	/**
+	 * Parses JSON string to retrieve only specified value
+	 * @param str is JSON string
+	 * @return value for specified key
+	 */
 	public String getTranslationFromJSON (String str) {
 		String translation = "";
+		String value = "translation";
 		try {
 			JSONObject obj = new JSONObject(str);
-			translation = obj.getString("translation");
+			translation = obj.getString(value);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

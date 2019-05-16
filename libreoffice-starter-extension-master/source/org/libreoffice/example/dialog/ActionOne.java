@@ -11,10 +11,9 @@ import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.XComponentContext;
 
 /**
- * @author arta.zena
- *
  * This action opens a set up (MT system's ID) and translation dialog.
- *
+ * From here user can change translation languages and insert
+ * the translated text in the selected area of the text.
  */
 
 public class ActionOne implements XDialogEventHandler {
@@ -40,7 +39,11 @@ public class ActionOne implements XDialogEventHandler {
 		dialog.execute();
 	}
 
+	/** save language selection, close the dialog */
 	private void onCloseButtonPressed() {
+		getFields();
+		Translate translate = new Translate();
+		translate.setSmt(languageBoxFrom.getSelectedItem(), languageBoxTo.getSelectedItem());
 		dialog.endExecute();
 		textFieldTo.setText(""); // Clean memory for insert button
 	}
@@ -48,30 +51,27 @@ public class ActionOne implements XDialogEventHandler {
 	private void onTranslateButtonPressed() throws Exception {
 		getFields();
 
-		// Translate selected text if it exists
-		String text;
-		if(selectedText != null) {
-			textFieldFrom.setText(selectedText);
-			selectedText = null;
-		}
-		text = textFieldFrom.getText();
 		Translate translate = new Translate();
 		String translated = translate.getTranslation(
 				languageBoxFrom.getSelectedItem(),
 				languageBoxTo.getSelectedItem(),
-				text);
+				textFieldFrom.getText());
 
-		//pass translated text to the dialog
+		//pass translated text to the dialog text field
 		textFieldTo.setText(translated);
 	}
 
-	//insert translated text at the end of the current document
+	/** insert translated text where the cursor is located in the document */
 	private void onInsertButtonPressed() {
 		if (!textFieldTo.getText().equals("")) {
-			com.sun.star.text.XTextDocument xTextDoc = DocumentHelper.getCurrentDocument(xContext);
-			com.sun.star.frame.XController xController = xTextDoc.getCurrentController();
-			com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier = DocumentHelper.getCursorSupplier(xController);
-			com.sun.star.text.XTextViewCursor xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
+			com.sun.star.text.XTextDocument xTextDoc =
+					DocumentHelper.getCurrentDocument(xContext);
+			com.sun.star.frame.XController xController =
+					xTextDoc.getCurrentController();
+			com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier =
+					DocumentHelper.getCursorSupplier(xController);
+			com.sun.star.text.XTextViewCursor xTextViewCursor =
+					xTextViewCursorSupplier.getViewCursor();
 
 			xTextViewCursor.setString(textFieldTo.getText());
 	        System.out.println("Insert:\t\tdone");
@@ -80,7 +80,7 @@ public class ActionOne implements XDialogEventHandler {
 		}
 	}
 
-	//updates variables based on dialog fields
+	/** updates variables based on dialog fields user can edit */
 	private void getFields() {
 		textFieldFrom = DialogHelper.getEditField( this.dialog, "TextFieldFrom" );
 		textFieldTo = DialogHelper.getEditField( this.dialog, "TextFieldTo" );

@@ -29,14 +29,9 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 public class DialogHelper {
-
 	/**
-	 * Create a dialog from an xdl file.
-	 *
-	 * @param xdlFile
-	 *            The filename in the `dialog` folder
-	 * @param context
-	 * @return XDialog
+	 * Create a dialog from xdl file.
+	 * @param xdlFile - the filename in the `dialog` folder
 	 */
 	public static XDialog createDialog(String xdlFile, XComponentContext context, XDialogEventHandler handler) {
 		Object oDialogProvider;
@@ -48,7 +43,6 @@ public class DialogHelper {
 			File dialogFile = FileHelper.getDialogFilePath(xdlFile, context);
 			try {
 			} catch (java.lang.Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return xDialogProv.createDialogWithHandler(convertToURL(context, dialogFile), handler);

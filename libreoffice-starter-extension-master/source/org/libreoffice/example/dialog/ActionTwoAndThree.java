@@ -4,11 +4,11 @@ import org.libreoffice.example.helper.DocumentHelper;
 
 import com.sun.star.uno.XComponentContext;
 /**
- * @author arta.zena
- *
- * This action autmatically translates selected text and inserts it
- * after the selected text. Translation languages are the same as previously used.
- *
+ * This action translates selected text and
+ *  (1)inserts it after the selected text if ActionTwo button is pressed or
+ *  (2)replaces selected text with it's translation if ActionThree button is pressed.
+ * Translation languages are the same as previously used and
+ * can be set in ActionOne dialog.
  */
 public class ActionTwoAndThree {
 
@@ -17,7 +17,6 @@ public class ActionTwoAndThree {
 	private static String combined = "";
 
 	public ActionTwoAndThree (XComponentContext xContext) {
-		System.out.println(">> ActionTwoAndThree constructor");
 		this.xContext = xContext;
 	}
 
@@ -35,10 +34,11 @@ public class ActionTwoAndThree {
 
 	public void replaceAction() throws Exception {
 		combineTranslatedParagraphs();
-		combined = combined.substring(1); //remove unnecessary "\n" at the beginning
-		replace(combined);
-		combined = "";
-
+		if(combined.length() > 1) {
+			combined = combined.substring(1); //remove unnecessary "\n" at the beginning
+			replace(combined);
+			combined = "";
+		}
 	}
 
 	private void replace(String translation) {
@@ -54,7 +54,12 @@ public class ActionTwoAndThree {
 		return xTextViewCursor.getString();
 	}
 
-	// translates each paragraph seperately, combines them in "combine" variable
+	/**
+	 * To avoid errors from "\n" characters in translatable text,
+	 * each paragraph is translated seperately.
+	 * To make insertion of translated text as one step for user,
+	 * all translated paragraphs are combined in a single variable.
+	 */
 	private void combineTranslatedParagraphs() throws Exception {
 		String selectedText = getSelectedText();
 		if(selectedText.length() > 0) {
@@ -68,24 +73,31 @@ public class ActionTwoAndThree {
 						null,
 						null,
 						paragraphs[i] );
-				combine(paralength, i, translated);
+				if(translated.length() > 0) {
+					combine(paralength, i, translated);
+				}
 			}
+		} else {
+			combined = "";
 		}
 	}
 
-	private static void combine(int full, int now, String par){
-		//if only one paragraph is translated, put space before
-		if (full == 1) {
+	/**
+	 * Combine() changes combination logic based on how many paragraphs are translated.
+	 *   If only one paragraph is translated, put a single space before.
+	 *   If more than one paragraph is translated, start new paragraph
+	 *     and then split translated paragraphs too.
+	 */
+	private static void combine(int paragraphCount, int currentParagraphNumber, String text){
+		if (paragraphCount == 1) {
 			combined = combined.concat(" ");
-			combined = combined.concat(par);
+			combined = combined.concat(text);
 		}
-		// if more than one paragraph is translated, start new paragraph
-		if (full > 1 && now == 0) {
+		if (paragraphCount > 1 && currentParagraphNumber == 0) {
 			combined = combined.concat("\n");
 		}
-		// if more than one paragraph is translated, split translations too
-		if (full > 1) {
-			combined = combined.concat(par);
+		if (paragraphCount > 1) {
+			combined = combined.concat(text);
 			combined = combined.concat("\n");
 		}
 	}

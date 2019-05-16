@@ -7,6 +7,16 @@ import com.sun.star.awt.XDialogEventHandler;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.XComponentContext;
 
+/**
+ * This dialog is shown, if UserID cannot be found.
+ * User is asked to go to website where UserID can be copied.
+ * TODO:
+ * When user pastes the ID in the textbox and presses the button,
+ * this class checks whether it is valid.
+ *   If it is, then data file is updated.
+ *   If not, user cannot use translation service.
+ */
+
 public class ConfigID implements XDialogEventHandler{
 
 	private XDialog dialog;
@@ -15,7 +25,6 @@ public class ConfigID implements XDialogEventHandler{
 	private String[] supportedActions = new String[] { actionCheck };
 
 	public ConfigID(XComponentContext xContext) {
-		System.out.println("~~~~~ ConfigID constructor");
 		this.xContext = xContext;
 		System.out.println("~~~~~ context added");
 		this.dialog = DialogHelper.createDialog("config_dialog.xdl", xContext, this);

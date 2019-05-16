@@ -7,25 +7,25 @@ import org.libreoffice.example.helper.TranslateAPI;
 public class Translate {
 
 	private static String clientID = "u-72738618-8461-4ed4-a20b-33031a7ac036"; //TODO: change clientID set up
-	private String smt = "smt-b0b7cc68-1bb3-4a35-a5de-f2f86d4dadf1"; // TODO: change; default to en->lv probably
+	private static String smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8"; // TODO: change to corrcet default. save to appdata?
 
 	public Translate () {
-		System.out.println("Translate constructor");
 	}
 
 	public String getTranslation(String from, String to, String text) throws Exception {
 		if (from != null && to != null) {
 			setSmt(from, to);
 		}
-		String result = translate(smt, text);
-		return result;
+		return translate(smt, text);
 	}
 
+	/** saves information of machine for ActionTwo and ActionThree */
 	public void setSmt (String languageFrom, String languageTo) {
 		this.smt = getSmtID(languageFrom, languageTo);
 	}
 
-	private String translate (String smt, String text) throws Exception {
+	/** if all necessary data is ready, translate text via API */
+	private String translate (String smt, String text){
 		String translated = "";
 		if (!smt.isEmpty()) {
 			try {
@@ -37,26 +37,32 @@ public class Translate {
 				System.out.println("Error: translating failed");
 			}
 		} else {
-			System.out.println("translation:\t not translated");
-			translated = text; // if requested system does not exist, return the same text
+			System.out.println("translation:\tmt system not available");
+			translated = text; // if requested system does not exist, return the original text
 		}
 		return translated;
 	}
 
-	//returns MT system's ID
+	/** returns MT system's ID based on selected languages */
 	private String getSmtID (String languageFrom, String languageTo) {
 		String smt = "";
 		String lv = "Latvian";
 		String en = "English";
-		if (languageFrom.contentEquals(lv) && languageTo.contentEquals(en)) {
-			smt = "smt-9c8cade7-91d9-434d-ae62-8ce69f7223de";
+		String lt = "Lithuanian";
+		String et = "Estonian";
+		if (languageFrom.contentEquals(en) && languageTo.contentEquals(lt)) {
+			smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8";
+		}
+		else if (languageFrom.contentEquals(lt) && languageTo.contentEquals(en)) {
+			smt = "smt-986e31a9-938a-4507-b2ce-f78b0fe13cf4";
+		}
+		else if (languageFrom.contentEquals(en) && languageTo.contentEquals(et)) {
+			smt = "smt-e0a590e8-e45f-4206-a78e-ed9fde4762d5";
 		}
 		else if (languageFrom.contentEquals(en) && languageTo.contentEquals(lv)) {
-			smt = "smt-16d2a887-317f-4ef4-976b-90bd8c5e1a46";
+			smt = "smt-b0b7cc68-1bb3-4a35-a5de-f2f86d4dadf1";
 		}
-		System.out.println("System ID:\t" + smt);
-//		return smt;
-		return "smt-b0b7cc68-1bb3-4a35-a5de-f2f86d4dadf1"; //TODO: remove when getSmtID() is done
+		return smt;
 	}
 
 }

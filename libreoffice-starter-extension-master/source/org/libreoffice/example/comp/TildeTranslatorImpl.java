@@ -16,6 +16,10 @@ import com.sun.star.lib.uno.helper.WeakBase;
 import com.sun.star.registry.XRegistryKey;
 import com.sun.star.uno.XComponentContext;
 
+/**
+ * This class is the entry point of the project
+ * (look in RegistrationHandler.classes).
+ */
 
 public final class TildeTranslatorImpl extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
@@ -49,10 +53,37 @@ public final class TildeTranslatorImpl extends WeakBase
 
     public TildeTranslatorImpl( XComponentContext context )
     {
-    	System.out.println("~~~~~ TildeTranslatorImpl constructor");
         m_xContext = context;
     };
 
+    public TildeTranslatorImpl( XComponentContext context, ActionOne dialog )
+    {
+        m_xContext = context;
+        m_dialog = dialog;
+    };
+
+    /** Create object for services (for panel factory) */
+    public static XSingleComponentFactory __getComponentFactory( String sImplementationName ) {
+        XSingleComponentFactory xFactory = null;
+
+        if ( sImplementationName.equals( m_implementationName ) )
+            xFactory = Factory.createComponentFactory(TildeTranslatorImpl.class, m_serviceNames);
+        return xFactory;
+    }
+
+    /** Register panel factory */
+    public static boolean __writeRegistryServiceInfo( XRegistryKey xRegistryKey ) {
+        return Factory.writeRegistryServiceInfo(m_implementationName,
+                                                m_serviceNames,
+                                                xRegistryKey);
+    }
+
+	/**
+	 * ClientID is stored in a file that is located in users home folder.
+	 * If file does not exist or it is empty, configuration dialog shows
+	 * up and user has to enter the ID.
+	 *
+	 */
     private void setClientID() throws IOException {
     	String homeFolder = System.getProperty("user.home");
     	File dataFile = new File(homeFolder + File.separator +"tildeID");
@@ -80,27 +111,6 @@ public final class TildeTranslatorImpl extends WeakBase
     	}
     }
 
-    public TildeTranslatorImpl( XComponentContext context, ActionOne dialog )
-    {
-        m_xContext = context;
-        m_dialog = dialog;
-    };
-
-    public static XSingleComponentFactory __getComponentFactory( String sImplementationName ) {
-        XSingleComponentFactory xFactory = null;
-
-        if ( sImplementationName.equals( m_implementationName ) )
-            xFactory = Factory.createComponentFactory(TildeTranslatorImpl.class, m_serviceNames);
-        return xFactory;
-    }
-
-    public static boolean __writeRegistryServiceInfo( XRegistryKey xRegistryKey ) {
-        return Factory.writeRegistryServiceInfo(m_implementationName,
-                                                m_serviceNames,
-                                                xRegistryKey);
-    }
-
-    // com.sun.star.lang.XServiceInfo:
     @Override
 	public String getImplementationName() {
          return m_implementationName;
@@ -122,14 +132,10 @@ public final class TildeTranslatorImpl extends WeakBase
         return m_serviceNames;
     }
 
-    // com.sun.star.task.XJobExecutor:
-
-
-//TODO dialogs are not showing up anymore
     @Override
 	public void trigger(String action)
     {
-    	System.out.println("~~~~~ trigger");
+//    	System.out.println("~~~~~ trigger");
 //    	if (clientID == null) {
 //    		try {
 //				setClientID();
