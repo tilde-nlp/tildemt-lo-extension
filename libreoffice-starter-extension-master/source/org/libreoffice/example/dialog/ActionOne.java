@@ -19,11 +19,11 @@ import com.sun.star.uno.XComponentContext;
 public class ActionOne implements XDialogEventHandler {
 
 	private XDialog dialog;
+	private XComponentContext xContext;
 	private static final String actionClose = "actionClose";
 	private static final String actionTranslate = "translateNow";
 	private static final String actionInsert = "insertNow";
 	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert };
-	private XComponentContext xContext;
 	private static XTextComponent textFieldFrom;
 	private static XTextComponent textFieldTo;
 	private static XListBox languageBoxFrom;
@@ -39,26 +39,27 @@ public class ActionOne implements XDialogEventHandler {
 		dialog.execute();
 	}
 
-	/** save language selection, close the dialog */
+	/** save latest language selection, close the dialog */
 	private void onCloseButtonPressed() {
 		getFields();
-		Translate translate = new Translate();
-		translate.setSmt(languageBoxFrom.getSelectedItem(), languageBoxTo.getSelectedItem());
-		dialog.endExecute();
-		textFieldTo.setText(""); // Clean memory for insert button
+		boolean selectedSysExists = setSmtIfSystemExists();
+		if(selectedSysExists) {
+			dialog.endExecute();
+			textFieldTo.setText(""); // Clean memory for insert button
+		}
 	}
 
 	private void onTranslateButtonPressed() throws Exception {
 		getFields();
+		boolean selectedSysExists = setSmtIfSystemExists();
+		if(selectedSysExists) {
+			Translate translate = new Translate(xContext);
+			String translated = translate.getTranslation(
+					textFieldFrom.getText());
 
-		Translate translate = new Translate();
-		String translated = translate.getTranslation(
-				languageBoxFrom.getSelectedItem(),
-				languageBoxTo.getSelectedItem(),
-				textFieldFrom.getText());
-
-		//pass translated text to the dialog text field
-		textFieldTo.setText(translated);
+			//pass translated text to the dialog text field
+			textFieldTo.setText(translated);
+		}
 	}
 
 	/** insert translated text where the cursor is located in the document */
@@ -91,6 +92,24 @@ public class ActionOne implements XDialogEventHandler {
 		System.out.println("To translate:\t" + textFieldFrom.getText());
 		System.out.println("Language from:\t" + languageBoxFrom.getSelectedItem());
 		System.out.println("Language to:\t" + languageBoxTo.getSelectedItem());
+	}
+
+	/** Show warning message, if selected system does not exist */
+	private boolean setSmtIfSystemExists() {
+		//TODO: check if Translate.java is not repeating this
+		Translate translate = new Translate(xContext);
+		boolean smt_exists = translate.setSmt(
+				languageBoxFrom.getSelectedItem(),
+				languageBoxTo.getSelectedItem());
+		if(!smt_exists) {
+			DialogHelper.showInfoMessage(
+					xContext,
+					dialog,
+					"Cannot translate to selected language direction!\nSelect again.");
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override

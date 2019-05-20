@@ -63,15 +63,13 @@ public class ActionTwoAndThree {
 	private void combineTranslatedParagraphs() throws Exception {
 		String selectedText = getSelectedText();
 		if(selectedText.length() > 0) {
-			Translate translate = new Translate();
+			Translate translate = new Translate(xContext);
 			String translated = null;
 
 			String paragraphs[] = selectedText.split("\\r?\\n");
 			int paralength = paragraphs.length;
 			for(int i = 0; i != paralength; i++) {
 				translated = translate.getTranslation(
-						null,
-						null,
 						paragraphs[i] );
 				if(translated.length() > 0) {
 					combine(paralength, i, translated);

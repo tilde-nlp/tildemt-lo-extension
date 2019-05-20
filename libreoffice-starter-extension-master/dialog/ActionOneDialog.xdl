@@ -12,15 +12,12 @@
    <dlg:menupopup>
     <dlg:menuitem dlg:value="Lithuanian" dlg:selected="true"/>
     <dlg:menuitem dlg:value="English"/>
-    <!-- 
     <dlg:menuitem dlg:value="Latvian"/>
     <dlg:menuitem dlg:value="Estonian"/>
-     -->
    </dlg:menupopup>
   </dlg:menulist>
   <dlg:button dlg:id="TranslateButton" dlg:tab-index="1" dlg:left="230" dlg:top="8" dlg:width="40" dlg:height="15" dlg:value="Translate">
-   <script:event script:event-name="on-performaction"
-	script:macro-name="vnd.sun.star.UNO:translateNow" script:language="UNO" />
+   <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:translateNow" script:language="UNO" />
   </dlg:button>
   <dlg:button dlg:id="CloseButton" dlg:tab-index="2" dlg:left="275" dlg:top="8" dlg:width="40" dlg:height="15" dlg:value="Close">
    <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:actionClose" script:language="UNO"/>

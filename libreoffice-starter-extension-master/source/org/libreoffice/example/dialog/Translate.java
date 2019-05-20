@@ -2,26 +2,35 @@ package org.libreoffice.example.dialog;
 
 import java.io.IOException;
 
+import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.libreoffice.example.helper.TranslateAPI;
+
+import com.sun.star.uno.XComponentContext;
 
 public class Translate {
 
-	private static String clientID = "u-72738618-8461-4ed4-a20b-33031a7ac036"; //TODO: change clientID set up
-	private static String smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8"; // TODO: change to corrcet default. save to appdata?
+	private static String clientID;
+	private static String smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8"; // TODO: change to correct default. save to appdata?
 
-	public Translate () {
+	public Translate(XComponentContext xContext) {
+		TildeTranslatorImpl t = new TildeTranslatorImpl(xContext);
+		clientID = t.getClientID();
 	}
 
-	public String getTranslation(String from, String to, String text) throws Exception {
-		if (from != null && to != null) {
-			setSmt(from, to);
-		}
+	public String getTranslation(String text) throws Exception {
 		return translate(smt, text);
 	}
 
-	/** saves information of machine for ActionTwo and ActionThree */
-	public void setSmt (String languageFrom, String languageTo) {
-		this.smt = getSmtID(languageFrom, languageTo);
+	/** if requested MT system exists, it is set;
+	 * saves information of the system for ActionTwo and ActionThree to use*/
+	public boolean setSmt (String languageFrom, String languageTo) {
+		String new_smt = getSmtID(languageFrom, languageTo);
+		if (new_smt == "") {
+			return false;
+		} else {
+			this.smt = new_smt;
+			return true;
+		}
 	}
 
 	/** if all necessary data is ready, translate text via API */
@@ -43,7 +52,8 @@ public class Translate {
 		return translated;
 	}
 
-	/** returns MT system's ID based on selected languages */
+	/** returns MT system's ID based on selected languages
+	 * TODO: dialog saves info too */
 	private String getSmtID (String languageFrom, String languageTo) {
 		String smt = "";
 		String lv = "Latvian";

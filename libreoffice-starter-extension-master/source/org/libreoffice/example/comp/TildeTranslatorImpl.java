@@ -31,35 +31,9 @@ public final class TildeTranslatorImpl extends WeakBase
         "org.libreoffice.example.TildeTranslator" };
     private static String clientID = null;
 
-    private ActionOne m_dialog;
-    private ActionOne getDialog() {
-    	if (m_dialog == null) {
-    		return new ActionOne(m_xContext);
-    	}
-    	else {
-    		return m_dialog;
-    	}
-    }
-
-    private ConfigID m_config_dialog;
-    private ConfigID getConfigDialog() {
-    	if (m_dialog == null) {
-    		return new ConfigID(m_xContext);
-    	}
-    	else {
-    		return m_config_dialog;
-    	}
-    }
-
     public TildeTranslatorImpl( XComponentContext context )
     {
         m_xContext = context;
-    };
-
-    public TildeTranslatorImpl( XComponentContext context, ActionOne dialog )
-    {
-        m_xContext = context;
-        m_dialog = dialog;
     };
 
     /** Create object for services (for panel factory) */
@@ -80,11 +54,11 @@ public final class TildeTranslatorImpl extends WeakBase
 
 	/**
 	 * ClientID is stored in a file that is located in users home folder.
-	 * If file does not exist or it is empty, configuration dialog shows
-	 * up and user has to enter the ID.
-	 *
+	 * If there is no ID in the file or the ID is invalid or the file does not exist,
+	 * user gets ID configurationID.
+	 * If it is valid, it is set to ClientID variable.
 	 */
-    private void setClientID() throws IOException {
+    private void checkClientIDFromFile() throws IOException {
     	String homeFolder = System.getProperty("user.home");
     	File dataFile = new File(homeFolder + File.separator +"tildeID");
     	System.out.println("exists?\t\t"+ dataFile.isFile());
@@ -95,8 +69,17 @@ public final class TildeTranslatorImpl extends WeakBase
     			String line = reader.readLine();
     			System.out.println("the line\t" + line);
     			if(line == null) {
-    				ConfigID conf = getConfigDialog();
+    				ConfigID conf = new ConfigID(m_xContext);
     				conf.show();
+    			} else {
+    				ConfigID c = new ConfigID(m_xContext);
+    				boolean valid = c.checkID(line);
+    				if(valid) {
+    					setClientID(line);
+    				} else {
+    					ConfigID conf = new ConfigID(m_xContext);
+        				conf.show();
+    				}
     			}
     		} catch (IOException e) {
     			e.printStackTrace();
@@ -105,10 +88,18 @@ public final class TildeTranslatorImpl extends WeakBase
     		Boolean isCreated = dataFile.createNewFile();
         	System.out.println("isCreated\t" + isCreated);
         	if(isCreated) {
-	        	ConfigID conf = getConfigDialog();
+	        	ConfigID conf = new ConfigID(m_xContext);
 	        	conf.show();
         	}
     	}
+    }
+
+    public void setClientID(String id) {
+    	clientID = id;
+    }
+
+    public String getClientID() {
+    	return clientID;
     }
 
     @Override
@@ -135,40 +126,40 @@ public final class TildeTranslatorImpl extends WeakBase
     @Override
 	public void trigger(String action)
     {
-//    	System.out.println("~~~~~ trigger");
-//    	if (clientID == null) {
-//    		try {
-//				setClientID();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//    	}
-//    	if (clientID != null) {
-        	switch (action) {
-        	case "actionOne":
-        		ActionOne actionOneDialog = getDialog();
-        		actionOneDialog.show();
-        		break;
-        	case "actionTwo":
-        		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
-        		try {
-    				actionTwo.insertAction();
-    			} catch (Exception e) {
-    				e.printStackTrace();
-    			}
-        		break;
-        	case "actionThree":
-        		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
-        		try {
-    				actionThree.replaceAction();
-    			} catch (Exception e) {
-    				e.printStackTrace();
-    			}
-        		break;
-        	default:
-        		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
+    	System.out.println("~~~~~ trigger");
+    	if (clientID == null) {
+    		try {
+				checkClientIDFromFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	}
+    	if (clientID != null) {
+    	switch (action) {
+    	case "actionOne":
+    		ActionOne actionOneDialog = new ActionOne(m_xContext);
+    		actionOneDialog.show();
+    		break;
+    	case "actionTwo":
+    		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
+    		try {
+				actionTwo.insertAction();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    		break;
+    	case "actionThree":
+    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
+    		try {
+				actionThree.replaceAction();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    		break;
+    	default:
+    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
         	}
-//    	}
+    	}
     }
 
 }

@@ -44,6 +44,8 @@ public class TranslateAPI {
 	            //extract and save the translation
 	            answer = response.toString();
 	            answer = getTranslationFromJSON(answer);
+		    } else if (responseCode == 401){
+		    	answer = null; //for ConfigID to check
 		    } else {
 		        System.out.println("POST did not work");
 		    }
