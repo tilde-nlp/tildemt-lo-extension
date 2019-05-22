@@ -14,6 +14,8 @@ import com.sun.star.uno.XComponentContext;
  * This action opens a set up (MT system's ID) and translation dialog.
  * From here user can change translation languages and insert
  * the translated text in the selected area of the text.
+ *
+ * @author arta.zena
  */
 
 public class ActionOne implements XDialogEventHandler {
@@ -30,16 +32,27 @@ public class ActionOne implements XDialogEventHandler {
 	private static XListBox languageBoxTo;
 	private static String selectedText = null;
 
+	/**
+	 * Constructor.
+	 * Creates dialog and sets context.
+	 *
+	 * @param xContext
+	 */
 	public ActionOne(XComponentContext xContext) {
 		this.dialog = DialogHelper.createDialog("ActionOneDialog.xdl", xContext, this);
 		this.xContext = xContext;
 	}
 
+	/**
+	 * Public method to start dialog.
+	 */
 	public void show(){
 		dialog.execute();
 	}
 
-	/** save latest language selection, close the dialog */
+	/**
+	 * Save the language selection, close the dialog.
+	 */
 	private void onCloseButtonPressed() {
 		getFields();
 		boolean selectedSysExists = setSmtIfSystemExists();
@@ -49,6 +62,13 @@ public class ActionOne implements XDialogEventHandler {
 		}
 	}
 
+	/**
+	 * If selected system exists, sends input text
+	 * to the translation class and sets returned
+	 * value to appear in output textfield.
+	 *
+	 * @throws Exception	getting translation failed
+	 */
 	private void onTranslateButtonPressed() throws Exception {
 		getFields();
 		boolean selectedSysExists = setSmtIfSystemExists();
@@ -62,7 +82,12 @@ public class ActionOne implements XDialogEventHandler {
 		}
 	}
 
-	/** insert translated text where the cursor is located in the document */
+	/**
+	 * If translation is not empty,
+	 *  get the cursor and insert translated text
+	 *  where the it is located in the document
+	 * Else do nothing
+	 */
 	private void onInsertButtonPressed() {
 		if (!textFieldTo.getText().equals("")) {
 			com.sun.star.text.XTextDocument xTextDoc =
@@ -75,13 +100,14 @@ public class ActionOne implements XDialogEventHandler {
 					xTextViewCursorSupplier.getViewCursor();
 
 			xTextViewCursor.setString(textFieldTo.getText());
-	        System.out.println("Insert:\t\tdone");
 		} else {
 			System.out.println("Insert:\tnothing to insert");
 		}
 	}
 
-	/** updates variables based on dialog fields user can edit */
+	/**
+	 * Updates variables based on dialog fields user can edit.
+	 */
 	private void getFields() {
 		textFieldFrom = DialogHelper.getEditField( this.dialog, "TextFieldFrom" );
 		textFieldTo = DialogHelper.getEditField( this.dialog, "TextFieldTo" );
@@ -94,7 +120,12 @@ public class ActionOne implements XDialogEventHandler {
 		System.out.println("Language to:\t" + languageBoxTo.getSelectedItem());
 	}
 
-	/** Show warning message, if selected system does not exist */
+	/**
+	 * Checks whether selected system exists.
+	 * Prompts if does not.
+	 *
+	 * @return 	whether systems exists
+	 */
 	private boolean setSmtIfSystemExists() {
 		//TODO: check if Translate.java is not repeating this
 		Translate translate = new Translate(xContext);

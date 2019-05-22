@@ -18,6 +18,12 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XReplaceable;
 
+/**
+ * Helps getting desktop, components, frames, cursors and
+ * other interfaces.
+ *
+ * @author arta.zena
+ */
 public class DocumentHelper {
 
 	/** Returns the current XDesktop */

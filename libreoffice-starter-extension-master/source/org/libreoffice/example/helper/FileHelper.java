@@ -12,6 +12,11 @@ import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.XURLTransformer;
 
+/**
+ * Helps finding file paths.
+ *
+ * @author arta.zena
+ */
 public class FileHelper {
 
 	final static String DIALOG_RESOURCES = "dialog/";
@@ -25,6 +30,10 @@ public class FileHelper {
 
 	/**
 	 * Returns a file path for a file in the installed extension, or null on failure.
+	 *
+	 * @param file
+	 * @param xContext
+	 * @return
 	 */
 	public static File getFilePath(String file, XComponentContext xContext) {
 		XPackageInformationProvider xPackageInformationProvider = PackageInformationProvider.get(xContext);

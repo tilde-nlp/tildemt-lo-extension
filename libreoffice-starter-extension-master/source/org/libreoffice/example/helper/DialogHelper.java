@@ -28,10 +28,20 @@ import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
+/**
+ * Manages actions with dialogs,
+ * for example, creating and prompting.
+ *
+ * @author arta.zena
+ */
 public class DialogHelper {
 	/**
 	 * Create a dialog from xdl file.
-	 * @param xdlFile - the filename in the `dialog` folder
+	 *
+	 * @param xdlFile	the filename in the `dialog` folder
+	 * @param context
+	 * @param handler	class that will manage the dialog
+	 * @return			created dialog
 	 */
 	public static XDialog createDialog(String xdlFile, XComponentContext context, XDialogEventHandler handler) {
 		Object oDialogProvider;
@@ -51,7 +61,13 @@ public class DialogHelper {
 		}
 	}
 
-	/** Returns a URL to be used with XDialogProvider to create a dialog */
+	/**
+	 *  Returns a URL to be used with XDialogProvider to create a dialog
+	 *
+	 * @param xContext
+	 * @param dialogFile
+	 * @return				URL string
+	 */
 	public static String convertToURL(XComponentContext xContext, File dialogFile) {
 		String sURL = null;
 		try {
@@ -65,7 +81,12 @@ public class DialogHelper {
 		return sURL;
 	}
 
-	/** Returns a button (XButton) from a dialog */
+	/** Returns a button (XButton) from a dialog
+	 *
+	 * @param dialog
+	 * @param componentId
+	 * @return
+	 */
 	public static XButton getButton(XDialog dialog, String componentId) {
 		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
@@ -73,7 +94,12 @@ public class DialogHelper {
 		return UnoRuntime.queryInterface(XButton.class, control);
 	}
 
-	/** Returns a text field (XTextComponent) from a dialog */
+	/** Returns a text field (XTextComponent) from a dialog
+	 *
+	 * @param dialog
+	 * @param componentId
+	 * @return
+	 */
 	public static XTextComponent getEditField(XDialog dialog, String componentId) {
 		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
@@ -81,7 +107,13 @@ public class DialogHelper {
 		return UnoRuntime.queryInterface(XTextComponent.class, control);
 	}
 
-	/** Returns a Combo box (XComboBox) from a dialog */
+	/**
+	 * Returns a Combo box (XComboBox) from a dialog
+	 *
+	 * @param dialog
+	 * @param componentId
+	 * @return
+	 */
 	public static XComboBox getCombobox(XDialog dialog, String componentId) {
 		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
@@ -89,7 +121,13 @@ public class DialogHelper {
 		return UnoRuntime.queryInterface(XComboBox.class, control);
 	}
 
-	/** Returns a List box (XListBox) from a dialog XDispatchProvider */
+	/**
+	 * Returns a List box (XListBox) from a dialog XDispatchProvider
+	 *
+	 * @param dialog
+	 * @param componentId
+	 * @return
+	 */
 	public static XListBox getListBox(XDialog dialog, String componentId) {
 		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
@@ -97,7 +135,13 @@ public class DialogHelper {
 		return UnoRuntime.queryInterface(XListBox.class, control);
 	}
 
-	/** Returns a label (XFixedText) from a dialog */
+	/**
+	 * Returns a label (XFixedText) from a dialog
+	 *
+	 * @param dialog
+	 * @param componentId
+	 * @return
+	 */
 	public static XFixedText getLabel(XDialog dialog, String componentId) {
 		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
@@ -105,6 +149,11 @@ public class DialogHelper {
 		return UnoRuntime.queryInterface(XFixedText.class, control);
 	}
 
+	/**
+	 * @param dialog
+	 * @param componentId
+	 * @param enable
+	 */
 	public static void EnableButton(XDialog dialog, String componentId, boolean enable) {
 		XControlContainer xDlgContainer = UnoRuntime.queryInterface(XControlContainer.class,
 				dialog);
@@ -119,12 +168,19 @@ public class DialogHelper {
 		}
 	}
 
-	/** Set the focus to an input field */
+	/** Set the focus to an input field
+	 * @param editField
+	 */
 	public static void SetFocus(XTextComponent editField) {
 		XWindow xControlWindow = UnoRuntime.queryInterface(XWindow.class, editField);
 		xControlWindow.setFocus();
 	}
 
+	/**
+	 * @param dialog
+	 * @param posX
+	 * @param posY
+	 */
 	public static void setPosition(XDialog dialog, int posX, int posY) {
 		XControlModel xDialogModel = UnoRuntime.queryInterface(XControl.class, dialog).getModel();
 		XPropertySet xPropSet = UnoRuntime.queryInterface(XPropertySet.class, xDialogModel);
@@ -137,6 +193,10 @@ public class DialogHelper {
 		}
 	}
 
+	/**
+	 * @param dialog
+	 * @return
+	 */
 	public static Point getPosition(XDialog dialog) {
 		int posX = 0;
 		int posY = 0;
@@ -150,18 +210,48 @@ public class DialogHelper {
 		return new Point(posX, posY);
 	}
 
+	/**
+	 * Generate and show info message with custom text
+	 *
+	 * @param context
+	 * @param dialog
+	 * @param message	custom message to show on the prompt
+	 */
 	public static void showInfoMessage(XComponentContext context, XDialog dialog, String message) {
 		showMessageBox(context, dialog, MessageBoxType.INFOBOX, "Info", message);
 	}
 
+	/**
+	 * Generate and show warning message with custom text
+	 *
+	 * @param context
+	 * @param dialog
+	 * @param message	custom message to show on the prompt
+	 */
 	public static void showWarningMessage(XComponentContext context, XDialog dialog, String message) {
 		showMessageBox(context, dialog, MessageBoxType.WARNINGBOX, "Warning", message);
 	}
 
+	/**
+	 * Generate and show error message with custom text
+	 *
+	 * @param context
+	 * @param dialog
+	 * @param message	custom message to show on the prompt
+	 */
 	public static void showErrorMessage(XComponentContext context, XDialog dialog, String message) {
 		showMessageBox(context, dialog, MessageBoxType.ERRORBOX, "Error", message);
 	}
 
+	/**
+	 * Generate and show message box with custom text
+	 *
+	 * @param context
+	 * @param dialog
+	 * @param type
+	 * @param sTitle
+	 * @param sMessage
+	 */
 	public static void showMessageBox(XComponentContext context, XDialog dialog, MessageBoxType type, String sTitle, String sMessage) {
 		XToolkit xToolkit;
 		try {

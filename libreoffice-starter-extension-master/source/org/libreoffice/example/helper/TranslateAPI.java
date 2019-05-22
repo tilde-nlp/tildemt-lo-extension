@@ -11,12 +11,21 @@ import java.net.URL;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * API used that returns translation of the given text
+ * using given MT system and ClientID
+ *
+ * @author arta.zena
+ */
 public class TranslateAPI {
 
 	public TranslateAPI() throws IOException {
 	}
 
 	/**
+	 * This method uses parameters to connect to "Tilde MT"
+	 * server and get the translation of the text.
+	 *
 	 * @param clientID is individual user's ClientID
 	 * @param systemID is MT system's ID for specified languages
 	 * @param text is text that user wants to translate
@@ -55,6 +64,13 @@ public class TranslateAPI {
 		return answer;
 	}
 
+	/**
+	 * @param clientID		users individual Client ID
+	 * @param systemID		MT system's ID
+	 * @param text			translatable text
+	 * @return				connection to system
+	 * @throws Exception	if any process in getting the connecton fails
+	 */
 	private HttpURLConnection getConnection(String clientID, String systemID, String text) throws Exception {
 		String POST_PARAMS = 	"{	\"systemID\": \"" 	+ 	systemID +
 									"\", \"text\": \"" 		+ 	text + "\" }";
@@ -77,6 +93,7 @@ public class TranslateAPI {
 
 	/**
 	 * Parses JSON string to retrieve only specified value
+	 *
 	 * @param str is JSON string
 	 * @return value for specified key
 	 */

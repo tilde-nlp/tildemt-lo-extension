@@ -1,10 +1,5 @@
 package org.libreoffice.example.comp;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
 import org.libreoffice.example.dialog.ActionOne;
 import org.libreoffice.example.dialog.ActionTwoAndThree;
 import org.libreoffice.example.dialog.ConfigID;
@@ -17,10 +12,13 @@ import com.sun.star.registry.XRegistryKey;
 import com.sun.star.uno.XComponentContext;
 
 /**
- * This class is the entry point of the project
- * (look in RegistrationHandler.classes).
+ * This class is the entry point of the project.
+ * The method "trigger" activates, when user
+ * interacts with the extension.
+ * (look in RegistrationHandler.classes)
+ *
+ * @author arta.zena
  */
-
 public final class TildeTranslatorImpl extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
               com.sun.star.task.XJobExecutor
@@ -31,12 +29,19 @@ public final class TildeTranslatorImpl extends WeakBase
         "org.libreoffice.example.TildeTranslator" };
     private static String clientID = null;
 
+    /**
+     * @param context
+     */
     public TildeTranslatorImpl( XComponentContext context )
     {
         m_xContext = context;
     };
 
-    /** Create object for services (for panel factory) */
+    /**
+     * Create object for services (for panel factory)
+     * @param sImplementationName
+     * @return
+     */
     public static XSingleComponentFactory __getComponentFactory( String sImplementationName ) {
         XSingleComponentFactory xFactory = null;
 
@@ -52,52 +57,16 @@ public final class TildeTranslatorImpl extends WeakBase
                                                 xRegistryKey);
     }
 
-	/**
-	 * ClientID is stored in a file that is located in users home folder.
-	 * If there is no ID in the file or the ID is invalid or the file does not exist,
-	 * user gets ID configurationID.
-	 * If it is valid, it is set to ClientID variable.
-	 */
-    private void checkClientIDFromFile() throws IOException {
-    	String homeFolder = System.getProperty("user.home");
-    	File dataFile = new File(homeFolder + File.separator +"tildeID");
-    	System.out.println("exists?\t\t"+ dataFile.isFile());
-    	if (dataFile.isFile()) {
-    		BufferedReader reader;
-    		try {
-    			reader = new BufferedReader(new FileReader(dataFile));
-    			String line = reader.readLine();
-    			System.out.println("the line\t" + line);
-    			if(line == null) {
-    				ConfigID conf = new ConfigID(m_xContext);
-    				conf.show();
-    			} else {
-    				ConfigID c = new ConfigID(m_xContext);
-    				boolean valid = c.checkID(line);
-    				if(valid) {
-    					setClientID(line);
-    				} else {
-    					ConfigID conf = new ConfigID(m_xContext);
-        				conf.show();
-    				}
-    			}
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
-    	} else {
-    		Boolean isCreated = dataFile.createNewFile();
-        	System.out.println("isCreated\t" + isCreated);
-        	if(isCreated) {
-	        	ConfigID conf = new ConfigID(m_xContext);
-	        	conf.show();
-        	}
-    	}
-    }
-
+    /**
+     * @param id	a String containing valid Client ID
+     */
     public void setClientID(String id) {
     	clientID = id;
     }
 
+    /**
+     * @return	returns current client ID
+     */
     public String getClientID() {
     	return clientID;
     }
@@ -123,42 +92,55 @@ public final class TildeTranslatorImpl extends WeakBase
         return m_serviceNames;
     }
 
+    /**
+     * interface XJobExecutor
+     * trigger event to start registered jobs
+     * Jobs are registered in configuration and will be started by
+     * executor automaticly, if they are registered for triggered event.
+     *
+     * trigger() sets client ID and if it is valid then
+     * direct action to the correct class.
+     *
+     * @param action	describe the event for which jobs can be registered and should be started
+     */
     @Override
 	public void trigger(String action)
     {
-    	System.out.println("~~~~~ trigger");
+    	// if client ID is not set, show configuration dialog
     	if (clientID == null) {
-    		try {
-				checkClientIDFromFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+    		ConfigID configID = new ConfigID(m_xContext);
+    		configID.configureID();
     	}
+    	// if setting the valid ID is succesful, performs asked action
     	if (clientID != null) {
-    	switch (action) {
-    	case "actionOne":
-    		ActionOne actionOneDialog = new ActionOne(m_xContext);
-    		actionOneDialog.show();
-    		break;
-    	case "actionTwo":
-    		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
-    		try {
-				actionTwo.insertAction();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-    		break;
-    	case "actionThree":
-    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
-    		try {
-				actionThree.replaceAction();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-    		break;
-    	default:
-    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
-        	}
+	    	switch (action) {
+	    		// call the translation dialog
+		    	case "actionOne":
+		    		ActionOne actionOneDialog = new ActionOne(m_xContext);
+		    		actionOneDialog.show();
+		    		break;
+		    	// call translaton appending action
+		    	case "actionTwo":
+		    		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
+		    		try {
+						actionTwo.insertAction();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+		    		break;
+		    	// call replacing action
+		    	case "actionThree":
+		    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
+		    		try {
+						actionThree.replaceAction();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+		    		break;
+		    	// prompt if non-defined action has been called
+		    	default:
+		    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
+	    	}
     	}
     }
 

@@ -5,10 +5,12 @@ import org.libreoffice.example.helper.DocumentHelper;
 import com.sun.star.uno.XComponentContext;
 /**
  * This action translates selected text and
- *  (1)inserts it after the selected text if ActionTwo button is pressed or
+ *  (1)appends it after the selected text if ActionTwo button is pressed or
  *  (2)replaces selected text with it's translation if ActionThree button is pressed.
  * Translation languages are the same as previously used and
  * can be set in ActionOne dialog.
+ *
+ * @author arta.zena
  */
 public class ActionTwoAndThree {
 
@@ -16,10 +18,19 @@ public class ActionTwoAndThree {
 	private static com.sun.star.text.XTextViewCursor xTextViewCursor;
 	private static String combined = "";
 
+	/**
+	 * @param xContext
+	 */
 	public ActionTwoAndThree (XComponentContext xContext) {
 		this.xContext = xContext;
 	}
 
+	/**
+	 * Append tranlation to the end of selected area.
+	 * Clean the variable that contains the translation.
+	 *
+	 * @throws Exception if getting translation while combining paragraphs failed
+	 */
 	public void insertAction() throws Exception {
 		combineTranslatedParagraphs();
 		insertAfter(combined);
@@ -27,11 +38,22 @@ public class ActionTwoAndThree {
 
 	}
 
+	/**
+	 * Moves cursour to the end of selection to insert translation there.
+	 *
+	 * @param translation	String containing translated text
+	 */
 	private void insertAfter(String translation) {
 		xTextViewCursor.collapseToEnd();
 		xTextViewCursor.setString(translation);
 	}
 
+	/**
+	 * If translated text is not empty, replace it with the translation.
+	 * Clean the variable that contains the translation.
+	 *
+	 * @throws Exception if getting translation while combining paragraphs failed
+	 */
 	public void replaceAction() throws Exception {
 		combineTranslatedParagraphs();
 		if(combined.length() > 1) {
@@ -41,11 +63,20 @@ public class ActionTwoAndThree {
 		}
 	}
 
+	/**
+	 * Replace selected text with it's translation
+	 *
+	 * @param translation	String containing all translated text
+	 */
 	private void replace(String translation) {
-		System.out.println("replace with:\t" + translation);
 		xTextViewCursor.setString(translation);
 	}
 
+	/**
+	 * Gets the user translatable input text
+	 *
+	 * @return	String that user wrote in dialog's translation box
+	 */
 	private String getSelectedText() {
 		com.sun.star.text.XTextDocument xTextDoc = DocumentHelper.getCurrentDocument(xContext);
 		com.sun.star.frame.XController xController = xTextDoc.getCurrentController();
@@ -59,6 +90,8 @@ public class ActionTwoAndThree {
 	 * each paragraph is translated seperately.
 	 * To make insertion of translated text as one step for user,
 	 * all translated paragraphs are combined in a single variable.
+	 *
+	 * @throws Exception	if getting translation failed
 	 */
 	private void combineTranslatedParagraphs() throws Exception {
 		String selectedText = getSelectedText();
@@ -85,6 +118,10 @@ public class ActionTwoAndThree {
 	 *   If only one paragraph is translated, put a single space before.
 	 *   If more than one paragraph is translated, start new paragraph
 	 *     and then split translated paragraphs too.
+	 *
+	 * @param paragraphCount			total paragraph count
+	 * @param currentParagraphNumber	current paragraph in the cycle
+	 * @param text						paragraph's content
 	 */
 	private static void combine(int paragraphCount, int currentParagraphNumber, String text){
 		if (paragraphCount == 1) {

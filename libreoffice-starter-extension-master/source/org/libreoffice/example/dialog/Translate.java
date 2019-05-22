@@ -7,22 +7,43 @@ import org.libreoffice.example.helper.TranslateAPI;
 
 import com.sun.star.uno.XComponentContext;
 
+/**
+ * This class manages variables (ClientID and smt) that are
+ * neccessary to translate text.
+ * Memorises MT system's ID and users ClientID.
+ *
+ * @author arta.zena
+ */
 public class Translate {
 
 	private static String clientID;
-	private static String smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8"; // TODO: change to correct default. save to appdata?
+	private static String smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8"; // TODO: save to appdata?
 
+	/**
+	 * @param xContext
+	 */
 	public Translate(XComponentContext xContext) {
 		TildeTranslatorImpl t = new TildeTranslatorImpl(xContext);
 		clientID = t.getClientID();
 	}
 
+	/**
+	 * @param text			one paragraph of translatable text
+	 * @return				paragraphs translation
+	 * @throws Exception	if transaltion failed
+	 */
 	public String getTranslation(String text) throws Exception {
 		return translate(smt, text);
 	}
 
-	/** if requested MT system exists, it is set;
-	 * saves information of the system for ActionTwo and ActionThree to use*/
+	/**
+	 * If requested MT system exists, it is set;
+	 * saves information of the system for ActionTwo and ActionThree to use
+	 *
+	 * @param languageFrom	language to translate from
+	 * @param languageTo	language to translate to
+	 * @return				whether selected system exists
+	 */
 	public boolean setSmt (String languageFrom, String languageTo) {
 		String new_smt = getSmtID(languageFrom, languageTo);
 		if (new_smt == "") {
@@ -33,7 +54,13 @@ public class Translate {
 		}
 	}
 
-	/** if all necessary data is ready, translate text via API */
+	/**
+	 * If all necessary data is ready, translate text via API
+	 *
+	 * @param smt	MT system's ID
+	 * @param text	translatable text
+	 * @return		translation
+	 */
 	private String translate (String smt, String text){
 		String translated = "";
 		if (!smt.isEmpty()) {
@@ -52,8 +79,14 @@ public class Translate {
 		return translated;
 	}
 
-	/** returns MT system's ID based on selected languages
-	 * TODO: dialog saves info too */
+	/**
+	 * Returns MT system's ID based on selected languages
+	 * TODO: dialog saves info too
+	 *
+	 * @param languageFrom	language to translate from
+	 * @param languageTo	language to translate to
+	 * @return				system ID or empty string if doesn't exist
+	 */
 	private String getSmtID (String languageFrom, String languageTo) {
 		String smt = "";
 		String lv = "Latvian";
