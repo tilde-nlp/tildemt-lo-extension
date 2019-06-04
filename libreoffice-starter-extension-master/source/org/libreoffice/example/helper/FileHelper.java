@@ -19,6 +19,7 @@ import com.sun.star.util.XURLTransformer;
  */
 public class FileHelper {
 
+	/** Folder where XDL dialog files can be found */
 	final static String DIALOG_RESOURCES = "dialog/";
 
 	/**

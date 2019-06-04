@@ -1,6 +1,7 @@
 package org.libreoffice.example.helper;
 
 import com.sun.star.beans.XPropertySet;
+import com.sun.star.container.XIndexAccess;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XController;
 import com.sun.star.frame.XDesktop;
@@ -40,7 +41,7 @@ public class DocumentHelper {
 	}
 
 	/** Returns the current XComponent */
-    private static XComponent getCurrentComponent(XComponentContext xContext) {
+    public static XComponent getCurrentComponent(XComponentContext xContext) {
         return getCurrentDesktop(xContext).getCurrentComponent();
     }
 
@@ -88,4 +89,11 @@ public class DocumentHelper {
 		return UnoRuntime.queryInterface(XPageCursor.class, xTextViewCursor);
 	}
 
+	public static XModel getModel(XTextDocument xTextDocument) {
+		return UnoRuntime.queryInterface(XModel.class, xTextDocument);
+	}
+	public static XIndexAccess getIndex () {
+
+		return null;
+	}
 }

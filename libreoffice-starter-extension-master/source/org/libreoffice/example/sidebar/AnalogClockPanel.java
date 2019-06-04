@@ -312,69 +312,12 @@ public class AnalogClockPanel
 		}
 	}
 
-
-
-
-
 	@Override
 	public void dispose ()
 	{
 		maTimer.cancel();
 		super.dispose();
 	}
-
-
-
-
-//	public static Color GetColor (final ColorType eColorType)
-//	{
-//		switch(eColorType)
-//		{
-//			default:
-//			case FaceColor:
-//				return maFaceColor;
-//
-//			case HourHandColor:
-//				return maHourHandColor;
-//
-//			case MinuteHandColor:
-//				return maMinuteHandColor;
-//
-//			case SecondHandColor:
-//				return maSecondHandColor;
-//		}
-//	}
-
-
-
-
-//	public static void SetColor (
-//			final ColorType eColorType,
-//			final Color aColor)
-//	{
-//		switch(eColorType)
-//		{
-//			default:
-//			case FaceColor:
-//				maFaceColor = aColor;
-//				break;
-//
-//			case HourHandColor:
-//				maHourHandColor = aColor;
-//				break;
-//
-//			case MinuteHandColor:
-//				maMinuteHandColor = aColor;
-//				break;
-//
-//			case SecondHandColor:
-//				maSecondHandColor = aColor;
-//				break;
-//		}
-//	}
-
-
-
 
 	private final XCanvas mxCanvas;
 	private Size maWindowSize;

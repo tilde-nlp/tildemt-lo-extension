@@ -15,7 +15,9 @@ import com.sun.star.uno.XComponentContext;
 public class ActionTwoAndThree {
 
 	private XComponentContext xContext;
+	/** Cursor in the document */
 	private static com.sun.star.text.XTextViewCursor xTextViewCursor;
+	/** Contains all translation paragraphs */
 	private static String combined = "";
 
 	/**
@@ -31,9 +33,9 @@ public class ActionTwoAndThree {
 	 *
 	 * @throws Exception if getting translation while combining paragraphs failed
 	 */
-	public void insertAction() throws Exception {
+	public void appendAction() throws Exception {
 		combineTranslatedParagraphs();
-		insertAfter(combined);
+		append(combined);
 		combined = "";
 
 	}
@@ -43,7 +45,7 @@ public class ActionTwoAndThree {
 	 *
 	 * @param translation	String containing translated text
 	 */
-	private void insertAfter(String translation) {
+	private void append(String translation) {
 		xTextViewCursor.collapseToEnd();
 		xTextViewCursor.setString(translation);
 	}
@@ -82,6 +84,7 @@ public class ActionTwoAndThree {
 		com.sun.star.frame.XController xController = xTextDoc.getCurrentController();
 		com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier = DocumentHelper.getCursorSupplier(xController);
 		xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
+
 		return xTextViewCursor.getString();
 	}
 
@@ -101,6 +104,7 @@ public class ActionTwoAndThree {
 
 			String paragraphs[] = selectedText.split("\\r?\\n");
 			int paralength = paragraphs.length;
+			// translate each paragraph seperately
 			for(int i = 0; i != paralength; i++) {
 				translated = translate.getTranslation(
 						paragraphs[i] );

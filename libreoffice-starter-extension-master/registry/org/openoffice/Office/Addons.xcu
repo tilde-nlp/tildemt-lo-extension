@@ -50,7 +50,7 @@
 						<value>com.sun.star.text.TextDocument</value>
 					</prop>
 					<prop oor:name="Title" oor:type="xs:string">
-						<value xml:lang="en-US">Join</value>
+						<value xml:lang="en-US">Append</value>
 						<value xml:lang="lv">Pievienot</value>
 					</prop>
 				</node>
@@ -96,7 +96,7 @@
 					</node>
 					<node oor:name="M2" oor:op="replace">
 						<prop oor:name="Title">
-							<value xml:lang="en-US">Join</value>
+							<value xml:lang="en-US">Append</value>
 							<value xml:lang="lv">Pievienot galā</value>
 						</prop>
 						<prop oor:name="URL">

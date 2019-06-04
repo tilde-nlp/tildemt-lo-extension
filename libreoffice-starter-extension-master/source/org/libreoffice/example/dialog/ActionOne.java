@@ -20,12 +20,16 @@ import com.sun.star.uno.XComponentContext;
 
 public class ActionOne implements XDialogEventHandler {
 
+	/** Translate dialog */
 	private XDialog dialog;
 	private XComponentContext xContext;
+	/** Known actions to react to */
 	private static final String actionClose = "actionClose";
 	private static final String actionTranslate = "translateNow";
 	private static final String actionInsert = "insertNow";
+	/** Array of supported actions */
 	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert };
+	/** Dialog fields */
 	private static XTextComponent textFieldFrom;
 	private static XTextComponent textFieldTo;
 	private static XListBox languageBoxFrom;

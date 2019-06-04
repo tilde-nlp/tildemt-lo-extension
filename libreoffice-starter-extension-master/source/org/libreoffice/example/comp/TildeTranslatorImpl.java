@@ -92,27 +92,27 @@ public final class TildeTranslatorImpl extends WeakBase
         return m_serviceNames;
     }
 
-    /**
-     * interface XJobExecutor
-     * trigger event to start registered jobs
-     * Jobs are registered in configuration and will be started by
-     * executor automaticly, if they are registered for triggered event.
-     *
-     * trigger() sets client ID and if it is valid then
-     * direct action to the correct class.
-     *
-     * @param action	describe the event for which jobs can be registered and should be started
-     */
-    @Override
+	/**
+	 * interface XJobExecutor
+	 * trigger event to start registered jobs
+	 * Jobs are registered in configuration and will be started by
+	 * executor automaticly, if they are registered for triggered event.
+	 *
+	 * trigger() sets client ID and if it is valid then
+	 * direct action to the correct class.
+	 *
+	 * @param action	describe the event for which jobs can be registered and should be started
+	 */
+	@Override
 	public void trigger(String action)
-    {
-    	// if client ID is not set, show configuration dialog
-    	if (clientID == null) {
-    		ConfigID configID = new ConfigID(m_xContext);
-    		configID.configureID();
-    	}
-    	// if setting the valid ID is succesful, performs asked action
-    	if (clientID != null) {
+	{
+		// if client ID is not set, show configuration dialog
+		if (clientID == null) {
+			ConfigID configID = new ConfigID(m_xContext);
+			configID.configureID();
+		}
+		// if setting the valid ID is succesful, performs asked action
+		if (clientID != null) {
 	    	switch (action) {
 	    		// call the translation dialog
 		    	case "actionOne":
@@ -123,7 +123,7 @@ public final class TildeTranslatorImpl extends WeakBase
 		    	case "actionTwo":
 		    		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
 		    		try {
-						actionTwo.insertAction();
+						actionTwo.appendAction();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -140,8 +140,8 @@ public final class TildeTranslatorImpl extends WeakBase
 		    	// prompt if non-defined action has been called
 		    	default:
 		    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
-	    	}
-    	}
-    }
+		    	}
+		}
+	}
 
 }

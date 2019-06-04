@@ -32,9 +32,13 @@ public class ConfigID implements XDialogEventHandler{
 
 	private XDialog dialog;
 	private XComponentContext xContext;
+	/** Known actions */
 	private static final String actionCheck = "checkNow";
+	/** String of knownc actions */
 	private String[] supportedActions = new String[] { actionCheck };
+	/** User entered client id */
 	private String id;
+	/** Filepath to folder where client id is saved*/
 	private final String homeFolder = System.getProperty("user.home");
 
 	/**
@@ -129,38 +133,38 @@ public class ConfigID implements XDialogEventHandler{
 	 * @exception IOException if reading/creating file failed
 	 */
 	private void checkClientIDFromFile() {
-    	File dataFile = new File(homeFolder + File.separator +"tildeID");
-    	if (dataFile.isFile()) {
-    		BufferedReader reader;
-    		try {
-    			reader = new BufferedReader(new FileReader(dataFile));
-    			String line = reader.readLine();
-    			if(line == null) {
-    				show();
-    			} else {
-    				boolean valid = checkID(line);
-    				if(valid) {
-    					TildeTranslatorImpl t = new TildeTranslatorImpl(xContext);
-    					t.setClientID(line);
-    				} else {
-    					show();
-    				}
-    			}
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
-    	} else {
-    		Boolean isCreated = false;
+		File dataFile = new File(homeFolder + File.separator +"tildeID");
+		if (dataFile.isFile()) {
+			BufferedReader reader;
+			try {
+				reader = new BufferedReader(new FileReader(dataFile));
+				String line = reader.readLine();
+				if(line == null) {
+					show();
+				} else {
+					boolean valid = checkID(line);
+					if(valid) {
+						TildeTranslatorImpl t = new TildeTranslatorImpl(xContext);
+						t.setClientID(line);
+					} else {
+						show();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			Boolean isCreated = false;
 			try {
 				isCreated = dataFile.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-        	if(isCreated) {
+	    	if(isCreated) {
 	        	show();
-        	}
-    	}
-    }
+	    	}
+		}
+	}
 
 	@Override
 	public boolean callHandlerMethod(XDialog dialog, Object eventObject, String methodName)

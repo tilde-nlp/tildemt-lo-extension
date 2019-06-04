@@ -17,7 +17,8 @@ import com.sun.star.uno.XComponentContext;
 public class Translate {
 
 	private static String clientID;
-	private static String smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8"; // TODO: save to appdata?
+	/** MT system's id; now to default */
+	private static String smt = "smt-f2e35605-1d5e-4d69-8664-d27a71a1ac26";
 
 	/**
 	 * @param xContext
@@ -93,17 +94,24 @@ public class Translate {
 		String en = "English";
 		String lt = "Lithuanian";
 		String et = "Estonian";
+		String sw = "Swedish";
 		if (languageFrom.contentEquals(en) && languageTo.contentEquals(lt)) {
 			smt = "smt-7060bc9b-7f6d-4978-a21b-591a13dbdea8";
 		}
 		else if (languageFrom.contentEquals(lt) && languageTo.contentEquals(en)) {
 			smt = "smt-986e31a9-938a-4507-b2ce-f78b0fe13cf4";
 		}
-		else if (languageFrom.contentEquals(en) && languageTo.contentEquals(et)) {
-			smt = "smt-e0a590e8-e45f-4206-a78e-ed9fde4762d5";
-		}
 		else if (languageFrom.contentEquals(en) && languageTo.contentEquals(lv)) {
-			smt = "smt-b0b7cc68-1bb3-4a35-a5de-f2f86d4dadf1";
+			smt = "smt-16d2a887-317f-4ef4-976b-90bd8c5e1a46";
+		}
+		else if (languageFrom.contentEquals(lv) && languageTo.contentEquals(en)) {
+			smt = "smt-0ad66ead-c181-4d0d-859a-50a0f51e2e03";
+		}
+		else if (languageFrom.contentEquals(sw) && languageTo.contentEquals(en)) {
+			smt = "smt-abf49352-0264-4480-bcfb-a7c7fabd2b0f";
+		}
+		else if (languageFrom.contentEquals(en) && languageTo.contentEquals(sw)) {
+			smt = "smt-f2e35605-1d5e-4d69-8664-d27a71a1ac26";
 		}
 		return smt;
 	}

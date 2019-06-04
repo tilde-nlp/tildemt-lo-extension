@@ -13,7 +13,8 @@ import com.sun.star.ui.XUIElementFactory;
 import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.XComponentContext;
 
-/** This is the factory that creates the sidebar panel that displays an analog clock. _writeRegistryServiceInfo
+/**
+ * This is the factory that creates the sidebar panel that displays an analog clock.
  */
 public class PanelFactory
 	implements XUIElementFactory, XServiceInfo

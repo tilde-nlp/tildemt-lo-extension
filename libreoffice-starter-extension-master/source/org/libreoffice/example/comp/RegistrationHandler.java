@@ -48,7 +48,7 @@ import com.sun.star.lang.XSingleComponentFactory;
 import com.sun.star.registry.XRegistryKey;
 
 /**
- * Component main registration class.
+ * Component registration class.
  *
  * <p><strong>This class should not be modified.</strong></p>
  *
@@ -172,34 +172,5 @@ public class RegistrationHandler {
 
     	return classes.toArray(new Class[classes.size()]);
     }
-
-    //imported from AnalogClock // Component.java. TODO:check if works / is necessary
-//    public static XSingleServiceFactory __getServiceFactory(
-//            final String sImplementationName,
-//            final XMultiServiceFactory xFactory,
-//            final XRegistryKey xKey)
-//        {
-//            XSingleServiceFactory xResult = null;
-//            System.out.println("looking up service factory for "+sImplementationName);
-//            if (sImplementationName.equals(PanelFactory.class.getName()))
-//            {
-//    	        xResult = FactoryHelper.getServiceFactory(
-//    	            	PanelFactory.class,
-//    	                PanelFactory.__serviceName,
-//    	                xFactory,
-//    	                xKey);
-//            }
-//            else if (sImplementationName.equals(ProtocolHandler.class.getName()))
-//            {
-//                xResult = FactoryHelper.getServiceFactory(
-//                    ProtocolHandler.class,
-//                    ProtocolHandler.__serviceName,
-//                    xFactory,
-//                    xKey);
-//            }
-//            System.out.println("    returning "+xResult);
-//
-//            return xResult;
-//        }
 
 }
