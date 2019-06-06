@@ -32,6 +32,7 @@ public class ConfigID implements XDialogEventHandler{
 
 	private XDialog dialog;
 	private XComponentContext xContext;
+	private String ClientID;
 	/** Known actions */
 	private static final String actionCheck = "checkNow";
 	/** String of knownc actions */
@@ -132,7 +133,8 @@ public class ConfigID implements XDialogEventHandler{
 	 *
 	 * @exception IOException if reading/creating file failed
 	 */
-	private void checkClientIDFromFile() {
+	private String checkClientIDFromFile() {
+		String valid_id = null;
 		File dataFile = new File(homeFolder + File.separator +"tildeID");
 		if (dataFile.isFile()) {
 			BufferedReader reader;
@@ -146,6 +148,7 @@ public class ConfigID implements XDialogEventHandler{
 					if(valid) {
 						TildeTranslatorImpl t = new TildeTranslatorImpl(xContext);
 						t.setClientID(line);
+						//valid_id = line;
 					} else {
 						show();
 					}
@@ -164,6 +167,7 @@ public class ConfigID implements XDialogEventHandler{
 	        	show();
 	    	}
 		}
+		return valid_id;
 	}
 
 	@Override

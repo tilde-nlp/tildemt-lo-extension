@@ -4,16 +4,16 @@
  <dlg:bulletinboard>
   <dlg:menulist dlg:id="ListBox1" dlg:tab-index="3" dlg:left="15" dlg:top="10" dlg:width="60" dlg:height="12" dlg:spin="true">
    <dlg:menupopup>
-    <dlg:menuitem dlg:value="English" dlg:selected="true"/>
-    <dlg:menuitem dlg:value="Swedish"/>
+    <dlg:menuitem dlg:value="English"/>
+    <dlg:menuitem dlg:value="Swedish" dlg:selected="true"/>
     <dlg:menuitem dlg:value="Latvian"/>
     <dlg:menuitem dlg:value="Lithuanian"/>
    </dlg:menupopup>
   </dlg:menulist>
   <dlg:menulist dlg:id="ListBox2" dlg:tab-index="4" dlg:left="80" dlg:top="10" dlg:width="60" dlg:height="12" dlg:spin="true">
    <dlg:menupopup>
-    <dlg:menuitem dlg:value="English"/>
-    <dlg:menuitem dlg:value="Swedish" dlg:selected="true"/>
+    <dlg:menuitem dlg:value="English" dlg:selected="true"/>
+    <dlg:menuitem dlg:value="Swedish"/>
     <dlg:menuitem dlg:value="Latvian"/>
     <dlg:menuitem dlg:value="Lithuanian"/>
    </dlg:menupopup>

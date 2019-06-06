@@ -8,9 +8,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * API used that returns translation of the given text
  * using given MT system and ClientID
@@ -52,7 +49,7 @@ public class TranslateAPI {
 
 	            //extract and save the translation
 	            answer = response.toString();
-	            answer = getTranslationFromJSON(answer);
+	            answer = JsonParser.getValue(answer, "translation");
 		    } else if (responseCode == 401){
 		    	answer = null; //for ConfigID to check
 		    } else {
@@ -89,24 +86,6 @@ public class TranslateAPI {
 	    os.close();
 
 		return connection;
-	}
-
-	/**
-	 * Parses JSON string to retrieve only specified value
-	 *
-	 * @param str is JSON string
-	 * @return value for specified key
-	 */
-	public String getTranslationFromJSON (String str) {
-		String translation = "";
-		String value = "translation";
-		try {
-			JSONObject obj = new JSONObject(str);
-			translation = obj.getString(value);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return translation;
 	}
 
 }

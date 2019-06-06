@@ -110,6 +110,7 @@ public final class TildeTranslatorImpl extends WeakBase
 		if (clientID == null) {
 			ConfigID configID = new ConfigID(m_xContext);
 			configID.configureID();
+			// get(set)SystemList
 		}
 		// if setting the valid ID is succesful, performs asked action
 		if (clientID != null) {
