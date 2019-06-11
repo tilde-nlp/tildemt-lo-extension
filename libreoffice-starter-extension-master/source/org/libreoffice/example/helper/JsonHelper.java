@@ -1,9 +1,11 @@
 package org.libreoffice.example.helper;
 
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JsonParser {
+public class JsonHelper {
 	/**
 	 * Parses JSON string to retrieve only specified value
 	 *
@@ -20,5 +22,18 @@ public class JsonParser {
 			e.printStackTrace();
 		}
 		return value;
+	}
+
+	public static String mapToJSON(Map<String, String> map) {
+		JSONObject json = new JSONObject();
+		for (Map.Entry<String,String> i : map.entrySet()) {
+			try {
+				json.put(i.getKey(), i.getValue());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		String str_json = json.toString();
+		return str_json;
 	}
 }

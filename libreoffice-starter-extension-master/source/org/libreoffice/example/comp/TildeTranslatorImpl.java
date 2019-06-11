@@ -4,6 +4,7 @@ import org.libreoffice.example.dialog.ActionOne;
 import org.libreoffice.example.dialog.ActionTwoAndThree;
 import org.libreoffice.example.dialog.ConfigID;
 import org.libreoffice.example.helper.DialogHelper;
+import org.libreoffice.example.helper.GetSystemList;
 
 import com.sun.star.lang.XSingleComponentFactory;
 import com.sun.star.lib.uno.helper.Factory;
@@ -131,7 +132,8 @@ public final class TildeTranslatorImpl extends WeakBase
 		    		break;
 		    	// call replacing action
 		    	case "actionThree":
-		    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
+		    		GetSystemList.set(clientID); // TODO: test
+;		    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
 		    		try {
 						actionThree.replaceAction();
 					} catch (Exception e) {

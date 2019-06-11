@@ -31,9 +31,9 @@ public class TranslateAPI {
 	public String translate (String clientID, String systemID, String text){
 		String answer = "";
 		try {
-			HttpURLConnection postConnection = getConnection(clientID, systemID, text);
+			HttpURLConnection postConnection = getConnection(clientID, systemID, text); // TODO: use ConnectionHelper.java
 		    int responseCode = postConnection.getResponseCode();
-		    System.out.println("POST Response:\t" + responseCode
+		    System.out.println("TranslateAPI Response:\t" + responseCode
 		    		+ " " + postConnection.getResponseMessage());
 
 		    // 200 is a response code for successful connection. Receiving data:
@@ -49,11 +49,9 @@ public class TranslateAPI {
 
 	            //extract and save the translation
 	            answer = response.toString();
-	            answer = JsonParser.getValue(answer, "translation");
-		    } else if (responseCode == 401){
-		    	answer = null; //for ConfigID to check
+	            answer = JsonHelper.getValue(answer, "translation");
 		    } else {
-		        System.out.println("POST did not work");
+		    	answer = null; //for ConfigID to check
 		    }
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,19 +67,19 @@ public class TranslateAPI {
 	 * @throws Exception	if any process in getting the connecton fails
 	 */
 	private HttpURLConnection getConnection(String clientID, String systemID, String text) throws Exception {
-		String POST_PARAMS = 	"{	\"systemID\": \"" 	+ 	systemID +
+		String body = 	"{	\"systemID\": \"" 	+ 	systemID +
 									"\", \"text\": \"" 		+ 	text + "\" }";
 		URL obj = new URL("https://letsmtdev.tilde.lv/ws/service.svc/json/TranslateEx");
 
 		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-	    connection.setRequestMethod("POST");
+	    connection.setRequestMethod("GET");
 	    connection.setRequestProperty("client-id", clientID);
 	    connection.setRequestProperty("Content-Type", "application/json");
 
 	    //sending data
 	    connection.setDoOutput(true);
 	    OutputStream os = connection.getOutputStream();
-	    os.write(POST_PARAMS.getBytes());
+	    os.write(body.getBytes());
 	    os.flush();
 	    os.close();
 
