@@ -1,12 +1,13 @@
 package org.libreoffice.example.helper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
+import org.libreoffice.example.helper.LetsMT.TranslatePayloadM;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * API used that returns translation of the given text
@@ -19,71 +20,46 @@ public class TranslateAPI {
 	public TranslateAPI() throws IOException {
 	}
 
-	/**
-	 * This method uses parameters to connect to "Tilde MT"
-	 * server and get the translation of the text.
-	 *
-	 * @param clientID is individual user's ClientID
-	 * @param systemID is MT system's ID for specified languages
-	 * @param text is text that user wants to translate
-	 * @return translation
-	 */
 	public String translate (String clientID, String systemID, String text){
-		String answer = "";
-		try {
-			HttpURLConnection postConnection = getConnection(clientID, systemID, text); // TODO: use ConnectionHelper.java
-		    int responseCode = postConnection.getResponseCode();
-		    System.out.println("TranslateAPI Response:\t" + responseCode
-		    		+ " " + postConnection.getResponseMessage());
-
-		    // 200 is a response code for successful connection. Receiving data:
-		    if (responseCode == 200) {
-		    	InputStream inputStream = postConnection.getInputStream();
-		    	BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-	            String inputLine;
-	            StringBuffer response = new StringBuffer();
-
-	            while ((inputLine = in .readLine()) != null) {
-	                response.append(inputLine); // TODO: atbilde nesatur garumzīmes
-	            } in .close();
-
-	            //extract and save the translation
-	            answer = response.toString();
-	            answer = JsonHelper.getValue(answer, "translation");
-		    } else {
-		    	answer = null; //for ConfigID to check
-		    }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return answer;
+		String translated = getRetrofitConnection(
+				"u-f08e4de3-8eed-4c78-abe7-7332619d13c0",
+				"smt-8d6f52a3-7f5a-4cca-a664-da222afe18b5",
+				"tekstas"); //TODO
+		return translated;
 	}
 
-	/**
-	 * @param clientID		users individual Client ID
-	 * @param systemID		MT system's ID
-	 * @param text			translatable text
-	 * @return				connection to system
-	 * @throws Exception	if any process in getting the connecton fails
-	 */
-	private HttpURLConnection getConnection(String clientID, String systemID, String text) throws Exception {
-		String body = 	"{	\"systemID\": \"" 	+ 	systemID +
-									"\", \"text\": \"" 		+ 	text + "\" }";
-		URL obj = new URL("https://letsmtdev.tilde.lv/ws/service.svc/json/TranslateEx");
+	private String getRetrofitConnection(String clientID, String systemID, String text) {
+		TranslatePayloadM translatable = new TranslatePayloadM(systemID, text);
 
-		HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-	    connection.setRequestMethod("GET");
-	    connection.setRequestProperty("client-id", clientID);
-	    connection.setRequestProperty("Content-Type", "application/json");
+		Retrofit retrofit = null;
+		try {
+		retrofit = new Retrofit.Builder()
+			    .baseUrl("https://www.letsmt.eu/ws/service.svc/json/")
+			    .addConverterFactory(GsonConverterFactory.create())
+			    .build();
+		} catch (Error e) {
+			e.printStackTrace();
+		}
 
-	    //sending data
-	    connection.setDoOutput(true);
-	    OutputStream os = connection.getOutputStream();
-	    os.write(body.getBytes());
-	    os.flush();
-	    os.close();
+		LetsMTAPI service = retrofit.create(LetsMTAPI.class);
+		Call<String> call = null;
+		try {
+			call = service.getTranslation(clientID, translatable);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 
-		return connection;
+		Response<String> result = null;
+		try {
+			result = call.execute();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		String translation = result.body();
+		System.out.println("translation = " + translation);
+
+		return translation;
 	}
 
 }

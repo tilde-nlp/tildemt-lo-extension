@@ -1,6 +1,6 @@
 package org.libreoffice.example.helper.LetsMT;
 
-public class SystemList {
+public class SystemListM {
 	 private System[] System;
 
 	    public System[] getSystem ()
@@ -16,6 +16,6 @@ public class SystemList {
 	    @Override
 	    public String toString()
 	    {
-	        return "SystemList [System = "+System+"]";
+	        return "SystemListM [System = "+System+"]";
 	    }
 }

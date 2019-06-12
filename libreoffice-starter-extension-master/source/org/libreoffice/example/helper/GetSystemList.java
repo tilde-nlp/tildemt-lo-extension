@@ -2,7 +2,7 @@ package org.libreoffice.example.helper;
 
 import java.io.IOException;
 
-import org.libreoffice.example.helper.LetsMT.SystemList;
+import org.libreoffice.example.helper.LetsMT.SystemListM;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -33,20 +33,20 @@ public class GetSystemList {
 			e.printStackTrace();
 		}
 		LetsMTAPI service = retrofit.create(LetsMTAPI.class);
-		Call<SystemList> call = null;
+		Call<SystemListM> call = null;
 		try {
 			call = service.getSystemList("u-f08e4de3-8eed-4c78-abe7-7332619d13c0"); //TODO
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 
-		Response<SystemList> result = null;
+		Response<SystemListM> result = null;
 		try {
 			result = call.execute();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		SystemList systemList = result.body();
+		SystemListM systemList = result.body();
 		System.out.println("systemlist = " + systemList.toString());
 	}
 }
