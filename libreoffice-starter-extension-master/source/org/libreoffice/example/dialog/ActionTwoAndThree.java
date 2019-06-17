@@ -1,6 +1,8 @@
 package org.libreoffice.example.dialog;
 
+import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.libreoffice.example.helper.DocumentHelper;
+import org.libreoffice.example.helper.TranslateAPI;
 
 import com.sun.star.uno.XComponentContext;
 /**
@@ -98,18 +100,17 @@ public class ActionTwoAndThree {
 	 */
 	private void combineTranslatedParagraphs() throws Exception {
 		String selectedText = getSelectedText();
+		String smt = TildeTranslatorImpl.getSystemID();
+		String clientID = TildeTranslatorImpl.getClientID();
+		String translation = null;
 		if(selectedText.length() > 0) {
-			Translate translate = new Translate(xContext);
-			String translated = null;
-
 			String paragraphs[] = selectedText.split("\\r?\\n");
 			int paralength = paragraphs.length;
 			// translate each paragraph seperately
 			for(int i = 0; i != paralength; i++) {
-				translated = translate.getTranslation(
-						paragraphs[i] );
-				if(translated.length() > 0) {
-					combine(paralength, i, translated);
+				translation = TranslateAPI.translate(clientID, smt, paragraphs[i]);
+				if(translation.length() > 0) {
+					combine(paralength, i, translation);
 				}
 			}
 		} else {

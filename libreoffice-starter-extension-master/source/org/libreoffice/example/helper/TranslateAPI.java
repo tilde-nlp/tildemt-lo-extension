@@ -20,15 +20,7 @@ public class TranslateAPI {
 	public TranslateAPI() throws IOException {
 	}
 
-	public String translate (String clientID, String systemID, String text){
-		String translated = getRetrofitConnection(
-				"u-f08e4de3-8eed-4c78-abe7-7332619d13c0",
-				"smt-8d6f52a3-7f5a-4cca-a664-da222afe18b5",
-				"tekstas"); //TODO
-		return translated;
-	}
-
-	private String getRetrofitConnection(String clientID, String systemID, String text) {
+	public static String translate (String clientID, String systemID, String text){
 		TranslatePayloadM translatable = new TranslatePayloadM(systemID, text);
 
 		Retrofit retrofit = null;
@@ -61,5 +53,4 @@ public class TranslateAPI {
 
 		return translation;
 	}
-
 }

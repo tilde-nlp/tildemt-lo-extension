@@ -1,7 +1,11 @@
 package org.libreoffice.example.dialog;
 
+import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.libreoffice.example.helper.DialogHelper;
 import org.libreoffice.example.helper.DocumentHelper;
+import org.libreoffice.example.helper.TranslateAPI;
+import org.libreoffice.example.helper.LetsMT.SystemListM;
+import org.libreoffice.example.helper.LetsMT.SystemSMT;
 
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.XDialogEventHandler;
@@ -30,10 +34,10 @@ public class ActionOne implements XDialogEventHandler {
 	/** Array of supported actions */
 	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert };
 	/** Dialog fields */
-	private static XTextComponent textFieldFrom;
-	private static XTextComponent textFieldTo;
-	private static XListBox languageBoxFrom;
-	private static XListBox languageBoxTo;
+	private static XTextComponent sourceTextField;
+	private static XTextComponent targetTextField;
+	private static XListBox sourceLanguageBox;
+	private static XListBox targetLanguageBox;
 	private static String selectedText = null;
 
 	/**
@@ -59,11 +63,9 @@ public class ActionOne implements XDialogEventHandler {
 	 */
 	private void onCloseButtonPressed() {
 		getFields();
-		boolean selectedSysExists = setSmtIfSystemExists();
-		if(selectedSysExists) {
-			dialog.endExecute();
-			textFieldTo.setText(""); // Clean memory for insert button
-		}
+		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem());
+		TildeTranslatorImpl.setSystemID(smt);
+		dialog.endExecute();
 	}
 
 	/**
@@ -75,15 +77,12 @@ public class ActionOne implements XDialogEventHandler {
 	 */
 	private void onTranslateButtonPressed() throws Exception {
 		getFields();
-		boolean selectedSysExists = setSmtIfSystemExists();
-		if(selectedSysExists) {
-			Translate translate = new Translate(xContext);
-			String translated = translate.getTranslation(
-					textFieldFrom.getText());
+		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem());
+		String clientID = TildeTranslatorImpl.getClientID();
+		String text = sourceTextField.getText();
+		String translation = TranslateAPI.translate(clientID, smt, text);
 
-			//pass translated text to the dialog text field
-			textFieldTo.setText(translated);
-		}
+		targetTextField.setText(translation);
 	}
 
 	/**
@@ -93,7 +92,7 @@ public class ActionOne implements XDialogEventHandler {
 	 * Else do nothing
 	 */
 	private void onInsertButtonPressed() {
-		if (!textFieldTo.getText().equals("")) {
+		if (!targetTextField.getText().equals("")) {
 			com.sun.star.text.XTextDocument xTextDoc =
 					DocumentHelper.getCurrentDocument(xContext);
 			com.sun.star.frame.XController xController =
@@ -103,7 +102,7 @@ public class ActionOne implements XDialogEventHandler {
 			com.sun.star.text.XTextViewCursor xTextViewCursor =
 					xTextViewCursorSupplier.getViewCursor();
 
-			xTextViewCursor.setString(textFieldTo.getText());
+			xTextViewCursor.setString(targetTextField.getText());
 		} else {
 			System.out.println("Insert:\tnothing to insert");
 		}
@@ -113,39 +112,38 @@ public class ActionOne implements XDialogEventHandler {
 	 * Updates variables based on dialog fields user can edit.
 	 */
 	private void getFields() {
-		textFieldFrom = DialogHelper.getEditField( this.dialog, "TextFieldFrom" );
-		textFieldTo = DialogHelper.getEditField( this.dialog, "TextFieldTo" );
-		languageBoxFrom = DialogHelper.getListBox( this.dialog , "ListBox1");
-		languageBoxTo = DialogHelper.getListBox( this.dialog , "ListBox2");
+		sourceTextField = DialogHelper.getEditField( this.dialog, "TextFieldFrom" );
+		targetTextField = DialogHelper.getEditField( this.dialog, "TextFieldTo" );
+		sourceLanguageBox = DialogHelper.getListBox( this.dialog , "ListBox1");
+		targetLanguageBox = DialogHelper.getListBox( this.dialog , "ListBox2");
 
 		System.out.println("--------");
-		System.out.println("To translate:\t" + textFieldFrom.getText());
-		System.out.println("Language from:\t" + languageBoxFrom.getSelectedItem());
-		System.out.println("Language to:\t" + languageBoxTo.getSelectedItem());
+		System.out.println("To translate:\t" + sourceTextField.getText());
+		System.out.println("Source language:\t" + sourceLanguageBox.getSelectedItem());
+		System.out.println("Target language:\t" + targetLanguageBox.getSelectedItem());
 	}
 
-	/**
-	 * Checks whether selected system exists.
-	 * Prompts if does not.
-	 *
-	 * @return 	whether systems exists
-	 */
-	private boolean setSmtIfSystemExists() {
-		//TODO: check if Translate.java is not repeating this
-		Translate translate = new Translate(xContext);
-		boolean smt_exists = translate.setSmt(
-				languageBoxFrom.getSelectedItem(),
-				languageBoxTo.getSelectedItem());
-		if(!smt_exists) {
-			DialogHelper.showInfoMessage(
-					xContext,
-					dialog,
-					"Cannot translate to selected language direction!\nSelect again.");
-			return false;
-		} else {
-			return true;
+	private String getSystemID (String sourceLang, String targetLang) {
+		SystemListM list = TildeTranslatorImpl.getSystemList();
+		SystemSMT[] systems = list.getSystem();
+		for (int i = 0; i < systems.length; i++ ) {
+			if (systems[i].getSourceLanguage().getCode().contentEquals(sourceLang) &&
+				systems[i].getTargetLanguage().getCode().contentEquals(targetLang)) {
+				return systems[i].getID();
+			}
 		}
+		System.out.println("System not found!");
+// TODO what if system is not found?
+		return "smt-8d6f52a3-7f5a-4cca-a664-da222afe18b5";
 	}
+//
+//	public void setListBoxes (SystemListM fullList) {
+//		SystemListM list = TildeTranslatorImpl.getSystemList();
+//		SystemSMT[] systems = list.getSystem();
+//		for (int i = 0; i < systems.length; i++ ) {
+//			sourceLanguageBox.addItems(arg0, arg1);
+//		}
+//	}
 
 	@Override
 	public boolean callHandlerMethod(XDialog dialog, Object eventObject, String methodName)

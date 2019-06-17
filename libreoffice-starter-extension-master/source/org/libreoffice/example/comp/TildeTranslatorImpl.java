@@ -4,7 +4,7 @@ import org.libreoffice.example.dialog.ActionOne;
 import org.libreoffice.example.dialog.ActionTwoAndThree;
 import org.libreoffice.example.dialog.ConfigID;
 import org.libreoffice.example.helper.DialogHelper;
-import org.libreoffice.example.helper.GetSystemList;
+import org.libreoffice.example.helper.LetsMT.SystemListM;
 
 import com.sun.star.lang.XSingleComponentFactory;
 import com.sun.star.lib.uno.helper.Factory;
@@ -29,6 +29,8 @@ public final class TildeTranslatorImpl extends WeakBase
     private static final String[] m_serviceNames = {
         "org.libreoffice.example.TildeTranslator" };
     private static String clientID = null;
+    private static SystemListM systemList = null;
+    private static String systemID = null;
 
     /**
      * @param context
@@ -68,8 +70,24 @@ public final class TildeTranslatorImpl extends WeakBase
     /**
      * @return	returns current client ID
      */
-    public String getClientID() {
+    public static String getClientID() {
     	return clientID;
+    }
+
+    public static void setSystemList (SystemListM sysList) {
+    	systemList = sysList;
+    }
+
+    public static SystemListM getSystemList() {
+    	return systemList;
+    }
+
+    public static void setSystemID(String id) {
+    	systemID = id;
+    }
+
+    public static String getSystemID() {
+    	return systemID;
     }
 
     @Override
@@ -132,7 +150,6 @@ public final class TildeTranslatorImpl extends WeakBase
 		    		break;
 		    	// call replacing action
 		    	case "actionThree":
-		    		GetSystemList.set(clientID); // TODO: test
 ;		    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
 		    		try {
 						actionThree.replaceAction();

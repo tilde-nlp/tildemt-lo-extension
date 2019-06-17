@@ -2,7 +2,7 @@ package org.libreoffice.example.helper.LetsMT;
 
 import com.sun.xml.internal.ws.api.addressing.WSEndpointReference.Metadata;
 
-public class System {
+public class SystemSMT {
 	private SourceLanguage SourceLanguage;
 
     private Description Description;

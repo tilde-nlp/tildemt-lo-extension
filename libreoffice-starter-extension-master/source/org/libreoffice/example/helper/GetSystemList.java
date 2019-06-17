@@ -2,6 +2,7 @@ package org.libreoffice.example.helper;
 
 import java.io.IOException;
 
+import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.libreoffice.example.helper.LetsMT.SystemListM;
 
 import retrofit2.Call;
@@ -20,9 +21,18 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class GetSystemList {
 
-	public GetSystemList () {}
-
 	public static void set (String id) {
+		Response<SystemListM> result = getRetrofitResult(id);
+		TildeTranslatorImpl.setSystemList(result.body());
+	}
+
+	public Boolean checkIfValid (String id) {
+		Response<SystemListM> result = getRetrofitResult(id);
+		Boolean valid = (result.code() == 200);
+		return valid;
+	}
+
+	private static Response<SystemListM> getRetrofitResult (String id) {
 		Retrofit retrofit = null;
 		try {
 		retrofit = new Retrofit.Builder()
@@ -35,7 +45,7 @@ public class GetSystemList {
 		LetsMTAPI service = retrofit.create(LetsMTAPI.class);
 		Call<SystemListM> call = null;
 		try {
-			call = service.getSystemList("u-f08e4de3-8eed-4c78-abe7-7332619d13c0"); //TODO
+			call = service.getSystemList(id); //TODO
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -46,7 +56,7 @@ public class GetSystemList {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		SystemListM systemList = result.body();
-		System.out.println("systemlist = " + systemList.toString());
+
+		return result;
 	}
 }
