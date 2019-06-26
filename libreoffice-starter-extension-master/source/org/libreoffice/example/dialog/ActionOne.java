@@ -1,5 +1,9 @@
 package org.libreoffice.example.dialog;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.libreoffice.example.helper.DialogHelper;
 import org.libreoffice.example.helper.DocumentHelper;
@@ -31,6 +35,8 @@ public class ActionOne implements XDialogEventHandler {
 	private static final String actionClose = "actionClose";
 	private static final String actionTranslate = "translateNow";
 	private static final String actionInsert = "insertNow";
+	private static final String actionChangeSourceLang = "changeSourceLang";
+	private static final String actionDialogOpen = "dialogOpen";
 	/** Array of supported actions */
 	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert };
 	/** Dialog fields */
@@ -63,7 +69,7 @@ public class ActionOne implements XDialogEventHandler {
 	 */
 	private void onCloseButtonPressed() {
 		getFields();
-		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem());
+		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem()); // TODO: pass language code not full title
 		TildeTranslatorImpl.setSystemID(smt);
 		dialog.endExecute();
 	}
@@ -92,6 +98,7 @@ public class ActionOne implements XDialogEventHandler {
 	 * Else do nothing
 	 */
 	private void onInsertButtonPressed() {
+		setListBoxes(); // TODO: do this on dialogs opening
 		if (!targetTextField.getText().equals("")) {
 			com.sun.star.text.XTextDocument xTextDoc =
 					DocumentHelper.getCurrentDocument(xContext);
@@ -105,6 +112,46 @@ public class ActionOne implements XDialogEventHandler {
 			xTextViewCursor.setString(targetTextField.getText());
 		} else {
 			System.out.println("Insert:\tnothing to insert");
+		}
+	}
+
+	private void onSourceLangChanged() {
+		getFields();
+		String selectedTargetLang = targetLanguageBox.getSelectedItem();
+		String selectedSourceLang = sourceLanguageBox.getSelectedItem();
+		SystemSMT[] systems = TildeTranslatorImpl.getSystemList().getSystem();
+
+	    List<String> targetLanguageArray = new ArrayList<String>();
+
+	    // update target list: get systems where source language is the selected one
+		for (int i = 0; i < systems.length; i++ ) {
+			String sourceLang = systems[i].getSourceLanguage().getName().getText();
+			String targetLang = systems[i].getTargetLanguage().getName().getText();
+			// put them in non-repeating array
+			if (sourceLang.equals(selectedSourceLang) && (!targetLanguageArray.contains(targetLang))) {
+				// check if machine's status is running
+				for (int k = 0; k < systems[i].getMetadata().length; k++) {
+					String key = systems[i].getMetadata()[k].getKey();
+					if (key.contentEquals("status")) {
+						if (systems[i].getMetadata()[k].getValue().contentEquals("running")) {
+							targetLanguageArray.add(targetLang);
+							break;
+						}
+					}
+				}
+			}
+		}
+		targetLanguageArray.sort(Comparator.naturalOrder());
+		targetLanguageBox.removeItems((short) 0, targetLanguageBox.getDropDownLineCount());
+		for (short i = 0; i < targetLanguageArray.size(); i++) {
+			targetLanguageBox.addItem(targetLanguageArray.get(i), i);
+		}
+		targetLanguageBox.setDropDownLineCount((short) targetLanguageArray.size());
+		// reset previous target language choice
+		if (targetLanguageArray.contains(selectedTargetLang)) {
+			targetLanguageBox.selectItem(selectedTargetLang, true);
+		} else {
+			targetLanguageBox.selectItemPos((short) 0, true);
 		}
 	}
 
@@ -124,26 +171,55 @@ public class ActionOne implements XDialogEventHandler {
 	}
 
 	private String getSystemID (String sourceLang, String targetLang) {
+
 		SystemListM list = TildeTranslatorImpl.getSystemList();
 		SystemSMT[] systems = list.getSystem();
 		for (int i = 0; i < systems.length; i++ ) {
-			if (systems[i].getSourceLanguage().getCode().contentEquals(sourceLang) &&
-				systems[i].getTargetLanguage().getCode().contentEquals(targetLang)) {
-				return systems[i].getID();
+
+			// check whether languages fit
+			if (systems[i].getSourceLanguage().getName().getText().contentEquals(sourceLang) &&
+				systems[i].getTargetLanguage().getName().getText().contentEquals(targetLang)) {
+
+				// check again if machine's status (to avoid error when there are >1 amchines with same languages)
+				for (int k = 0; k < systems[i].getMetadata().length; k++) {
+					String key = systems[i].getMetadata()[k].getKey();
+					if (key.contentEquals("status")) {
+						if (systems[i].getMetadata()[k].getValue().contentEquals("running")) {
+							return systems[i].getID();
+						}
+					}
+				}
 			}
 		}
-		System.out.println("System not found!");
-// TODO what if system is not found?
+		DialogHelper.showInfoMessage(xContext, dialog, "System not available!");
+		System.out.println("\nSystem not found! Using default system to translate...");
+		targetTextField.setText("");
 		return "smt-8d6f52a3-7f5a-4cca-a664-da222afe18b5";
 	}
-//
-//	public void setListBoxes (SystemListM fullList) {
-//		SystemListM list = TildeTranslatorImpl.getSystemList();
-//		SystemSMT[] systems = list.getSystem();
-//		for (int i = 0; i < systems.length; i++ ) {
-//			sourceLanguageBox.addItems(arg0, arg1);
-//		}
-//	}
+
+	public void setListBoxes () {
+	    // create array containing available languages
+		SystemListM list = TildeTranslatorImpl.getSystemList();
+		SystemSMT[] systems = list.getSystem();
+	    List<String> sourceLanguageArray = new ArrayList<String>();
+
+		// get full language list of available machines for source box
+		for (int i = 0; i < systems.length; i++ ) {
+			// check whether this language is already in the list and add it if not
+			String sourceLang = systems[i].getSourceLanguage().getName().getText();
+			if (!sourceLanguageArray.contains(sourceLang)) {
+				sourceLanguageArray.add(sourceLang);
+			}
+		}
+
+		// sort in alphabetical order
+		sourceLanguageArray.sort(Comparator.naturalOrder());
+		for (short i = 0; i < sourceLanguageArray.size(); i++) {
+			sourceLanguageBox.addItem(sourceLanguageArray.get(i), i);
+		}
+		sourceLanguageBox.setDropDownLineCount((short) sourceLanguageArray.size());
+		sourceLanguageBox.selectItemPos((short) 0, true);
+	}
 
 	@Override
 	public boolean callHandlerMethod(XDialog dialog, Object eventObject, String methodName)
@@ -162,6 +238,10 @@ public class ActionOne implements XDialogEventHandler {
 		}
 		else if (methodName.equals(actionInsert)) {
 			onInsertButtonPressed();
+			return true;
+		}
+		else if (methodName.contentEquals(actionChangeSourceLang)) {
+			onSourceLangChanged();
 			return true;
 		}
 		return false; // Event was not handled

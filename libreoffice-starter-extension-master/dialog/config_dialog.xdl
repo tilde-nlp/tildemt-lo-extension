@@ -8,6 +8,6 @@
   <dlg:button dlg:id="approveID" dlg:tab-index="4" dlg:left="90" dlg:top="55" dlg:width="51" dlg:height="15" dlg:value="Continue">
    <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:checkNow" script:language="UNO"/>
   </dlg:button>
-  <dlg:text dlg:id="linkDescriotion" dlg:tab-index="5" dlg:left="12" dlg:top="70" dlg:width="167" dlg:height="23" dlg:value="More information: link..."/>
+  <dlg:linklabel dlg:id="link" dlg:tab-index="5" dlg:left="12" dlg:top="70" dlg:width="167" dlg:height="23" dlg:value="More information" dlg:url="https://tilde.com" />
  </dlg:bulletinboard>
 </dlg:window>
