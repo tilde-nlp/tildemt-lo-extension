@@ -11,11 +11,18 @@ import org.libreoffice.example.helper.TranslateAPI;
 import org.libreoffice.example.helper.LetsMT.SystemListM;
 import org.libreoffice.example.helper.LetsMT.SystemSMT;
 
+import com.sun.star.awt.XControl;
+import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.XDialogEventHandler;
 import com.sun.star.awt.XListBox;
 import com.sun.star.awt.XTextComponent;
+import com.sun.star.beans.PropertyVetoException;
+import com.sun.star.beans.UnknownPropertyException;
+import com.sun.star.beans.XPropertySet;
+import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.WrappedTargetException;
+import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 
 /**
@@ -36,15 +43,19 @@ public class ActionOne implements XDialogEventHandler {
 	private static final String actionTranslate = "translateNow";
 	private static final String actionInsert = "insertNow";
 	private static final String actionChangeSourceLang = "changeSourceLang";
-	private static final String actionDialogOpen = "dialogOpen";
+	private static final String actionOnExecute = "dialogOpen";
 	/** Array of supported actions */
-	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert };
+	private String[] supportedActions = new String[] {
+			actionClose, actionTranslate, actionInsert, actionChangeSourceLang, actionOnExecute };
 	/** Dialog fields */
 	private static XTextComponent sourceTextField;
 	private static XTextComponent targetTextField;
 	private static XListBox sourceLanguageBox;
 	private static XListBox targetLanguageBox;
 	private static String selectedText = null;
+	private static String savedSourceLang;
+	private static String savedTargetLang;
+	 private XControlContainer m_xControlContainer;
 
 	/**
 	 * Constructor.
@@ -61,7 +72,24 @@ public class ActionOne implements XDialogEventHandler {
 	 * Public method to start dialog.
 	 */
 	public void show(){
+//		setLanguageBoxes();
+		configureListBoxOnOpening();
 		dialog.execute();
+	}
+
+	private void setLanguageBoxes() {
+		SystemListM list = TildeTranslatorImpl.getSystemList();
+		SystemSMT[] systems = list.getSystem();
+		List<String> sourceLanguageArray = new ArrayList<String>();
+		for (int i = 0; i < systems.length; i++ ) {
+			// check whether this language is already in the list and add it if not
+			String sourceLang = systems[i].getSourceLanguage().getName().getText();
+			if (!sourceLanguageArray.contains(sourceLang)) {
+				sourceLanguageArray.add(sourceLang);
+			}
+		}
+		sourceLanguageArray.sort(Comparator.naturalOrder());
+
 	}
 
 	/**
@@ -69,8 +97,11 @@ public class ActionOne implements XDialogEventHandler {
 	 */
 	private void onCloseButtonPressed() {
 		getFields();
-		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem()); // TODO: pass language code not full title
+		savedSourceLang = sourceLanguageBox.getSelectedItem();
+		savedTargetLang = targetLanguageBox.getSelectedItem();
+		String smt = getSystemID(savedSourceLang, savedTargetLang);
 		TildeTranslatorImpl.setSystemID(smt);
+
 		dialog.endExecute();
 	}
 
@@ -221,6 +252,96 @@ public class ActionOne implements XDialogEventHandler {
 		sourceLanguageBox.selectItemPos((short) 0, true);
 	}
 
+
+	private void setLanguageChoice() {
+		sourceLanguageBox.selectItem(savedSourceLang, true);
+		targetLanguageBox.selectItem(savedTargetLang, true);
+	}
+
+	private void configureListBoxOnOpening () {
+		String[] sourceLanguages = getSourceLanguageList();
+		m_xControlContainer = UnoRuntime.queryInterface( XControlContainer.class, dialog );
+		XControl sourceLangBoxControl = m_xControlContainer.getControl("ListBox1");
+		XPropertySet sourceLangBoxProps = UnoRuntime.queryInterface(XPropertySet.class, sourceLangBoxControl.getModel() );
+		String selectedSourceLanguage = null;
+		try {
+			sourceLangBoxProps.setPropertyValue("StringItemList", sourceLanguages);
+			selectedSourceLanguage = sourceLanguages[0];
+			short[] selectedNr = new short[]{0};
+			sourceLangBoxProps.setPropertyValue("SelectedItems", selectedNr);
+		} catch (IllegalArgumentException | UnknownPropertyException | PropertyVetoException
+				| WrappedTargetException e) {
+			e.printStackTrace();
+		}
+
+		String[] targetLanguages = getTargetLanguageList(selectedSourceLanguage);
+		XControl targetLangBoxControl = m_xControlContainer.getControl("ListBox2");
+		XPropertySet targetLangBoxProps = UnoRuntime.queryInterface(XPropertySet.class, targetLangBoxControl.getModel() );
+		try {
+			targetLangBoxProps.setPropertyValue("StringItemList", targetLanguages);
+			short[] selectedNr = new short[]{0};
+			targetLangBoxProps.setPropertyValue("SelectedItems", selectedNr);
+		} catch (IllegalArgumentException | UnknownPropertyException | PropertyVetoException
+				| WrappedTargetException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private String[] getTargetLanguageList(String sourceLanguage) {
+		SystemSMT[] systems = TildeTranslatorImpl.getSystemList().getSystem();
+
+	    List<String> targetLanguageList = new ArrayList<String>();
+
+	    // update target list: get systems where source language is the selected one
+		for (int i = 0; i < systems.length; i++ ) {
+			String systemsSourceLang = systems[i].getSourceLanguage().getName().getText();
+			String systemsTargetLang = systems[i].getTargetLanguage().getName().getText();
+			// put them in non-repeating array
+			if (systemsSourceLang.equals(sourceLanguage) && (!targetLanguageList.contains(systemsTargetLang))) {
+				// check if machine's status is running
+				for (int k = 0; k < systems[i].getMetadata().length; k++) {
+					String key = systems[i].getMetadata()[k].getKey();
+					if (key.contentEquals("status")) {
+						if (systems[i].getMetadata()[k].getValue().contentEquals("running")) {
+							targetLanguageList.add(systemsTargetLang);
+							break;
+						}
+					}
+				}
+			}
+		}
+		targetLanguageList.sort(Comparator.naturalOrder());
+		String[] targetLanguageArray = new String[targetLanguageList.size()];
+		for(int i = 0; i < targetLanguageList.size(); i++) {
+			targetLanguageArray[i] = targetLanguageList.get(i);
+		}
+		return targetLanguageArray;
+	}
+
+	private String[] getSourceLanguageList() {
+	    // create array containing available languages
+		SystemListM list = TildeTranslatorImpl.getSystemList();
+		SystemSMT[] systems = list.getSystem();
+	    List<String> sourceLanguageList = new ArrayList<String>();
+
+		// get full language list of available machines for source box
+		for (int i = 0; i < systems.length; i++ ) {
+			// check whether this language is already in the list and add it if not
+			String sourceLang = systems[i].getSourceLanguage().getName().getText();
+			if (!sourceLanguageList.contains(sourceLang)) {
+				sourceLanguageList.add(sourceLang);
+			}
+		}
+		// sort in alphabetical order
+		sourceLanguageList.sort(Comparator.naturalOrder());
+		String[] sourceLanguageArray = new String[sourceLanguageList.size()];
+		for(int i = 0; i < sourceLanguageList.size(); i++) {
+			sourceLanguageArray[i] = sourceLanguageList.get(i);
+		}
+		return sourceLanguageArray;
+	}
+
 	@Override
 	public boolean callHandlerMethod(XDialog dialog, Object eventObject, String methodName)
 			throws WrappedTargetException {
@@ -243,6 +364,10 @@ public class ActionOne implements XDialogEventHandler {
 		else if (methodName.contentEquals(actionChangeSourceLang)) {
 			onSourceLangChanged();
 			return true;
+		}
+		else if (methodName.contentEquals(actionOnExecute)){
+			setListBoxes();
+			setLanguageChoice();
 		}
 		return false; // Event was not handled
 	}
