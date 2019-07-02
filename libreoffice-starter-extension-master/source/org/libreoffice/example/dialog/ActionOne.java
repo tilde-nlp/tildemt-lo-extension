@@ -43,18 +43,17 @@ public class ActionOne implements XDialogEventHandler {
 	private static final String actionTranslate = "translateNow";
 	private static final String actionInsert = "insertNow";
 	private static final String actionChangeSourceLang = "changeSourceLang";
-	private static final String actionOnExecute = "dialogOpen";
 	/** Array of supported actions */
 	private String[] supportedActions = new String[] {
-			actionClose, actionTranslate, actionInsert, actionChangeSourceLang, actionOnExecute };
+			actionClose, actionTranslate, actionInsert, actionChangeSourceLang };
 	/** Dialog fields */
 	private static XTextComponent sourceTextField;
 	private static XTextComponent targetTextField;
 	private static XListBox sourceLanguageBox;
 	private static XListBox targetLanguageBox;
 	private static String selectedText = null;
-	private static String savedSourceLang;
-	private static String savedTargetLang;
+	private static String savedSourceLang = "";
+	private static String savedTargetLang = "";
 	 private XControlContainer m_xControlContainer;
 
 	/**
@@ -72,24 +71,8 @@ public class ActionOne implements XDialogEventHandler {
 	 * Public method to start dialog.
 	 */
 	public void show(){
-//		setLanguageBoxes();
 		configureListBoxOnOpening();
 		dialog.execute();
-	}
-
-	private void setLanguageBoxes() {
-		SystemListM list = TildeTranslatorImpl.getSystemList();
-		SystemSMT[] systems = list.getSystem();
-		List<String> sourceLanguageArray = new ArrayList<String>();
-		for (int i = 0; i < systems.length; i++ ) {
-			// check whether this language is already in the list and add it if not
-			String sourceLang = systems[i].getSourceLanguage().getName().getText();
-			if (!sourceLanguageArray.contains(sourceLang)) {
-				sourceLanguageArray.add(sourceLang);
-			}
-		}
-		sourceLanguageArray.sort(Comparator.naturalOrder());
-
 	}
 
 	/**
@@ -99,8 +82,7 @@ public class ActionOne implements XDialogEventHandler {
 		getFields();
 		savedSourceLang = sourceLanguageBox.getSelectedItem();
 		savedTargetLang = targetLanguageBox.getSelectedItem();
-		String smt = getSystemID(savedSourceLang, savedTargetLang);
-		TildeTranslatorImpl.setSystemID(smt);
+		TildeTranslatorImpl.setSystemID(getSystemID(savedSourceLang, savedTargetLang));
 
 		dialog.endExecute();
 	}
@@ -129,7 +111,6 @@ public class ActionOne implements XDialogEventHandler {
 	 * Else do nothing
 	 */
 	private void onInsertButtonPressed() {
-		setListBoxes(); // TODO: do this on dialogs opening
 		if (!targetTextField.getText().equals("")) {
 			com.sun.star.text.XTextDocument xTextDoc =
 					DocumentHelper.getCurrentDocument(xContext);
@@ -146,44 +127,36 @@ public class ActionOne implements XDialogEventHandler {
 		}
 	}
 
+	/**
+	 * When source language is changed, target language list box
+	 * is updated to fit the new source language.
+	 * If previousely set target language is available also for the new source language
+	 *   it stays the same.
+	 * Else it is set to the first one in the list.
+	 */
 	private void onSourceLangChanged() {
 		getFields();
-		String selectedTargetLang = targetLanguageBox.getSelectedItem();
 		String selectedSourceLang = sourceLanguageBox.getSelectedItem();
-		SystemSMT[] systems = TildeTranslatorImpl.getSystemList().getSystem();
+		String selectedTargetLang = targetLanguageBox.getSelectedItem();
+		String[] targetLanguageArray = getTargetLanguageList(selectedSourceLang);
 
-	    List<String> targetLanguageArray = new ArrayList<String>();
-
-	    // update target list: get systems where source language is the selected one
-		for (int i = 0; i < systems.length; i++ ) {
-			String sourceLang = systems[i].getSourceLanguage().getName().getText();
-			String targetLang = systems[i].getTargetLanguage().getName().getText();
-			// put them in non-repeating array
-			if (sourceLang.equals(selectedSourceLang) && (!targetLanguageArray.contains(targetLang))) {
-				// check if machine's status is running
-				for (int k = 0; k < systems[i].getMetadata().length; k++) {
-					String key = systems[i].getMetadata()[k].getKey();
-					if (key.contentEquals("status")) {
-						if (systems[i].getMetadata()[k].getValue().contentEquals("running")) {
-							targetLanguageArray.add(targetLang);
-							break;
-						}
-					}
-				}
+		// emptry the target box before adding new values
+		targetLanguageBox.removeItems((short) 0, targetLanguageBox.getDropDownLineCount());
+		Boolean targetStaysTheSame = false;
+		for (short i = 0; i < targetLanguageArray.length; i++) {
+			targetLanguageBox.addItem(targetLanguageArray[i], i);
+			if (targetLanguageArray[i].contentEquals(selectedTargetLang)) {
+				targetStaysTheSame = true;
 			}
 		}
-		targetLanguageArray.sort(Comparator.naturalOrder());
-		targetLanguageBox.removeItems((short) 0, targetLanguageBox.getDropDownLineCount());
-		for (short i = 0; i < targetLanguageArray.size(); i++) {
-			targetLanguageBox.addItem(targetLanguageArray.get(i), i);
-		}
-		targetLanguageBox.setDropDownLineCount((short) targetLanguageArray.size());
-		// reset previous target language choice
-		if (targetLanguageArray.contains(selectedTargetLang)) {
+		if (targetStaysTheSame) {
 			targetLanguageBox.selectItem(selectedTargetLang, true);
 		} else {
 			targetLanguageBox.selectItemPos((short) 0, true);
 		}
+
+		targetLanguageBox.setDropDownLineCount((short) targetLanguageArray.length);
+		sourceLanguageBox.setDropDownLineCount((short) getSourceLanguageList().length);
 	}
 
 	/**
@@ -201,8 +174,16 @@ public class ActionOne implements XDialogEventHandler {
 		System.out.println("Target language:\t" + targetLanguageBox.getSelectedItem());
 	}
 
+	/**
+	 * Based on languages passed via parameters,
+	 * first available running system's id is returned.
+	 * If there is no available system, info dialog shows up.
+	 *
+	 * @param sourceLang
+	 * @param targetLang
+	 * @return Strign containing system id
+	 */
 	private String getSystemID (String sourceLang, String targetLang) {
-
 		SystemListM list = TildeTranslatorImpl.getSystemList();
 		SystemSMT[] systems = list.getSystem();
 		for (int i = 0; i < systems.length; i++ ) {
@@ -225,69 +206,76 @@ public class ActionOne implements XDialogEventHandler {
 		DialogHelper.showInfoMessage(xContext, dialog, "System not available!");
 		System.out.println("\nSystem not found! Using default system to translate...");
 		targetTextField.setText("");
-		return "smt-8d6f52a3-7f5a-4cca-a664-da222afe18b5";
+		return null;
 	}
 
-	public void setListBoxes () {
-	    // create array containing available languages
-		SystemListM list = TildeTranslatorImpl.getSystemList();
-		SystemSMT[] systems = list.getSystem();
-	    List<String> sourceLanguageArray = new ArrayList<String>();
-
-		// get full language list of available machines for source box
-		for (int i = 0; i < systems.length; i++ ) {
-			// check whether this language is already in the list and add it if not
-			String sourceLang = systems[i].getSourceLanguage().getName().getText();
-			if (!sourceLanguageArray.contains(sourceLang)) {
-				sourceLanguageArray.add(sourceLang);
-			}
-		}
-
-		// sort in alphabetical order
-		sourceLanguageArray.sort(Comparator.naturalOrder());
-		for (short i = 0; i < sourceLanguageArray.size(); i++) {
-			sourceLanguageBox.addItem(sourceLanguageArray.get(i), i);
-		}
-		sourceLanguageBox.setDropDownLineCount((short) sourceLanguageArray.size());
-		sourceLanguageBox.selectItemPos((short) 0, true);
-	}
-
-
-	private void setLanguageChoice() {
-		sourceLanguageBox.selectItem(savedSourceLang, true);
-		targetLanguageBox.selectItem(savedTargetLang, true);
-	}
-
+	/**
+	 * Adds available system language lists to list boxes before the dialog is open.
+	 *
+	 */
 	private void configureListBoxOnOpening () {
-		String[] sourceLanguages = getSourceLanguageList();
+		// get properties for the source list box
 		m_xControlContainer = UnoRuntime.queryInterface( XControlContainer.class, dialog );
 		XControl sourceLangBoxControl = m_xControlContainer.getControl("ListBox1");
 		XPropertySet sourceLangBoxProps = UnoRuntime.queryInterface(XPropertySet.class, sourceLangBoxControl.getModel() );
+
+		String[] sourceLanguages = getSourceLanguageList();
 		String selectedSourceLanguage = null;
 		try {
+			// add String[] contents to the list box
 			sourceLangBoxProps.setPropertyValue("StringItemList", sourceLanguages);
+
+			// reset language choice with which user closed the dialog last time
+			// (or just set first languages if the dialog is open for the first time)
+			short[] selectedNr = new short[1];
+			selectedNr[0] = (short) 0;
 			selectedSourceLanguage = sourceLanguages[0];
-			short[] selectedNr = new short[]{0};
+			for (int i = 0; i < sourceLanguages.length; i++) {
+				if (sourceLanguages[i].contentEquals(savedSourceLang)) {
+					selectedNr[0] = (short) i;
+					selectedSourceLanguage = savedSourceLang;
+					break;
+				}
+			}
 			sourceLangBoxProps.setPropertyValue("SelectedItems", selectedNr);
 		} catch (IllegalArgumentException | UnknownPropertyException | PropertyVetoException
 				| WrappedTargetException e) {
 			e.printStackTrace();
 		}
+		// set dropdown menu line count to match entry count
+		try {
+			sourceLangBoxProps.setPropertyValue("LineCount", 1); // TODO fix
+		} catch (Exception e) {
+			System.out.println("Setting line count failed");
+		}
 
+		// adjust target language box based on what is set in source box. Similar to upper code.
 		String[] targetLanguages = getTargetLanguageList(selectedSourceLanguage);
 		XControl targetLangBoxControl = m_xControlContainer.getControl("ListBox2");
-		XPropertySet targetLangBoxProps = UnoRuntime.queryInterface(XPropertySet.class, targetLangBoxControl.getModel() );
+		XPropertySet targetLangBoxProps = UnoRuntime.queryInterface(XPropertySet.class, targetLangBoxControl.getModel());
 		try {
 			targetLangBoxProps.setPropertyValue("StringItemList", targetLanguages);
-			short[] selectedNr = new short[]{0};
+			short[] selectedNr = new short[] {(short) 0};
+			for (int i = 0; i < targetLanguages.length; i++) {
+				if (targetLanguages[i].contentEquals(savedTargetLang)) {
+					selectedNr[0] = (short) i;
+					break;
+				}
+			}
 			targetLangBoxProps.setPropertyValue("SelectedItems", selectedNr);
 		} catch (IllegalArgumentException | UnknownPropertyException | PropertyVetoException
 				| WrappedTargetException e) {
 			e.printStackTrace();
 		}
-
 	}
 
+	/**
+	 * Based on given source language retruns non-repeating language list
+	 * with all available target languages for systems that are running.
+	 *
+	 * @param sourceLanguage
+	 * @return	String array with target languages
+	 */
 	private String[] getTargetLanguageList(String sourceLanguage) {
 		SystemSMT[] systems = TildeTranslatorImpl.getSystemList().getSystem();
 
@@ -302,16 +290,15 @@ public class ActionOne implements XDialogEventHandler {
 				// check if machine's status is running
 				for (int k = 0; k < systems[i].getMetadata().length; k++) {
 					String key = systems[i].getMetadata()[k].getKey();
-					if (key.contentEquals("status")) {
-						if (systems[i].getMetadata()[k].getValue().contentEquals("running")) {
+					if (key.contentEquals("status") && systems[i].getMetadata()[k].getValue().contentEquals("running")) {
 							targetLanguageList.add(systemsTargetLang);
 							break;
-						}
 					}
 				}
 			}
 		}
 		targetLanguageList.sort(Comparator.naturalOrder());
+		// change from List<String> to String[]
 		String[] targetLanguageArray = new String[targetLanguageList.size()];
 		for(int i = 0; i < targetLanguageList.size(); i++) {
 			targetLanguageArray[i] = targetLanguageList.get(i);
@@ -319,6 +306,10 @@ public class ActionOne implements XDialogEventHandler {
 		return targetLanguageArray;
 	}
 
+	/**
+	 * Extracts available source languages that have at least one running system.
+	 * @return String[] with nonrepeating source languages
+	 */
 	private String[] getSourceLanguageList() {
 	    // create array containing available languages
 		SystemListM list = TildeTranslatorImpl.getSystemList();
@@ -330,11 +321,19 @@ public class ActionOne implements XDialogEventHandler {
 			// check whether this language is already in the list and add it if not
 			String sourceLang = systems[i].getSourceLanguage().getName().getText();
 			if (!sourceLanguageList.contains(sourceLang)) {
-				sourceLanguageList.add(sourceLang);
+				// check is system is running
+				for (int k = 0; k < systems[i].getMetadata().length; k++) {
+					String key = systems[i].getMetadata()[k].getKey();
+					if (key.contentEquals("status") && systems[i].getMetadata()[k].getValue().contentEquals("running")) {
+							sourceLanguageList.add(sourceLang);
+							break;
+					}
+				}
 			}
 		}
 		// sort in alphabetical order
 		sourceLanguageList.sort(Comparator.naturalOrder());
+		// change from List<String> to String[]
 		String[] sourceLanguageArray = new String[sourceLanguageList.size()];
 		for(int i = 0; i < sourceLanguageList.size(); i++) {
 			sourceLanguageArray[i] = sourceLanguageList.get(i);
@@ -364,10 +363,6 @@ public class ActionOne implements XDialogEventHandler {
 		else if (methodName.contentEquals(actionChangeSourceLang)) {
 			onSourceLangChanged();
 			return true;
-		}
-		else if (methodName.contentEquals(actionOnExecute)){
-			setListBoxes();
-			setLanguageChoice();
 		}
 		return false; // Event was not handled
 	}
