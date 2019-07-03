@@ -54,7 +54,7 @@ public class ActionOne implements XDialogEventHandler {
 	private static String selectedText = null;
 	private static String savedSourceLang = "";
 	private static String savedTargetLang = "";
-	 private XControlContainer m_xControlContainer;
+	private XControlContainer m_xControlContainer;
 
 	/**
 	 * Constructor.
@@ -149,6 +149,7 @@ public class ActionOne implements XDialogEventHandler {
 				targetStaysTheSame = true;
 			}
 		}
+		// if target language if available also for the new source language, don't change the selection
 		if (targetStaysTheSame) {
 			targetLanguageBox.selectItem(selectedTargetLang, true);
 		} else {
@@ -241,12 +242,6 @@ public class ActionOne implements XDialogEventHandler {
 		} catch (IllegalArgumentException | UnknownPropertyException | PropertyVetoException
 				| WrappedTargetException e) {
 			e.printStackTrace();
-		}
-		// set dropdown menu line count to match entry count
-		try {
-			sourceLangBoxProps.setPropertyValue("LineCount", 1); // TODO fix
-		} catch (Exception e) {
-			System.out.println("Setting line count failed");
 		}
 
 		// adjust target language box based on what is set in source box. Similar to upper code.
