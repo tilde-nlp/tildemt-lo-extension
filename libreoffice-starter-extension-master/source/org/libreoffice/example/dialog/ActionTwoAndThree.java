@@ -101,14 +101,13 @@ public class ActionTwoAndThree {
 	private void combineTranslatedParagraphs() throws Exception {
 		String selectedText = getSelectedText();
 		String smt = TildeTranslatorImpl.getSystemID();
-		String clientID = TildeTranslatorImpl.getClientID();
 		String translation = null;
 		if(selectedText.length() > 0) {
 			String paragraphs[] = selectedText.split("\\r?\\n");
 			int paralength = paragraphs.length;
 			// translate each paragraph seperately
 			for(int i = 0; i != paralength; i++) {
-				translation = TranslateAPI.translate(clientID, smt, paragraphs[i]);
+				translation = TildeTranslatorImpl.TildeMTClient.translate(smt, paragraphs[i]);
 				if(translation.length() > 0) {
 					combine(paralength, i, translation);
 				}

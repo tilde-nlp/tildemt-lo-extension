@@ -96,15 +96,14 @@ public class ConfigID {
 	 * @return 					true if given ID is valid
 	 */
 	static boolean checkID (String inputID) {
+		//TODO: Should call TildeTranslatorImpl.setClientID(clientID); And should make it to fail on GetSystemList call if the ClientID is not valid
 		GetSystemList gsl = new GetSystemList();
 		Boolean valid = gsl.checkIfValid(inputID);
 		return valid;
 	}
 
 	public static void setClientAndSystemIDs (String clientID) {
-		TildeTranslatorImpl t = new TildeTranslatorImpl(xContext);
-		t.setClientID(clientID);
-		GetSystemList.set(clientID);
+		TildeTranslatorImpl.setClientID(clientID);
 	}
 
 }

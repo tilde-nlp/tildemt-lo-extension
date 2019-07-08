@@ -97,9 +97,8 @@ public class ActionOne implements XDialogEventHandler {
 	private void onTranslateButtonPressed() throws Exception {
 		getFields();
 		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem());
-		String clientID = TildeTranslatorImpl.getClientID();
 		String text = sourceTextField.getText();
-		String translation = TranslateAPI.translate(clientID, smt, text);
+		String translation = TildeTranslatorImpl.TildeMTAPIClient.translate(smt, text);
 
 		targetTextField.setText(translation);
 	}
