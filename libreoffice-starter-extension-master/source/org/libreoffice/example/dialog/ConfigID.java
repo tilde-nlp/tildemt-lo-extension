@@ -23,7 +23,7 @@ import com.sun.star.uno.XComponentContext;
 
 public class ConfigID {
 	private static XComponentContext xContext;
-	private final String homeFolder = System.getProperty("user.home");
+	private static final String homeFolder = System.getProperty("user.home");
 
 	/**
 	 * @param xContext
@@ -40,12 +40,11 @@ public class ConfigID {
 	 *
 	 * @exception IOException if reading/creating file failed
 	 */
-	public void configureID() {
+	public static void configureID() {
 		File dataFile = new File(homeFolder + File.separator +"tildeID");
 		if (dataFile.isFile()) {
-			BufferedReader reader;
 			try {
-				reader = new BufferedReader(new FileReader(dataFile));
+				BufferedReader reader = new BufferedReader(new FileReader(dataFile));
 				String line = reader.readLine();
 				if(line == null) {
 					show();
@@ -71,10 +70,6 @@ public class ConfigID {
 	        	show();
 	    	}
 		}
-	}
-
-	public String getHomeFolder () {
-		return homeFolder;
 	}
 
 	/**
