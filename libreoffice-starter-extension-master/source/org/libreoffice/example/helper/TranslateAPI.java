@@ -15,42 +15,63 @@ import retrofit2.converter.gson.GsonConverterFactory;
  *
  * @author arta.zena
  */
-public class TranslateAPI {
+public class TildeMTAPIClient {
+	private String clientID = null;
+	private final LetsMTAPI service;
 
-	public TranslateAPI() throws IOException {
+	public TildeMTAPIClient() {
+		// Create TildeMT service proxy
+		if (service == null) {
+			Retrofit retrofit = null;
+			try {
+			retrofit = new Retrofit.Builder()
+					.baseUrl("https://www.letsmt.eu/ws/service.svc/json/")
+					.addConverterFactory(GsonConverterFactory.create())
+					.build();
+			} catch (Error e) {
+				e.printStackTrace();
+			}
+
+			service = retrofit.create(LetsMTAPI.class);
+		}
+
+		return service;
 	}
 
-	public static String translate (String clientID, String systemID, String text){
+	public void setClientID(String id) {
+    	clientID = id;
+	}
+
+	public void getClientID(String id) {
+    	return clientID;
+	}
+
+	public String translate(String systemID, String text) {
 		TranslatePayloadM translatable = new TranslatePayloadM(systemID, text);
+		Response<String> result = null;
 
-		Retrofit retrofit = null;
 		try {
-		retrofit = new Retrofit.Builder()
-			    .baseUrl("https://www.letsmt.eu/ws/service.svc/json/")
-			    .addConverterFactory(GsonConverterFactory.create())
-			    .build();
-		} catch (Error e) {
-			e.printStackTrace();
-		}
-
-		LetsMTAPI service = retrofit.create(LetsMTAPI.class);
-		Call<String> call = null;
-		try {
-			call = service.getTranslation(clientID, translatable);
+			Call<String> call = service.getTranslation(clientID, translatable);
+			result = call.execute();
 		} catch (Exception e1) {
 			e1.printStackTrace();
-		}
-
-		Response<String> result = null;
-		try {
-			result = call.execute();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			//TODO: should fail with message on error
 		}
 
 		String translation = result.body();
 		System.out.println("translation = " + translation);
 
 		return translation;
+	}
+
+	private SystemListM getSystemList() {
+		try {
+			Call<SystemListM> call = service.getSystemList(clientID); //TODO
+			Response<SystemListM> result = call.execute();
+			return result.body();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			//TODO: should fail with message on error
+		}
 	}
 }
