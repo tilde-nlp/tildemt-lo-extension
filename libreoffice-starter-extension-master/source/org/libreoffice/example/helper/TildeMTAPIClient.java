@@ -1,7 +1,6 @@
 package org.libreoffice.example.helper;
 
-import java.io.IOException;
-
+import org.libreoffice.example.helper.LetsMT.SystemListM;
 import org.libreoffice.example.helper.LetsMT.TranslatePayloadM;
 
 import retrofit2.Call;
@@ -17,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class TildeMTAPIClient {
 	private String clientID = null;
-	private final LetsMTAPI service;
+	private LetsMTAPI service;
 
 	public TildeMTAPIClient() {
 		// Create TildeMT service proxy
@@ -34,15 +33,13 @@ public class TildeMTAPIClient {
 
 			service = retrofit.create(LetsMTAPI.class);
 		}
-
-		return service;
 	}
 
 	public void setClientID(String id) {
     	clientID = id;
 	}
 
-	public void getClientID(String id) {
+	public String getClientID() {
     	return clientID;
 	}
 
@@ -64,7 +61,7 @@ public class TildeMTAPIClient {
 		return translation;
 	}
 
-	private SystemListM getSystemList() {
+	public SystemListM getSystemList() {
 		try {
 			Call<SystemListM> call = service.getSystemList(clientID); //TODO
 			Response<SystemListM> result = call.execute();
@@ -72,6 +69,7 @@ public class TildeMTAPIClient {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			//TODO: should fail with message on error
+			return null;
 		}
 	}
 }

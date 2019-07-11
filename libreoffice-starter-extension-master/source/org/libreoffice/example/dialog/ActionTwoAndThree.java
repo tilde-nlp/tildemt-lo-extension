@@ -2,7 +2,6 @@ package org.libreoffice.example.dialog;
 
 import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.libreoffice.example.helper.DocumentHelper;
-import org.libreoffice.example.helper.TranslateAPI;
 
 import com.sun.star.uno.XComponentContext;
 /**

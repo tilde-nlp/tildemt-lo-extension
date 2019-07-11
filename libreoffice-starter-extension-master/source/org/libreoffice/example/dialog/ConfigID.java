@@ -75,7 +75,7 @@ public class ConfigID {
 	/**
 	 * Public metod to launch dialog.
 	 */
-	private void show(){
+	private static void show(){
 		ConfigDialog configDialog = new ConfigDialog(xContext, homeFolder);
 		configDialog.show();
 	}

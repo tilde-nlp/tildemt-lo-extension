@@ -7,7 +7,6 @@ import java.util.List;
 import org.libreoffice.example.comp.TildeTranslatorImpl;
 import org.libreoffice.example.helper.DialogHelper;
 import org.libreoffice.example.helper.DocumentHelper;
-import org.libreoffice.example.helper.TranslateAPI;
 import org.libreoffice.example.helper.LetsMT.SystemListM;
 import org.libreoffice.example.helper.LetsMT.SystemSMT;
 
@@ -98,7 +97,7 @@ public class ActionOne implements XDialogEventHandler {
 		getFields();
 		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem());
 		String text = sourceTextField.getText();
-		String translation = TildeTranslatorImpl.TildeMTAPIClient.translate(smt, text);
+		String translation = TildeTranslatorImpl.TildeMTClient.translate(smt, text);
 
 		targetTextField.setText(translation);
 	}

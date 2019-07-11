@@ -4,6 +4,7 @@ import org.libreoffice.example.dialog.ActionOne;
 import org.libreoffice.example.dialog.ActionTwoAndThree;
 import org.libreoffice.example.dialog.ConfigID;
 import org.libreoffice.example.helper.DialogHelper;
+import org.libreoffice.example.helper.TildeMTAPIClient;
 import org.libreoffice.example.helper.LetsMT.SystemListM;
 
 import com.sun.star.lang.XSingleComponentFactory;
@@ -64,7 +65,7 @@ public final class TildeTranslatorImpl extends WeakBase
     /**
      * @param id	a String containing valid Client ID
      */
-    public static void setClientID(String id) {        
+    public static void setClientID(String id) {
         TildeMTClient.setClientID(id);
 
         // Update system list on clientID change
