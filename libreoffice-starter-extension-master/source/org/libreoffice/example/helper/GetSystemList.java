@@ -1,3 +1,4 @@
+//TODO: remove this implementation as the functionality is moved to TranslateAPI.java
 package org.libreoffice.example.helper;
 
 import java.io.IOException;

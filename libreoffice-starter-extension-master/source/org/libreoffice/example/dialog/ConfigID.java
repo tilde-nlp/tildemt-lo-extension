@@ -23,7 +23,7 @@ import com.sun.star.uno.XComponentContext;
 
 public class ConfigID {
 	private static XComponentContext xContext;
-	private final String homeFolder = System.getProperty("user.home");
+	private static final String homeFolder = System.getProperty("user.home");
 
 	/**
 	 * @param xContext
@@ -40,12 +40,11 @@ public class ConfigID {
 	 *
 	 * @exception IOException if reading/creating file failed
 	 */
-	public void configureID() {
+	public static void configureID() {
 		File dataFile = new File(homeFolder + File.separator +"tildeID");
 		if (dataFile.isFile()) {
-			BufferedReader reader;
 			try {
-				reader = new BufferedReader(new FileReader(dataFile));
+				BufferedReader reader = new BufferedReader(new FileReader(dataFile));
 				String line = reader.readLine();
 				if(line == null) {
 					show();
@@ -73,14 +72,10 @@ public class ConfigID {
 		}
 	}
 
-	public String getHomeFolder () {
-		return homeFolder;
-	}
-
 	/**
 	 * Public metod to launch dialog.
 	 */
-	private void show(){
+	private static void show(){
 		ConfigDialog configDialog = new ConfigDialog(xContext, homeFolder);
 		configDialog.show();
 	}
@@ -96,15 +91,14 @@ public class ConfigID {
 	 * @return 					true if given ID is valid
 	 */
 	static boolean checkID (String inputID) {
+		//TODO: Should call TildeTranslatorImpl.setClientID(clientID); And should make it to fail on GetSystemList call if the ClientID is not valid
 		GetSystemList gsl = new GetSystemList();
 		Boolean valid = gsl.checkIfValid(inputID);
 		return valid;
 	}
 
 	public static void setClientAndSystemIDs (String clientID) {
-		TildeTranslatorImpl t = new TildeTranslatorImpl(xContext);
-		t.setClientID(clientID);
-		GetSystemList.set(clientID);
+		TildeTranslatorImpl.setClientID(clientID);
 	}
 
 }

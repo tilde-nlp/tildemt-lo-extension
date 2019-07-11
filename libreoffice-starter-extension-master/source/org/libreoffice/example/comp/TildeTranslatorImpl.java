@@ -4,6 +4,7 @@ import org.libreoffice.example.dialog.ActionOne;
 import org.libreoffice.example.dialog.ActionTwoAndThree;
 import org.libreoffice.example.dialog.ConfigID;
 import org.libreoffice.example.helper.DialogHelper;
+import org.libreoffice.example.helper.TildeMTAPIClient;
 import org.libreoffice.example.helper.LetsMT.SystemListM;
 
 import com.sun.star.lang.XSingleComponentFactory;
@@ -28,9 +29,10 @@ public final class TildeTranslatorImpl extends WeakBase
     private static final String m_implementationName = TildeTranslatorImpl.class.getName();
     private static final String[] m_serviceNames = {
         "org.libreoffice.example.TildeTranslator" };
-    private static String clientID = null;
     private static SystemListM systemList = null;
     private static String systemID = null;
+
+    public static final TildeMTAPIClient TildeMTClient = new TildeMTAPIClient();
 
     /**
      * @param context
@@ -63,15 +65,12 @@ public final class TildeTranslatorImpl extends WeakBase
     /**
      * @param id	a String containing valid Client ID
      */
-    public void setClientID(String id) {
-    	clientID = id;
-    }
+    public static void setClientID(String id) {
+        TildeMTClient.setClientID(id);
 
-    /**
-     * @return	returns current client ID
-     */
-    public static String getClientID() {
-    	return clientID;
+        // Update system list on clientID change
+        SystemListM result = TildeMTClient.getSystemList();
+		TildeTranslatorImpl.setSystemList(result);
     }
 
     public static void setSystemList (SystemListM sysList) {
@@ -126,13 +125,11 @@ public final class TildeTranslatorImpl extends WeakBase
 	public void trigger(String action)
 	{
 		// if client ID is not set, show configuration dialog
-		if (clientID == null) {
-			ConfigID configID = new ConfigID(m_xContext);
-			configID.configureID();
-			// get(set)SystemListM
+		if (TildeMTClient.getClientID() == null) {
+			ConfigID.configureID();
 		}
 		// if setting the valid ID is succesful, performs asked action
-		if (clientID != null) {
+		if (TildeMTClient.getClientID() != null) {
 	    	switch (action) {
 	    		// call the translation dialog
 		    	case "actionOne":
@@ -150,7 +147,7 @@ public final class TildeTranslatorImpl extends WeakBase
 		    		break;
 		    	// call replacing action
 		    	case "actionThree":
-;		    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
+		    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
 		    		try {
 						actionThree.replaceAction();
 					} catch (Exception e) {
