@@ -23,6 +23,7 @@ This extension provides functionality to translate Libre Office documents with `
 ## Debugging tips and tricks
 
 * If `Eclipse` is showing that program is terminated, that can be caused by: 
+  - Yo're trying to run `debug option` when starting project more than twice on the same code base => just restart `Eclipse`, should be fine first time after restart. 
   - compilation errors: [loeclipse Issue 14](https://github.com/LibreOffice/loeclipse/issues/14)
   - Libre Office is running => terminate in task manager
   - There is some kind of bug in code but Eclipse is not showing errors like for example in `/registry/org/openoffice/Office/Accelerators.xcu`
