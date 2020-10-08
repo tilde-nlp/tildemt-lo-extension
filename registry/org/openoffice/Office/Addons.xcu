@@ -76,7 +76,7 @@
 			<node oor:name="org.libreoffice.example.TildeTranslator.menubar" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
 					<value xml:lang="en-US">Tilde Translator</value>
-					<value xml:lang="lv">Tildes Tuklkotājs</value>
+					<value xml:lang="lv">Tildes Tulkotājs</value>
 				</prop>
 				<prop oor:name="Context" oor:type="xs:string">
 					<value>com.sun.star.text.TextDocument</value>
