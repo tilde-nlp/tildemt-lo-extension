@@ -20,10 +20,20 @@ This extension provides functionality to translate Libre Office documents with `
 7. The extension will be installed in LibreOffice (see Tools->Extension Manager)
 8. To translate ... TODO: describe this.
 
+## Debugging tips and tricks
+
+* If `Eclipse` is showing that program is terminated, that can be caused by: 
+  - compilation errors: [loeclipse Issue 14](https://github.com/LibreOffice/loeclipse/issues/14)
+  - Libre Office is running => terminate in task manager
+  - There is some kind of bug in code but Eclipse is not showing errors like for example in `/registry/org/openoffice/Office/Accelerators.xcu`
+  - Some random `Eclipse` / `loeclipse` bug 
+    - restart Eclipse :)
+    - recreate `eclipse-workspace` settings? 
+
 ## Development Hints
 * The entry point is in [TildeTranslatorImpl.java](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/source/org/libreoffice/example/comp/StarterProjectImpl.java).
 * Toolbar items and menu entries are defined in [Addons.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/Addons.xcu).
-* Shortcuts are defined in [Accelerators.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/Accelerators.xcu).
+* Keyboard shortcuts for plugin actions are defined in [Accelerators.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/Accelerators.xcu).
 * The position of the toolbar is defined in [WriterWindowState.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/UI/WriterWindowState.xcu).
 * The dialog shown when clicking "Action One" is [ActionOneDialog.xdl](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/dialog/ActionOneDialog.xdl). The dialog itself contains information how to edit it.
 * The [DialogHelper](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/source/org/libreoffice/example/helper/DialogHelper.java) contains some helper methods to work with the dialog.
