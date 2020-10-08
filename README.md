@@ -43,3 +43,8 @@ This extension provides functionality to translate Libre Office documents with `
   * [OpenOffice Wiki](https://wiki.openoffice.org/wiki/Extensions_development)
   * [API Reference](http://api.libreoffice.org/docs/idl/ref/index.html)
   * [Example extensions](http://api.libreoffice.org/examples/examples.html#Java_examples)
+
+
+## Distribution / Testing
+
+* Built extension is located in `/dist/*.oxt`. You can double click it and it should automatically open install wizard in Libre Office.
