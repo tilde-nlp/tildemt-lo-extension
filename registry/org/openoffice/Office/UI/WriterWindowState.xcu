@@ -11,7 +11,7 @@
 					<value>Tilde Translate</value>
 				</prop>
 				<prop oor:name="DockPos" oor:type="xs:string">
-					<value>10,1</value>
+					<value>10,0</value>
 				</prop>
 				<prop oor:name="Docked" oor:type="xs:boolean">
 					<value>true</value>

@@ -21,8 +21,6 @@ public class ActionAppend {
 	/**
 	 * Append translation to the end of selected area.
 	 * Clean the variable that contains the translation.
-	 *
-	 * @throws Exception if getting translation while combining paragraphs failed
 	 */
 	public void process() {
 		String translation = this.contentHelper.combineTranslatedParagraphs(this.apiClient);

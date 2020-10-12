@@ -39,8 +39,6 @@ public class ContentHelper {
 	 * each paragraph is translated separately.
 	 * To make insertion of translated text as one step for user,
 	 * all translated paragraphs are combined in a single variable.
-	 *
-	 * @throws Exception	if getting translation failed
 	 */
 	public String combineTranslatedParagraphs(TildeMTClient apiClient)  {
 		String result = "";

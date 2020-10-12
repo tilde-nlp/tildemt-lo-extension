@@ -102,10 +102,10 @@ public final class TildeTranslatorImpl extends WeakBase
 		    	case "actionTranslate":
 		    		new ActionTranslate(m_xContext, client).show();
 		    		break;
-		    	case "appendAction":
+		    	case "actionAppend":
 		    		new ActionAppend(m_xContext, client).process();
 		    		break;
-		    	case "replaceAction":
+		    	case "actionReplace":
 		    		new ActionReplace(m_xContext, client).process();
 		    		break;
 		    	default:
