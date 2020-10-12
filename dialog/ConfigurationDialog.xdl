@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dlg:window PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "dialog.dtd">
-<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="config_dialog" dlg:left="163" dlg:top="55" dlg:width="154" dlg:height="85" dlg:closeable="true" dlg:moveable="true" dlg:title="Set your ID">
+<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="ConfigurationDialog" dlg:left="163" dlg:top="55" dlg:width="154" dlg:height="85" dlg:closeable="true" dlg:moveable="true" dlg:title="Set your ID">
  <dlg:bulletinboard>
   <dlg:text dlg:id="infoField" dlg:tab-index="1" dlg:left="12" dlg:top="10" dlg:width="120" dlg:height="11" dlg:value=""/>
   <dlg:text dlg:id="inputDescription" dlg:tab-index="2" dlg:left="12" dlg:top="25" dlg:width="120" dlg:height="11" dlg:value="Input ClientID:"/>

@@ -1,7 +1,5 @@
 package com.tilde.mt.lotranslator.comp;
 
-import java.util.logging.Logger;
-
 import com.sun.star.lang.XSingleComponentFactory;
 import com.sun.star.lib.uno.helper.Factory;
 import com.sun.star.lib.uno.helper.WeakBase;
@@ -9,7 +7,10 @@ import com.sun.star.registry.XRegistryKey;
 import com.sun.star.uno.XComponentContext;
 import com.tilde.mt.lotranslator.Configuration;
 import com.tilde.mt.lotranslator.LetsMTConfiguration;
-import com.tilde.mt.lotranslator.TildeMTAPIClient;
+import com.tilde.mt.lotranslator.Logger;
+import com.tilde.mt.lotranslator.TildeMTClient;
+import com.tilde.mt.lotranslator.dialog.ActionAppend;
+import com.tilde.mt.lotranslator.dialog.ActionReplace;
 import com.tilde.mt.lotranslator.dialog.ActionTranslate;
 import com.tilde.mt.lotranslator.dialog.ConfigDialog;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
@@ -20,9 +21,9 @@ public final class TildeTranslatorImpl extends WeakBase
 {
     private final XComponentContext m_xContext;
     private static final String m_implementationName = TildeTranslatorImpl.class.getName();
-    private static final String[] m_serviceNames = {"com.tilde.mt.lotranslator.tildetranslator" };
+    private static final String[] m_serviceNames = { "com.tilde.mt.lotranslator.tildetranslator" };
     
-    private static final Logger logger = Logger.getLogger(TildeTranslatorImpl.class.getName());
+    private static final Logger logger = new Logger(TildeTranslatorImpl.class.getName());
 
     /**
      * @param context
@@ -90,38 +91,23 @@ public final class TildeTranslatorImpl extends WeakBase
 		logger.info(String.format("Action: %s", action));
 		
 		// if client ID is not set, show configuration dialog
-		
 		LetsMTConfiguration config = Configuration.Read();
-		TildeMTAPIClient client = new TildeMTAPIClient(config.ClientID);
+		TildeMTClient client = new TildeMTClient(config.ClientID);
 		if(client.GetSystemList() == null) {
 	        ConfigDialog configDialog = new ConfigDialog(this.m_xContext);
 	        configDialog.show();
 		}
 		else {
 			switch (action) {
-	    		// call the translation dialog
 		    	case "actionTranslate":
-		    		ActionTranslate actionOneDialog = new ActionTranslate(m_xContext, client);
-		    		actionOneDialog.show();
+		    		new ActionTranslate(m_xContext, client).show();
 		    		break;
-		    	// call translaton appending action
-		    	/*case "actionTwo":
-		    		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
-		    		try {
-						actionTwo.appendAction();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+		    	case "appendAction":
+		    		new ActionAppend(m_xContext, client).process();
 		    		break;
-		    	// call replacing action
-		    	case "actionThree":
-		    		ActionTwoAndThree actionThree = new ActionTwoAndThree(m_xContext);
-		    		try {
-						actionThree.replaceAction();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-		    		break;*/
+		    	case "replaceAction":
+		    		new ActionReplace(m_xContext, client).process();
+		    		break;
 		    	default:
 		    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
 	    	}

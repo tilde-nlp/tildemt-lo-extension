@@ -28,7 +28,7 @@ public class FileHelper {
 	 */
 	public static File getFilePath(String file, XComponentContext xContext) {
 		XPackageInformationProvider xPackageInformationProvider = PackageInformationProvider.get(xContext);
-		String[][] ext = xPackageInformationProvider.getExtensionList();
+
         String location = xPackageInformationProvider.getPackageLocation("com.tilde.mt.lotranslator.tildetranslator");
         Object oTransformer;
 		try {

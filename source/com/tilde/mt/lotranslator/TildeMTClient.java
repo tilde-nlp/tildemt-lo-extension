@@ -5,33 +5,47 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
+import com.tilde.mt.lotranslator.models.TildeMTTranslation;
 
-public class TildeMTAPIClient {
+public class TildeMTClient {
 	private String ClientID = null;
     
     private final String TranslationAPI = "https://ltmt.tilde.lv/ws/Service.svc/json";
     private final String AppID = "TildeMT|Plugin|LibreOffice";
+    private final Logger logger = new Logger(this.getClass().getName());
     
-    public TildeMTAPIClient(String clientID) {
+    public TildeMTClient(String clientID) {
     	this.ClientID = clientID;
     }
     
-	public String translate(String systemID, String inputText) throws UnsupportedEncodingException{
-		String translation = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", this.AppID, systemID, URLEncoder.encode(inputText, "UTF-8"));
+	public String translate(String systemID, String inputText) {
+		logger.info(String.format("translate text: system: %s, text: %s", systemID, inputText));
+		
+		String encodedText = null;
+		try {
+			encodedText = URLEncoder.encode(inputText, "UTF-8");
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		
+		String translationUrl = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", this.AppID, systemID, encodedText);
+		String translation = this.Request(translationUrl); 
 		
 		if(translation != null) {
-			JSONObject object = (JSONObject) new JSONTokener(translation).nextValue();
-			return object.getString("translation");
+			Gson gson = new Gson();
+			TildeMTTranslation translated = gson.fromJson(translation, TildeMTTranslation.class);
+			
+			logger.info(String.format("translation: %s", translated.translation));
+			return translated.translation;
 		}
 		else {
 			return null;
@@ -39,12 +53,15 @@ public class TildeMTAPIClient {
 	}
 
 	public TildeMTSystemList GetSystemList() {
+		logger.info(String.format("Get systems"));
+		
 		String systems = this.Request(this.TranslationAPI + "/GetSystemList?appID=" + this.AppID); 
 		
 		if(systems != null) {
 			Gson gson = new Gson();
 			TildeMTSystemList systemList = gson.fromJson(systems, TildeMTSystemList.class);
 			
+			logger.info(String.format("Systems found: %s", systemList.System.length));
 			return systemList;
 		}
 		return null;
@@ -65,7 +82,7 @@ public class TildeMTAPIClient {
 			connection.setRequestProperty("client-id", this.ClientID);
 
 			in = new BufferedInputStream(connection.getInputStream());
-			reader = new BufferedReader(new InputStreamReader(in));
+			reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
 			String line = "";
 			while ((line = reader.readLine()) != null) {

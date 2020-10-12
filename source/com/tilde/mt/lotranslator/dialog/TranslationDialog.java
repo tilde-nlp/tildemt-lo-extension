@@ -7,14 +7,14 @@ import com.sun.star.uno.XComponentContext;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 
 
-public class ActionOneDialog implements XDialogEventHandler {
+public class TranslationDialog implements XDialogEventHandler {
 	
 	private XDialog dialog;
 	private static final String actionOk = "actionOk";
 	private String[] supportedActions = new String[] { actionOk };
 	
-	public ActionOneDialog(XComponentContext xContext) {
-		this.dialog = DialogHelper.createDialog("ActionOneDialog.xdl", xContext, this);
+	public TranslationDialog(XComponentContext xContext) {
+		this.dialog = DialogHelper.createDialog("TranslationDialog.xdl", xContext, this);
 	}
 
 	public void show() {

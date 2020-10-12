@@ -33,14 +33,12 @@ This extension provides functionality to translate Libre Office documents with `
 
 ## Development Hints
 * Project entry point configuration is located in `./.unoproject` there is option `regclassname` 
-* The entry point is in [TildeTranslatorImpl.java](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/source/org/libreoffice/example/comp/StarterProjectImpl.java).
-* Toolbar items and menu entries are defined in [Addons.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/Addons.xcu).
-* Keyboard shortcuts for plugin actions are defined in [Accelerators.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/Accelerators.xcu).
-* The position of the toolbar is defined in [WriterWindowState.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/UI/WriterWindowState.xcu).
-* The dialog shown when clicking "Action One" is [ActionOneDialog.xdl](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/dialog/ActionOneDialog.xdl). The dialog itself contains information how to edit it.
-* The [DialogHelper](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/source/org/libreoffice/example/helper/DialogHelper.java) contains some helper methods to work with the dialog.
+* The entry point is in [TildeTranslatorImpl.java](./source/com/tilde/mt/lotranslator/comp/TildeTranslatorImpl.java).
+* Toolbar items and menu entries are defined in [Addons.xcu](./registry/org/openoffice/Office/Addons.xcu).
+* Keyboard shortcuts for plugin actions are defined in [Accelerators.xcu](./registry/org/openoffice/Office/Accelerators.xcu).
+* The position of the toolbar is defined in [WriterWindowState.xcu](./registry/org/openoffice/Office/UI/WriterWindowState.xcu).
 * To debug the Java code, just stick a breakpoint anywhere in Eclipse and start your run configuration in debug mode.
-* If you add non-code files (or an external .jar) to your extension, you need to mention them in [package.properties](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/package.properties), else they won't be included in the packaged extension.
+* If you add non-code files (or an external .jar) to your extension, you need to mention them in [package.properties](./package.properties), else they won't be included in the packaged extension.
 * Now go on customizing the extension to your needs. Some helpful links:
   * [OpenOffice Wiki](https://wiki.openoffice.org/wiki/Extensions_development)
   * [API Reference](http://api.libreoffice.org/docs/idl/ref/index.html)

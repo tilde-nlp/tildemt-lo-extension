@@ -41,7 +41,7 @@
 				</node>
 				<node oor:name="t02" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:com.tilde.mt.lotranslator.tildetranslator?actionTwo</value>
+						<value>service:com.tilde.mt.lotranslator.tildetranslator?appendAction</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -56,7 +56,7 @@
 				</node>
 				<node oor:name="t03" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:com.tilde.mt.lotranslator.tildetranslator?actionThree</value>
+						<value>service:com.tilde.mt.lotranslator.tildetranslator?replaceAction</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -100,7 +100,7 @@
 							<value xml:lang="lv">Pievienot galā</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:com.tilde.mt.lotranslator.tildetranslator?actionTwo</value>
+							<value>service:com.tilde.mt.lotranslator.tildetranslator?appendAction</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>
@@ -112,7 +112,7 @@
 							<value xml:lang="lv">Aizvietot</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:com.tilde.mt.lotranslator.tildetranslator?actionThree</value>
+							<value>service:com.tilde.mt.lotranslator.tildetranslator?replaceAction</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>
