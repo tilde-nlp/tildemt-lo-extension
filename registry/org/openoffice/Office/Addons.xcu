@@ -4,29 +4,29 @@
 	<node oor:name="AddonUI">
 
 		<node oor:name="Images">
-			<node oor:name="org.libreoffice.example.TildeTranslator.imageActionOne" oor:op="replace">
+			<node oor:name="com.tilde.mt.lotranslator.tildetranslator.imageActionOne" oor:op="replace">
 				<prop oor:name="URL" oor:type="xs:string">
-					<value>service:org.libreoffice.example.TildeTranslator?actionOne</value>
+					<value>service:com.tilde.mt.lotranslator.tildetranslator?actionTranslate</value>
 				</prop>
 				<node oor:name="UserDefinedImages">
 					<prop oor:name="ImageSmallURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.tildetranslator/images/tilde-logo-16.png</value>
+						<value>vnd.sun.star.extension://com.tilde.mt.lotranslator.tildetranslator/images/tilde-logo-16.png</value>
 					</prop>
 					<prop oor:name="ImageBigURL">
-						<value>vnd.sun.star.extension://org.libreoffice.example.tildetranslator/images/tilde-logo-26.png</value>
+						<value>vnd.sun.star.extension://com.tilde.mt.lotranslator.tildetranslator/images/tilde-logo-26.png</value>
 					</prop>
 				</node>
 			</node>
 		</node>
 
 		<node oor:name="OfficeToolBar">
-			<node oor:name="org.libreoffice.example.TildeTranslator.toolbar" oor:op="replace">
+			<node oor:name="com.tilde.mt.lotranslator.tildetranslator.toolbar" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
 					<value>Tilde Translator</value>
 				</prop>
 				<node oor:name="t01" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:org.libreoffice.example.TildeTranslator?actionOne</value>
+						<value>service:com.tilde.mt.lotranslator.tildetranslator?actionTranslate</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -41,7 +41,7 @@
 				</node>
 				<node oor:name="t02" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:org.libreoffice.example.TildeTranslator?actionTwo</value>
+						<value>service:com.tilde.mt.lotranslator.tildetranslator?actionTwo</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -56,7 +56,7 @@
 				</node>
 				<node oor:name="t03" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
-						<value>service:org.libreoffice.example.TildeTranslator?actionThree</value>
+						<value>service:com.tilde.mt.lotranslator.tildetranslator?actionThree</value>
 					</prop>
 					<prop oor:name="Target" oor:type="xs:string">
 						<value>_self</value>
@@ -73,7 +73,7 @@
 		</node>
 
 		<node oor:name="OfficeMenuBar">
-			<node oor:name="org.libreoffice.example.TildeTranslator.menubar" oor:op="replace">
+			<node oor:name="com.tilde.mt.lotranslator.tildetranslator.menubar" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
 					<value xml:lang="en-US">Tilde Translator</value>
 					<value xml:lang="lv">Tildes Tulkotājs</value>
@@ -88,7 +88,7 @@
 							<value xml:lang="lv">Tulkot</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:org.libreoffice.example.TildeTranslator?actionOne</value>
+							<value>service:com.tilde.mt.lotranslator.tildetranslator?actionTranslate</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>
@@ -100,7 +100,7 @@
 							<value xml:lang="lv">Pievienot galā</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:org.libreoffice.example.TildeTranslator?actionTwo</value>
+							<value>service:com.tilde.mt.lotranslator.tildetranslator?actionTwo</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>
@@ -112,7 +112,7 @@
 							<value xml:lang="lv">Aizvietot</value>
 						</prop>
 						<prop oor:name="URL">
-							<value>service:org.libreoffice.example.TildeTranslator?actionThree</value>
+							<value>service:com.tilde.mt.lotranslator.tildetranslator?actionThree</value>
 						</prop>
 						<prop oor:name="Target" oor:type="xs:string">
 							<value>_self</value>

@@ -5,8 +5,8 @@
 
 	<node oor:name="UIElements">
 		<node oor:name="States">
-			<!-- Used to dock the toolbar in the second toolbar row (by default it's floating) -->
-			<node oor:name="private:resource/toolbar/addon_org.libreoffice.example.TildeTranslator.toolbar" oor:op="replace">
+			<!-- Used to dock the toolbar in the first toolbar row (by default it's floating) -->
+			<node oor:name="private:resource/toolbar/addon_com.tilde.mt.lotranslator.tildetranslator.toolbar" oor:op="replace">
 				<prop oor:name="UIName" oor:type="xs:string">
 					<value>Tilde Translate</value>
 				</prop>

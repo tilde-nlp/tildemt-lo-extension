@@ -1,38 +1,28 @@
-package org.libreoffice.example.comp;
+package com.tilde.mt.lotranslator.comp;
 
-import org.libreoffice.example.dialog.ActionOne;
-import org.libreoffice.example.dialog.ActionTwoAndThree;
-import org.libreoffice.example.dialog.ConfigID;
-import org.libreoffice.example.helper.DialogHelper;
-import org.libreoffice.example.helper.TildeMTAPIClient;
-import org.libreoffice.example.helper.LetsMT.SystemListM;
+import java.util.logging.Logger;
 
 import com.sun.star.lang.XSingleComponentFactory;
 import com.sun.star.lib.uno.helper.Factory;
 import com.sun.star.lib.uno.helper.WeakBase;
 import com.sun.star.registry.XRegistryKey;
 import com.sun.star.uno.XComponentContext;
+import com.tilde.mt.lotranslator.Configuration;
+import com.tilde.mt.lotranslator.LetsMTConfiguration;
+import com.tilde.mt.lotranslator.TildeMTAPIClient;
+import com.tilde.mt.lotranslator.dialog.ActionTranslate;
+import com.tilde.mt.lotranslator.dialog.ConfigDialog;
+import com.tilde.mt.lotranslator.helper.DialogHelper;
 
-/**
- * This class is the entry point of the project.
- * The method "trigger" activates, when user
- * interacts with the extension.
- * (look in RegistrationHandler.classes)
- *
- * @author arta.zena
- */
 public final class TildeTranslatorImpl extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
               com.sun.star.task.XJobExecutor
 {
     private final XComponentContext m_xContext;
     private static final String m_implementationName = TildeTranslatorImpl.class.getName();
-    private static final String[] m_serviceNames = {
-        "org.libreoffice.example.TildeTranslator" };
-    private static SystemListM systemList = null;
-    private static String systemID = null;
-
-    public static final TildeMTAPIClient TildeMTClient = new TildeMTAPIClient();
+    private static final String[] m_serviceNames = {"com.tilde.mt.lotranslator.tildetranslator" };
+    
+    private static final Logger logger = Logger.getLogger(TildeTranslatorImpl.class.getName());
 
     /**
      * @param context
@@ -40,6 +30,7 @@ public final class TildeTranslatorImpl extends WeakBase
     public TildeTranslatorImpl( XComponentContext context )
     {
         m_xContext = context;
+        logger.info("Tilde Translator init");
     };
 
     /**
@@ -50,43 +41,15 @@ public final class TildeTranslatorImpl extends WeakBase
     public static XSingleComponentFactory __getComponentFactory( String sImplementationName ) {
         XSingleComponentFactory xFactory = null;
 
-        if ( sImplementationName.equals( m_implementationName ) )
-            xFactory = Factory.createComponentFactory(TildeTranslatorImpl.class, m_serviceNames);
+        if (sImplementationName.equals(m_implementationName)) {
+        	xFactory = Factory.createComponentFactory(TildeTranslatorImpl.class, m_serviceNames);
+        }
         return xFactory;
     }
 
     /** Register panel factory */
     public static boolean __writeRegistryServiceInfo( XRegistryKey xRegistryKey ) {
-        return Factory.writeRegistryServiceInfo(m_implementationName,
-                                                m_serviceNames,
-                                                xRegistryKey);
-    }
-
-    /**
-     * @param id	a String containing valid Client ID
-     */
-    public static void setClientID(String id) {
-        TildeMTClient.setClientID(id);
-
-        // Update system list on clientID change
-        SystemListM result = TildeMTClient.getSystemList();
-		TildeTranslatorImpl.setSystemList(result);
-    }
-
-    public static void setSystemList (SystemListM sysList) {
-    	systemList = sysList;
-    }
-
-    public static SystemListM getSystemList() {
-    	return systemList;
-    }
-
-    public static void setSystemID(String id) {
-    	systemID = id;
-    }
-
-    public static String getSystemID() {
-    	return systemID;
+        return Factory.writeRegistryServiceInfo(m_implementationName, m_serviceNames, xRegistryKey);
     }
 
     @Override
@@ -114,7 +77,7 @@ public final class TildeTranslatorImpl extends WeakBase
 	 * interface XJobExecutor
 	 * trigger event to start registered jobs
 	 * Jobs are registered in configuration and will be started by
-	 * executor automaticly, if they are registered for triggered event.
+	 * executor automatically, if they are registered for triggered event.
 	 *
 	 * trigger() sets client ID and if it is valid then
 	 * direct action to the correct class.
@@ -124,20 +87,25 @@ public final class TildeTranslatorImpl extends WeakBase
 	@Override
 	public void trigger(String action)
 	{
+		logger.info(String.format("Action: %s", action));
+		
 		// if client ID is not set, show configuration dialog
-		if (TildeMTClient.getClientID() == null) {
-			ConfigID.configureID();
+		
+		LetsMTConfiguration config = Configuration.Read();
+		TildeMTAPIClient client = new TildeMTAPIClient(config.ClientID);
+		if(client.GetSystemList() == null) {
+	        ConfigDialog configDialog = new ConfigDialog(this.m_xContext);
+	        configDialog.show();
 		}
-		// if setting the valid ID is succesful, performs asked action
-		if (TildeMTClient.getClientID() != null) {
-	    	switch (action) {
+		else {
+			switch (action) {
 	    		// call the translation dialog
-		    	case "actionOne":
-		    		ActionOne actionOneDialog = new ActionOne(m_xContext);
+		    	case "actionTranslate":
+		    		ActionTranslate actionOneDialog = new ActionTranslate(m_xContext, client);
 		    		actionOneDialog.show();
 		    		break;
 		    	// call translaton appending action
-		    	case "actionTwo":
+		    	/*case "actionTwo":
 		    		ActionTwoAndThree actionTwo = new ActionTwoAndThree(m_xContext);
 		    		try {
 						actionTwo.appendAction();
@@ -153,12 +121,10 @@ public final class TildeTranslatorImpl extends WeakBase
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-		    		break;
-		    	// prompt if non-defined action has been called
+		    		break;*/
 		    	default:
 		    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
-		    	}
+	    	}
 		}
 	}
-
 }

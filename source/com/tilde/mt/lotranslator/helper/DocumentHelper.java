@@ -1,4 +1,4 @@
-package org.libreoffice.example.helper;
+package com.tilde.mt.lotranslator.helper;
 
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XIndexAccess;

@@ -3,7 +3,7 @@
 project.prefix=org.libreoffice.example
 project.ooo=LibreOffice 7.0
 project.language=Java
-regclassname=org.libreoffice.example.comp.RegistrationHandler
+regclassname=com.tilde.mt.lotranslator.comp.RegistrationHandler
 project.idl=/idl
 project.implementation=comp
 project.build=build

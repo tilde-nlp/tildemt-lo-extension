@@ -32,6 +32,7 @@ This extension provides functionality to translate Libre Office documents with `
     - recreate `eclipse-workspace` settings? 
 
 ## Development Hints
+* Project entry point configuration is located in `./.unoproject` there is option `regclassname` 
 * The entry point is in [TildeTranslatorImpl.java](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/source/org/libreoffice/example/comp/StarterProjectImpl.java).
 * Toolbar items and menu entries are defined in [Addons.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/Addons.xcu).
 * Keyboard shortcuts for plugin actions are defined in [Accelerators.xcu](https://github.com/smehrbrodt/libreoffice-starter-extension/blob/master/registry/org/openoffice/Office/Accelerators.xcu).

@@ -1,14 +1,8 @@
-package org.libreoffice.example.dialog;
+package com.tilde.mt.lotranslator.dialog;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import org.libreoffice.example.comp.TildeTranslatorImpl;
-import org.libreoffice.example.helper.DialogHelper;
-import org.libreoffice.example.helper.DocumentHelper;
-import org.libreoffice.example.helper.LetsMT.SystemListM;
-import org.libreoffice.example.helper.LetsMT.SystemSMT;
 
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
@@ -23,6 +17,13 @@ import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
+import com.tilde.mt.lotranslator.Configuration;
+import com.tilde.mt.lotranslator.TildeMTAPIClient;
+import com.tilde.mt.lotranslator.comp.TildeTranslatorImpl;
+import com.tilde.mt.lotranslator.helper.DialogHelper;
+import com.tilde.mt.lotranslator.helper.DocumentHelper;
+import com.tilde.mt.lotranslator.models.TildeMTSystem;
+import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 
 /**
  * This action opens a set up (MT system's ID) and translation dialog.
@@ -32,7 +33,7 @@ import com.sun.star.uno.XComponentContext;
  * @author arta.zena
  */
 
-public class ActionOne implements XDialogEventHandler {
+public class ActionTranslate implements XDialogEventHandler {
 
 	/** Translate dialog */
 	private XDialog dialog;
@@ -54,6 +55,8 @@ public class ActionOne implements XDialogEventHandler {
 	private static String savedSourceLang = "";
 	private static String savedTargetLang = "";
 	private XControlContainer m_xControlContainer;
+	
+	private TildeMTAPIClient apiClient;
 
 	/**
 	 * Constructor.
@@ -61,9 +64,10 @@ public class ActionOne implements XDialogEventHandler {
 	 *
 	 * @param xContext
 	 */
-	public ActionOne(XComponentContext xContext) {
+	public ActionTranslate(XComponentContext xContext, TildeMTAPIClient apiClient) {
 		this.dialog = DialogHelper.createDialog("ActionOneDialog.xdl", xContext, this);
 		this.xContext = xContext;
+		this.apiClient = apiClient;
 	}
 
 	/**
@@ -81,15 +85,16 @@ public class ActionOne implements XDialogEventHandler {
 		getFields();
 		savedSourceLang = sourceLanguageBox.getSelectedItem();
 		savedTargetLang = targetLanguageBox.getSelectedItem();
-		TildeTranslatorImpl.setSystemID(getSystemID(savedSourceLang, savedTargetLang));
 
+		Configuration.setSystemID(getSystemID(savedSourceLang, savedTargetLang));
+		
 		dialog.endExecute();
 	}
 
 	/**
 	 * If selected system exists, sends input text
 	 * to the translation class and sets returned
-	 * value to appear in output textfield.
+	 * value to appear in output text field.
 	 *
 	 * @throws Exception	getting translation failed
 	 */
@@ -97,7 +102,7 @@ public class ActionOne implements XDialogEventHandler {
 		getFields();
 		String smt = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem());
 		String text = sourceTextField.getText();
-		String translation = TildeTranslatorImpl.TildeMTClient.translate(smt, text);
+		String translation =  this.apiClient.translate(smt, text);
 
 		targetTextField.setText(translation);
 	}
@@ -128,7 +133,7 @@ public class ActionOne implements XDialogEventHandler {
 	/**
 	 * When source language is changed, target language list box
 	 * is updated to fit the new source language.
-	 * If previousely set target language is available also for the new source language
+	 * If previously set target language is available also for the new source language
 	 *   it stays the same.
 	 * Else it is set to the first one in the list.
 	 */
@@ -180,18 +185,18 @@ public class ActionOne implements XDialogEventHandler {
 	 *
 	 * @param sourceLang
 	 * @param targetLang
-	 * @return Strign containing system id
+	 * @return String containing system id
 	 */
 	private String getSystemID (String sourceLang, String targetLang) {
-		SystemListM list = TildeTranslatorImpl.getSystemList();
-		SystemSMT[] systems = list.getSystem();
+		TildeMTSystem[] systems = this.apiClient.GetSystemList().Systems;
+		
 		for (int i = 0; i < systems.length; i++ ) {
 
 			// check whether languages fit
 			if (systems[i].getSourceLanguage().getName().getText().contentEquals(sourceLang) &&
 				systems[i].getTargetLanguage().getName().getText().contentEquals(targetLang)) {
 
-				// check again if machine's status (to avoid error when there are >1 amchines with same languages)
+				// check again if machine's status (to avoid error when there are > 1 machines with same languages)
 				for (int k = 0; k < systems[i].getMetadata().length; k++) {
 					String key = systems[i].getMetadata()[k].getKey();
 					if (key.contentEquals("status")) {
@@ -263,14 +268,14 @@ public class ActionOne implements XDialogEventHandler {
 	}
 
 	/**
-	 * Based on given source language retruns non-repeating language list
+	 * Based on given source language returns non-repeating language list
 	 * with all available target languages for systems that are running.
 	 *
 	 * @param sourceLanguage
 	 * @return	String array with target languages
 	 */
 	private String[] getTargetLanguageList(String sourceLanguage) {
-		SystemSMT[] systems = TildeTranslatorImpl.getSystemList().getSystem();
+		TildeMTSystem[] systems = this.apiClient.GetSystemList().Systems;
 
 	    List<String> targetLanguageList = new ArrayList<String>();
 
@@ -301,12 +306,11 @@ public class ActionOne implements XDialogEventHandler {
 
 	/**
 	 * Extracts available source languages that have at least one running system.
-	 * @return String[] with nonrepeating source languages
+	 * @return String[] with non-repeating source languages
 	 */
 	private String[] getSourceLanguageList() {
 	    // create array containing available languages
-		SystemListM list = TildeTranslatorImpl.getSystemList();
-		SystemSMT[] systems = list.getSystem();
+		TildeMTSystem[] systems = this.apiClient.GetSystemList().Systems;
 	    List<String> sourceLanguageList = new ArrayList<String>();
 
 		// get full language list of available machines for source box
