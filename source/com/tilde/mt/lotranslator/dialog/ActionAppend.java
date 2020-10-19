@@ -22,8 +22,8 @@ public class ActionAppend {
 	 * Append translation to the end of selected area.
 	 * Clean the variable that contains the translation.
 	 */
-	public void process() {
-		String translation = this.contentHelper.combineTranslatedParagraphs(this.apiClient);
+	public void process(String systemID) {
+		String translation = this.contentHelper.combineTranslatedParagraphs(this.apiClient, systemID);
 		append(translation);
 	}
 

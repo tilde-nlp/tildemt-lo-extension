@@ -22,8 +22,8 @@ public class ActionReplace {
 	 * If translated text is not empty, replace it with the translation.
 	 * Clean the variable that contains the translation.
 	 */
-	public void process() {
-		String translated = this.contentHelper.combineTranslatedParagraphs(apiClient);
+	public void process(String systemID) {
+		String translated = this.contentHelper.combineTranslatedParagraphs(apiClient, systemID);
 		if(translated.length() > 1) {
 			translated = translated.substring(1); //remove unnecessary "\n" at the beginning
 			replace(translated);

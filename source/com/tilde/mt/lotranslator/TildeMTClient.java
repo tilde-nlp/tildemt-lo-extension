@@ -1,14 +1,16 @@
 package com.tilde.mt.lotranslator;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.Gson;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
@@ -21,99 +23,71 @@ public class TildeMTClient {
     private final String AppID = "TildeMT|Plugin|LibreOffice";
     private final Logger logger = new Logger(this.getClass().getName());
     
+    private TildeMTSystemList cachedSystemList = null;
+    
     public TildeMTClient(String clientID) {
     	this.ClientID = clientID;
     }
     
-	public String translate(String systemID, String inputText) {
+	public CompletableFuture<String> Translate(String systemID, String inputText) {
 		logger.info(String.format("translate text: system: %s, text: %s", systemID, inputText));
 		
-		String encodedText = null;
-		try {
-			encodedText = URLEncoder.encode(inputText, "UTF-8");
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
+		String translationUrl = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), systemID, URLEncoder.encode(inputText, StandardCharsets.UTF_8));
 		
-		String translationUrl = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", this.AppID, systemID, encodedText);
-		String translation = this.Request(translationUrl); 
-		
-		if(translation != null) {
+		return this.Request(translationUrl).thenApply(translation -> {
 			Gson gson = new Gson();
 			TildeMTTranslation translated = gson.fromJson(translation, TildeMTTranslation.class);
 			
 			logger.info(String.format("translation: %s", translated.translation));
 			return translated.translation;
-		}
-		else {
-			return null;
-		}
+		});
 	}
 
 	public TildeMTSystemList GetSystemList() {
-		logger.info(String.format("Get systems"));
+		if(cachedSystemList == null) {
+			logger.info(String.format("Get systems"));
 		
-		String systems = this.Request(this.TranslationAPI + "/GetSystemList?appID=" + this.AppID); 
-		
-		if(systems != null) {
-			Gson gson = new Gson();
-			TildeMTSystemList systemList = gson.fromJson(systems, TildeMTSystemList.class);
+			String systems;
+			try {
+				// TODO: convert GetSystemList to non-blocking
+				systems = this.Request(this.TranslationAPI + "/GetSystemList?appID=" + URLEncoder.encode(this.AppID, StandardCharsets.UTF_8)).get();
+				
+				if(systems != null) {
+					Gson gson = new Gson();
+					TildeMTSystemList systemList = gson.fromJson(systems, TildeMTSystemList.class);
+					logger.info(systems);
+					logger.info(String.format("Systems found: %s", systemList.System.length));
+					this.cachedSystemList = systemList;
+					return systemList;
+				}
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			
-			logger.info(String.format("Systems found: %s", systemList.System.length));
-			return systemList;
+			return null;
 		}
-		return null;
+		else {
+			return this.cachedSystemList;
+		}
 	}
 	
-	private String Request(String url) {
-		HttpURLConnection connection = null;
-		InputStream in = null;
-		BufferedReader reader = null;
+	private CompletableFuture<String> Request(String url) {
+		URI uri = null;
 		
-		String res = "";
-		Boolean success = false;
 		try {
-			URL urls = new URL(url);
-
-			connection = (HttpURLConnection) urls.openConnection();
-			connection.setRequestMethod("GET");
-			connection.setRequestProperty("client-id", this.ClientID);
-
-			in = new BufferedInputStream(connection.getInputStream());
-			reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
-
-			String line = "";
-			while ((line = reader.readLine()) != null) {
-				res += line;
-			}
-			
-			success = true;
+			uri = new URL(url).toURI();
 		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			if(connection != null) {
-				connection.disconnect();
-			}
-			if(in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if(reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+		catch (MalformedURLException | URISyntaxException e1) {
+			e1.printStackTrace();
 		}
 		
-		return success ? res: null;
+		HttpClient client = HttpClient.newHttpClient();
+	    HttpRequest request = HttpRequest.newBuilder()
+	          .uri(uri)
+	          .header("client-id", this.ClientID)
+	          .build();
+
+	    return client.sendAsync(request, BodyHandlers.ofString()).thenApply(HttpResponse::body);
 	}
 }

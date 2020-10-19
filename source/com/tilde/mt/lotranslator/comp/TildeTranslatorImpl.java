@@ -14,6 +14,7 @@ import com.tilde.mt.lotranslator.dialog.ActionReplace;
 import com.tilde.mt.lotranslator.dialog.ActionTranslate;
 import com.tilde.mt.lotranslator.dialog.ConfigDialog;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
+import com.tilde.mt.lotranslator.models.TildeMTSystem;
 
 public final class TildeTranslatorImpl extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
@@ -93,21 +94,36 @@ public final class TildeTranslatorImpl extends WeakBase
 		// if client ID is not set, show configuration dialog
 		LetsMTConfiguration config = Configuration.Read();
 		TildeMTClient client = new TildeMTClient(config.ClientID);
-		if(client.GetSystemList() == null) {
-	        ConfigDialog configDialog = new ConfigDialog(this.m_xContext);
+		TildeMTSystem[] systems = client.GetSystemList().System;
+		String systemID = Configuration.getSystemID();
+		
+		if(systems == null) {
+			ConfigDialog configDialog = new ConfigDialog(this.m_xContext);
 	        configDialog.show();
-		}
+        }
 		else {
 			switch (action) {
 		    	case "actionTranslate":
 		    		new ActionTranslate(m_xContext, client).show();
 		    		break;
 		    	case "actionAppend":
-		    		new ActionAppend(m_xContext, client).process();
+		    		if(systemID == null) {
+		    			DialogHelper.showErrorMessage(m_xContext, null, "Please choose MT system");
+		    			new ActionTranslate(m_xContext, client).show();
+		    		}
+		    		else {
+		    			new ActionAppend(m_xContext, client).process(systemID);
+		    		}
 		    		break;
 		    	case "actionReplace":
-		    		new ActionReplace(m_xContext, client).process();
-		    		break;
+		    		if(systemID == null) {
+		    			DialogHelper.showErrorMessage(m_xContext, null, "Please choose MT system");	
+		    			new ActionTranslate(m_xContext, client).show();
+		    		}
+		    		else {
+		    			new ActionReplace(m_xContext, client).process(systemID);
+		    		}
+	    			break;
 		    	default:
 		    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
 	    	}

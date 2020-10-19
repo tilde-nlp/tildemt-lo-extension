@@ -1,5 +1,7 @@
 package com.tilde.mt.lotranslator.models;
 
+import java.util.HashMap;
+
 public class TildeMTSystem {
 	
 	private TildeMTSystemLanguage SourceLanguage;
@@ -10,6 +12,8 @@ public class TildeMTSystem {
     private String ID;
     private String Domain;
     
+    private HashMap<String, String> MetadataCache = null;
+    
     public TildeMTSystemLanguage getSourceLanguage ()
     {
         return SourceLanguage;
@@ -18,9 +22,16 @@ public class TildeMTSystem {
     {
         return Description;
     }
-    public TildeMTSystemMetadata[] getMetadata ()
+    public HashMap<String, String> getMetadata ()
     {
-        return Metadata;
+    	if(MetadataCache == null) {
+	    	HashMap<String, String> metadata = new HashMap<String, String>();
+	    	for (int i = 0; i < Metadata.length; i++) {
+	    		metadata.put(Metadata[i].getKey(), Metadata[i].getValue());
+	    	}
+	    	MetadataCache = metadata;
+    	}
+    	return MetadataCache;
     }
     public TildeMTSystemLocalizedText getTitle ()
     {
@@ -38,7 +49,22 @@ public class TildeMTSystem {
     {
         return TargetLanguage;
     }
-
+    
+    /**
+     * System is available to use
+     * @return
+     */
+    public Boolean IsAvailable() {
+    	HashMap<String, String> metadata = this.getMetadata();
+    	
+    	if(metadata.containsKey("status")) {
+    		String status = metadata.get("status");
+    		if(status.equals("running")) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
     @Override
     public String toString()
     {

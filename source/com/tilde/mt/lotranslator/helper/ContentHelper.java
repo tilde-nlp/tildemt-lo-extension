@@ -1,8 +1,9 @@
 package com.tilde.mt.lotranslator.helper;
 
 
+import java.util.concurrent.ExecutionException;
+
 import com.sun.star.uno.XComponentContext;
-import com.tilde.mt.lotranslator.Configuration;
 import com.tilde.mt.lotranslator.TildeMTClient;
 
 public class ContentHelper {
@@ -40,18 +41,23 @@ public class ContentHelper {
 	 * To make insertion of translated text as one step for user,
 	 * all translated paragraphs are combined in a single variable.
 	 */
-	public String combineTranslatedParagraphs(TildeMTClient apiClient)  {
+	public String combineTranslatedParagraphs(TildeMTClient apiClient, String systemID)  {
 		String result = "";
 		
 		String selectedText = getSelectedText();
-		String smt = Configuration.getSystemID();
-		String translation = null;
+
 		if(selectedText.length() > 0) {
 			String paragraphs[] = selectedText.split("\\r?\\n");
 			int paralength = paragraphs.length;
 			// translate each paragraph separately
 			for(int i = 0; i != paralength; i++) {
-				translation = apiClient.translate(smt, paragraphs[i]);
+				String translation = "";
+				try {
+					translation = apiClient.Translate(systemID, paragraphs[i]).get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				if(translation.length() > 0) {
 					combine(result, paralength, i, translation);
 				}
