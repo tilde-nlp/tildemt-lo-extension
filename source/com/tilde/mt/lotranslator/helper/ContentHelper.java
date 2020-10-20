@@ -1,38 +1,49 @@
 package com.tilde.mt.lotranslator.helper;
 
 
-import java.util.concurrent.ExecutionException;
-
+import com.sun.star.beans.UnknownPropertyException;
+import com.sun.star.beans.XPropertySet;
+import com.sun.star.lang.Locale;
+import com.sun.star.lang.WrappedTargetException;
+import com.sun.star.text.XTextCursor;
+import com.sun.star.text.XTextViewCursor;
 import com.sun.star.uno.XComponentContext;
+import com.tilde.mt.lotranslator.Logger;
 import com.tilde.mt.lotranslator.TildeMTClient;
+import com.tilde.mt.lotranslator.models.SelectedText;
 
 public class ContentHelper {
-
-	private XComponentContext xContext;
-	/** Cursor in the document */
-	private static com.sun.star.text.XTextViewCursor xTextViewCursor;
-	/** Contains all translation paragraphs */
-	
-
-	/**
-	 * @param xContext
-	 */
-	public ContentHelper (XComponentContext xContext) {
-		this.xContext = xContext;
-	}
-
+	private static Logger logger = new Logger(ContentHelper.class.getName());
 	/**
 	 * Gets the user translatable input text
 	 *
 	 * @return	String that user wrote in dialog's translation box
 	 */
-	private String getSelectedText() {
+	public static SelectedText getSelectedText(XComponentContext xContext) {
+		SelectedText selection = new SelectedText();
+
 		com.sun.star.text.XTextDocument xTextDoc = DocumentHelper.getCurrentDocument(xContext);
 		com.sun.star.frame.XController xController = xTextDoc.getCurrentController();
 		com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier = DocumentHelper.getCursorSupplier(xController);
-		xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
+		XTextViewCursor xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
 
-		return xTextViewCursor.getString();
+		// if there are multiple languages in text, select first one?
+		XTextCursor startCursor = xTextViewCursor.getText().createTextCursorByRange(xTextViewCursor.getStart());
+		XPropertySet xCursorProps = DocumentHelper.getPageCursorProps(startCursor);
+		
+		selection.Text = xTextViewCursor.getString();
+		try {
+			Object rawLocale = xCursorProps.getPropertyValue("CharLocale");
+			Locale charLocale = (Locale) rawLocale;
+			selection.Locale = charLocale;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		logger.info(String.format("Selection: %s", selection));
+		
+		return selection;
 	}
 
 	/**
@@ -41,10 +52,10 @@ public class ContentHelper {
 	 * To make insertion of translated text as one step for user,
 	 * all translated paragraphs are combined in a single variable.
 	 */
-	public String combineTranslatedParagraphs(TildeMTClient apiClient, String systemID)  {
+	public static String combineTranslatedParagraphs(XComponentContext xContext, TildeMTClient apiClient, String systemID)  {
 		String result = "";
 		
-		String selectedText = getSelectedText();
+		String selectedText = ContentHelper.getSelectedText(xContext).Text;
 
 		if(selectedText.length() > 0) {
 			String paragraphs[] = selectedText.split("\\r?\\n");

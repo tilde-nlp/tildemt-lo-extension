@@ -9,13 +9,11 @@ public class ActionAppend {
 	/** Translate dialog */
 	private XComponentContext xContext;
 	private static com.sun.star.text.XTextViewCursor xTextViewCursor;
-	private ContentHelper contentHelper;
 	private TildeMTClient apiClient;
 
 	public ActionAppend(XComponentContext xContext, TildeMTClient apiClient) {
 		this.xContext = xContext;
 		this.apiClient = apiClient;
-		this.contentHelper = new ContentHelper(this.xContext);
 	}
 	
 	/**
@@ -23,7 +21,7 @@ public class ActionAppend {
 	 * Clean the variable that contains the translation.
 	 */
 	public void process(String systemID) {
-		String translation = this.contentHelper.combineTranslatedParagraphs(this.apiClient, systemID);
+		String translation = ContentHelper.combineTranslatedParagraphs(this.xContext, this.apiClient, systemID);
 		append(translation);
 	}
 

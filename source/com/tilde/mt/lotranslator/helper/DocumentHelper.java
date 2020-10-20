@@ -12,6 +12,7 @@ import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.text.XPageCursor;
 import com.sun.star.text.XTextContent;
+import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.text.XTextViewCursorSupplier;
@@ -87,6 +88,10 @@ public class DocumentHelper {
 
 	public static XPageCursor getPageCursor(XTextViewCursor xTextViewCursor) {
 		return UnoRuntime.queryInterface(XPageCursor.class, xTextViewCursor);
+	}
+	
+	public static XPropertySet getPageCursorProps(XTextCursor xTextCursor) {
+		return UnoRuntime.queryInterface(XPropertySet.class, xTextCursor);
 	}
 
 	public static XModel getModel(XTextDocument xTextDocument) {

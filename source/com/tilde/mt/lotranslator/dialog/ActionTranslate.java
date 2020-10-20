@@ -2,6 +2,7 @@ package com.tilde.mt.lotranslator.dialog;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -19,8 +20,10 @@ import com.sun.star.uno.XComponentContext;
 import com.tilde.mt.lotranslator.Configuration;
 import com.tilde.mt.lotranslator.Logger;
 import com.tilde.mt.lotranslator.TildeMTClient;
+import com.tilde.mt.lotranslator.helper.ContentHelper;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 import com.tilde.mt.lotranslator.helper.DocumentHelper;
+import com.tilde.mt.lotranslator.models.SelectedText;
 import com.tilde.mt.lotranslator.models.TildeMTSystem;
 
 /**
@@ -53,6 +56,8 @@ public class ActionTranslate implements XDialogEventHandler {
 	private static String savedSourceLang = "";
 	private static String savedTargetLang = "";
 	private static String savedDomain = "";
+	
+	private HashMap<String, String> namedSourceLangCodes = new HashMap<String, String>();
 	
 	private XControlContainer m_xControlContainer;
 
@@ -219,8 +224,21 @@ public class ActionTranslate implements XDialogEventHandler {
 		m_xControlContainer = UnoRuntime.queryInterface(XControlContainer.class, dialog);
 		XControl sourceLangBoxControl = m_xControlContainer.getControl("SourceLanguages");
 		XPropertySet sourceLangBoxProps = UnoRuntime.queryInterface(XPropertySet.class, sourceLangBoxControl.getModel());
-
+				
 		String[] sourceLanguages = getSourceLanguages();
+		
+		SelectedText selection = ContentHelper.getSelectedText(this.xContext);
+		if(namedSourceLangCodes.containsKey(selection.Locale.Language)) {
+			savedSourceLang = namedSourceLangCodes.get(selection.Locale.Language);
+			logger.warn(String.format("Setting initial language to detected: %s", selection.Locale.Language));
+		}
+		else {
+			logger.warn(String.format("Language that was detected from text was not resolved to MT system: %s", selection.Locale.Language));
+		}
+		
+		this.sourceTextField = DialogHelper.getEditField(this.dialog, "TextFieldFrom");
+		this.sourceTextField.setText(selection.Text);
+		
 		String selectedSourceLanguage = null;
 		String selectedTargetLanguage = null;
 		try {
@@ -340,7 +358,9 @@ public class ActionTranslate implements XDialogEventHandler {
 		for (int i = 0; i < systems.length; i++) {
 			TildeMTSystem system = systems[i];
 			String sourceLang = system.getSourceLanguage().getName().getText();
-
+			String sourceLangCode = system.getSourceLanguage().getCode();
+			namedSourceLangCodes.put(sourceLangCode, sourceLang);
+			
 			if(system.IsAvailable()) {
 				sourceLanguages.add(sourceLang);
 			}

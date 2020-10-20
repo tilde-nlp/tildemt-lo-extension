@@ -10,12 +10,10 @@ public class ActionReplace {
 	private XComponentContext xContext;
 	private static com.sun.star.text.XTextViewCursor xTextViewCursor;
 	private TildeMTClient apiClient;
-	private ContentHelper contentHelper;
 	
 	public ActionReplace(XComponentContext xContext, TildeMTClient apiClient) {
 		this.xContext = xContext;
 		this.apiClient = apiClient;
-		this.contentHelper = new ContentHelper(this.xContext);
 	}
 	
 	/**
@@ -23,7 +21,7 @@ public class ActionReplace {
 	 * Clean the variable that contains the translation.
 	 */
 	public void process(String systemID) {
-		String translated = this.contentHelper.combineTranslatedParagraphs(apiClient, systemID);
+		String translated = ContentHelper.combineTranslatedParagraphs(this.xContext, apiClient, systemID);
 		if(translated.length() > 1) {
 			translated = translated.substring(1); //remove unnecessary "\n" at the beginning
 			replace(translated);
