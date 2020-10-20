@@ -70,7 +70,7 @@ public class ContentHelper {
 				}
 				
 				if(translation.length() > 0) {
-					combine(result, paralength, i, translation);
+					result = combine(result, paralength, i, translation);
 				}
 			}
 		} 
@@ -88,7 +88,7 @@ public class ContentHelper {
 	 * @param currentParagraphNumber	current paragraph in the cycle
 	 * @param text						paragraph's content
 	 */
-	private static void combine(String result, int paragraphCount, int currentParagraphNumber, String text){
+	private static String combine(String result, int paragraphCount, int currentParagraphNumber, String text){
 		if (paragraphCount == 1) {
 			result = result.concat(" ");
 			result = result.concat(text);
@@ -100,6 +100,7 @@ public class ContentHelper {
 			result = result.concat(text);
 			result = result.concat("\n");
 		}
+		return result;
 	}
 
 }

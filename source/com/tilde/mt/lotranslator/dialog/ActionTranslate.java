@@ -44,9 +44,11 @@ public class ActionTranslate implements XDialogEventHandler {
 	private static final String actionTranslate = "translateNow";
 	private static final String actionInsert = "insertNow";
 	private static final String actionChangeSourceLang = "changeSourceLang";
+	private static final String actionChangeTargetLang = "changeTargetLang";
+	private static final String actionChangeDomain = "changeDomain";
+
 	/** Array of supported actions */
-	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert,
-			actionChangeSourceLang };
+	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert, actionChangeSourceLang, actionChangeTargetLang, actionChangeDomain };
 	/** Dialog fields */
 	private static XTextComponent sourceTextField;
 	private static XTextComponent targetTextField;
@@ -76,15 +78,13 @@ public class ActionTranslate implements XDialogEventHandler {
 		dialog.execute();
 	}
 
-	private void onCloseButtonPressed() {
+	private void saveConfiguration() {
 		getFields();
 		savedSourceLang = sourceLanguageBox.getSelectedItem();
 		savedTargetLang = targetLanguageBox.getSelectedItem();
 		savedDomain = domainBox.getSelectedItem();
 
 		Configuration.setSystemID(getSystemID(savedSourceLang, savedTargetLang, savedDomain));
-
-		dialog.endExecute();
 	}
 
 	/**
@@ -97,15 +97,6 @@ public class ActionTranslate implements XDialogEventHandler {
 		getFields();
 		String systemID = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem(), domainBox.getSelectedItem());
 		String text = sourceTextField.getText();
-		
-		/*var res = this.apiClient.Translate(systemID, text).thenAccept(translation -> {
-			if(translation != null) {
-				targetTextField.setText(translation);
-			}
-		}).exceptionally(ex -> {
-			ex.printStackTrace();
-			return null;
-		});*/
 		
 		targetTextField.setText(this.apiClient.Translate(systemID, text).get());
 	}
@@ -168,6 +159,8 @@ public class ActionTranslate implements XDialogEventHandler {
 		else {
 			domainBox.selectItemPos((short) 0, true);
 		}
+		
+		saveConfiguration();
 	}
 
 	/**
@@ -299,6 +292,8 @@ public class ActionTranslate implements XDialogEventHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		saveConfiguration();
 	}
 
 	private SortedSet<String> getDomains(String selectedSourceLang, String selectedTargetLang) {
@@ -372,10 +367,10 @@ public class ActionTranslate implements XDialogEventHandler {
 
 	
 	@Override
-	public boolean callHandlerMethod(XDialog dialog, Object eventObject, String methodName)
-			throws WrappedTargetException {
+	public boolean callHandlerMethod(XDialog dialog, Object eventObject, String methodName) throws WrappedTargetException {
 		if (methodName.equals(actionClose)) {
-			onCloseButtonPressed();
+			saveConfiguration();
+			dialog.endExecute();
 			return true;
 		} else if (methodName.equals(actionTranslate)) {
 			try {
@@ -389,6 +384,14 @@ public class ActionTranslate implements XDialogEventHandler {
 			return true;
 		} else if (methodName.contentEquals(actionChangeSourceLang)) {
 			onSourceLangChanged();
+			return true;
+		}
+		else if (methodName.contentEquals(actionChangeTargetLang)) {
+			saveConfiguration();
+			return true;
+		}
+		else if (methodName.contentEquals(actionChangeDomain)) {
+			saveConfiguration();
 			return true;
 		}
 		return false; // Event was not handled
