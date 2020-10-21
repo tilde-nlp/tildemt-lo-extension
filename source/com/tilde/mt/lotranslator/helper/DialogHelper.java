@@ -160,7 +160,7 @@ public class DialogHelper {
 	}
 
 	public static void showErrorMessage(XComponentContext context, XDialog dialog, String message) {
-		showMessageBox(context, dialog, MessageBoxType.ERRORBOX, "Fehler", message);
+		showMessageBox(context, dialog, MessageBoxType.ERRORBOX, "Error", message);
 	}
 
 	public static void showMessageBox(XComponentContext context, XDialog dialog, MessageBoxType type, String sTitle, String sMessage) {

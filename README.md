@@ -22,6 +22,9 @@ This extension provides functionality to translate Libre Office documents with `
 
 ## Debugging tips and tricks
 
+* When debugging, if you don't open `Libre Office writer`, just close the `Libre Office` aplication screen, it will cause problems as written below
+* If project is runing, starting or debugging it will cause problems (as it is written below)
+* If `Eclipse` is showing multiple errors from nowhere, just press `clean project`, errors will fade away
 * `Eclipse` / `Java` knows how to autopatch code in live, so if you change `*.java` when not in break mode, you shall automatically see changes in plugin. 
 * If `Eclipse` is showing that program is terminated, that can be caused by: 
   - Yo're trying to run `debug option` when starting project more than twice on the same code base => just restart `Eclipse`, should be fine first time after restart. 
