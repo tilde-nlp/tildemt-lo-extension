@@ -52,7 +52,7 @@ public class TildeMTClient {
 				// TODO: convert GetSystemList to non-blocking
 				systems = this.Request(this.TranslationAPI + "/GetSystemList?appID=" + URLEncoder.encode(this.AppID, StandardCharsets.UTF_8)).get();
 				
-				if(systems != null) {
+				if(systems != null && !systems.equals("")) {
 					Gson gson = new Gson();
 					TildeMTSystemList systemList = gson.fromJson(systems, TildeMTSystemList.class);
 					logger.info(systems);

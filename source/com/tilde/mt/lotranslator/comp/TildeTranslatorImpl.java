@@ -12,9 +12,10 @@ import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.dialog.ActionAppend;
 import com.tilde.mt.lotranslator.dialog.ActionReplace;
 import com.tilde.mt.lotranslator.dialog.ActionTranslate;
-import com.tilde.mt.lotranslator.dialog.ConfigDialog;
+import com.tilde.mt.lotranslator.dialog.AuthDialog;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 import com.tilde.mt.lotranslator.models.TildeMTSystem;
+import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 
 public final class TildeTranslatorImpl extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
@@ -94,12 +95,13 @@ public final class TildeTranslatorImpl extends WeakBase
 		// if client ID is not set, show configuration dialog
 		LetsMTConfiguration config = Configuration.Read();
 		TildeMTClient client = new TildeMTClient(config.ClientID);
-		TildeMTSystem[] systems = client.GetSystemList().System;
+		TildeMTSystemList systemList = client.GetSystemList();
+
 		String systemID = Configuration.getSystemID();
+		AuthDialog configDialog = new AuthDialog(this.m_xContext);
 		
-		if(systems == null) {
-			ConfigDialog configDialog = new ConfigDialog(this.m_xContext);
-	        configDialog.show();
+		if(systemList == null || systemList.System == null) {
+	        configDialog.show(true);
         }
 		else {
 			switch (action) {
@@ -123,6 +125,9 @@ public final class TildeTranslatorImpl extends WeakBase
 		    		else {
 		    			new ActionReplace(m_xContext, client).process(systemID);
 		    		}
+	    			break;
+		    	case "actionAuth":
+		    		configDialog.show(false);
 	    			break;
 		    	default:
 		    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);

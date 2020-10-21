@@ -21,6 +21,11 @@ import com.google.gson.stream.JsonReader;
  */
 
 public class Configuration {
+	/**
+	 * This is public client id which is fallback when there are no private clientId set.
+	 */
+	private static final String publicClientID = "x-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
+	
 	private static final Logger logger = new Logger(Configuration.class.getName());
 	private static final String configurationFile = System.getProperty("user.home") + File.separator + ".tildeConfiguration.json";
 	
@@ -47,6 +52,7 @@ public class Configuration {
 	public static LetsMTConfiguration Read() {
 		logger.info("Reading configuration...");
 		logger.info(String.format("Configuration file: %s", configurationFile));
+		Boolean setDefaultConfiguration = false;
 		
 		LetsMTConfiguration config = new LetsMTConfiguration();
 		if(Exists()) {
@@ -57,15 +63,32 @@ public class Configuration {
 			}
 			catch(Exception e) {
 				e.printStackTrace();
+				setDefaultConfiguration = true;
 			}
 		}
 		else {
 			logger.warn("configuration file does not exist, creating example configuration");
 			
 			Write(config);
+			
+			setDefaultConfiguration = true;
+		}
+		
+		if(setDefaultConfiguration || config.ClientID == null) {
+			config.ClientID = publicClientID;
 		}
 		
 		return config;
+	}
+	
+	/**
+	 * Check if user is using his private client id.
+	 * @return
+	 */
+	public static Boolean IsPrivateConfiguration() {
+		LetsMTConfiguration config = Configuration.Read();
+		
+		return config.ClientID != Configuration.publicClientID;
 	}
 	
 	public static void setSystemID(String systemID) {
