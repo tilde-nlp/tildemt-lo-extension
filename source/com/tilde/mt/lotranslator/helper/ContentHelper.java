@@ -3,10 +3,8 @@ package com.tilde.mt.lotranslator.helper;
 
 import java.util.ArrayList;
 
-import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.Locale;
-import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.uno.XComponentContext;

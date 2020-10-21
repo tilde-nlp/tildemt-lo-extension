@@ -229,8 +229,8 @@ public class ActionTranslate implements XDialogEventHandler {
 			logger.warn(String.format("Language that was detected from text was not resolved to MT system: %s", selection.Locale.Language));
 		}
 		
-		this.sourceTextField = DialogHelper.getEditField(this.dialog, "TextFieldFrom");
-		this.sourceTextField.setText(selection.Text);
+		sourceTextField = DialogHelper.getEditField(this.dialog, "TextFieldFrom");
+		sourceTextField.setText(selection.Text);
 		
 		String selectedSourceLanguage = null;
 		String selectedTargetLanguage = null;

@@ -14,7 +14,6 @@ import com.tilde.mt.lotranslator.dialog.ActionReplace;
 import com.tilde.mt.lotranslator.dialog.ActionTranslate;
 import com.tilde.mt.lotranslator.dialog.AuthDialog;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
-import com.tilde.mt.lotranslator.models.TildeMTSystem;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 
 public final class TildeTranslatorImpl extends WeakBase

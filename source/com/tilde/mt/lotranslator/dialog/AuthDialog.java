@@ -1,6 +1,5 @@
 package com.tilde.mt.lotranslator.dialog;
 
-import com.sun.star.awt.XButton;
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.XDialogEventHandler;
 import com.sun.star.awt.XFixedText;
