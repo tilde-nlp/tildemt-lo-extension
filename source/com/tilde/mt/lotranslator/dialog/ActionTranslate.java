@@ -11,6 +11,7 @@ import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XDialog;
 import com.sun.star.awt.XDialogEventHandler;
+import com.sun.star.awt.XFixedText;
 import com.sun.star.awt.XListBox;
 import com.sun.star.awt.XTextComponent;
 import com.sun.star.beans.XPropertySet;
@@ -25,6 +26,7 @@ import com.tilde.mt.lotranslator.helper.DialogHelper;
 import com.tilde.mt.lotranslator.helper.DocumentHelper;
 import com.tilde.mt.lotranslator.models.SelectedText;
 import com.tilde.mt.lotranslator.models.TildeMTSystem;
+import com.tilde.mt.lotranslator.models.TildeMTUserData;
 
 /**
  * This action opens a set up (MT system's ID) and translation dialog. From here
@@ -59,6 +61,8 @@ public class ActionTranslate implements XDialogEventHandler {
 	private static String savedTargetLang = "";
 	private static String savedDomain = "";
 	
+	private TildeMTUserData userData;
+	
 	private HashMap<String, String> namedSourceLangCodes = new HashMap<String, String>();
 	
 	private XControlContainer m_xControlContainer;
@@ -67,10 +71,11 @@ public class ActionTranslate implements XDialogEventHandler {
 
 	private Logger logger = new Logger(this.getClass().getName());
 
-	public ActionTranslate(XComponentContext xContext, TildeMTClient apiClient) {
+	public ActionTranslate(XComponentContext xContext, TildeMTClient apiClient, TildeMTUserData userData) {
 		this.dialog = DialogHelper.createDialog("TranslationDialog.xdl", xContext, this);
 		this.xContext = xContext;
 		this.apiClient = apiClient;
+		this.userData = userData;
 	}
 
 	public void show() {
@@ -116,7 +121,7 @@ public class ActionTranslate implements XDialogEventHandler {
 
 			xTextViewCursor.setString(targetTextField.getText());
 		} else {
-			logger.info("Insert:\tnothing to insert");
+			DialogHelper.showInfoMessage(this.xContext, null, "Please translate text you wish to replace");
 		}
 	}
 
@@ -213,6 +218,9 @@ public class ActionTranslate implements XDialogEventHandler {
 	 *
 	 */
 	private void configureListBoxOnOpening() {
+		XFixedText userGroupLabel = DialogHelper.getLabel(dialog, "userGroupLabel");
+		userGroupLabel.setText(String.format("User group: %s", userData.ActiveGroup));
+		
 		// get properties for the source list box
 		m_xControlContainer = UnoRuntime.queryInterface(XControlContainer.class, dialog);
 		XControl sourceLangBoxControl = m_xControlContainer.getControl("SourceLanguages");

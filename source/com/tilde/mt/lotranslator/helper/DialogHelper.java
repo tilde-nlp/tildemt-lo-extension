@@ -152,31 +152,31 @@ public class DialogHelper {
 	}
 	
 	public static void showInfoMessage(XComponentContext context, XDialog dialog, String message) {
-		showMessageBox(context, dialog, MessageBoxType.INFOBOX, "Info", message);
+		showMessageBox(context, dialog, MessageBoxType.INFOBOX, "VU Translator - Info", message);
 	}
 	
 	public static void showWarningMessage(XComponentContext context, XDialog dialog, String message) {
-		showMessageBox(context, dialog, MessageBoxType.WARNINGBOX, "Warnung", message);
+		showMessageBox(context, dialog, MessageBoxType.WARNINGBOX, "VU Translator - Warnung", message);
 	}
 
 	public static void showErrorMessage(XComponentContext context, XDialog dialog, String message) {
-		showMessageBox(context, dialog, MessageBoxType.ERRORBOX, "Error", message);
+		showMessageBox(context, dialog, MessageBoxType.ERRORBOX, "VU Translator - Error", message);
 	}
 
 	public static void showMessageBox(XComponentContext context, XDialog dialog, MessageBoxType type, String sTitle, String sMessage) {
 		XToolkit xToolkit;
 		try {
-			xToolkit = UnoRuntime.queryInterface(XToolkit.class,
-						context.getServiceManager().createInstanceWithContext("com.sun.star.awt.Toolkit", context));
-		} catch (Exception e) {
+			xToolkit = UnoRuntime.queryInterface(XToolkit.class, context.getServiceManager().createInstanceWithContext("com.sun.star.awt.Toolkit", context));
+		} 
+		catch (Exception e) {
 			return;
 		}
 		XMessageBoxFactory xMessageBoxFactory = UnoRuntime.queryInterface(XMessageBoxFactory.class, xToolkit);
 		XWindowPeer xParentWindowPeer = UnoRuntime.queryInterface(XWindowPeer.class, dialog);
-        XMessageBox xMessageBox = xMessageBoxFactory.createMessageBox(xParentWindowPeer, type,
-        		com.sun.star.awt.MessageBoxButtons.BUTTONS_OK, sTitle, sMessage);
-        if (xMessageBox == null)
+        XMessageBox xMessageBox = xMessageBoxFactory.createMessageBox(xParentWindowPeer, type, com.sun.star.awt.MessageBoxButtons.BUTTONS_OK, sTitle, sMessage);
+        if (xMessageBox == null) {
         	return;
+        }
         
         xMessageBox.execute();
 	}

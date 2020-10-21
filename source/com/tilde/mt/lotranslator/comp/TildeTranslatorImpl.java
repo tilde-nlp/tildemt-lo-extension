@@ -15,6 +15,7 @@ import com.tilde.mt.lotranslator.dialog.ActionTranslate;
 import com.tilde.mt.lotranslator.dialog.AuthDialog;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
+import com.tilde.mt.lotranslator.models.TildeMTUserData;
 
 public final class TildeTranslatorImpl extends WeakBase
    implements com.sun.star.lang.XServiceInfo,
@@ -103,14 +104,23 @@ public final class TildeTranslatorImpl extends WeakBase
 	        configDialog.show(true);
         }
 		else {
+			TildeMTUserData userData;
+			try{
+				userData = client.GetUserData().get();
+			}
+			catch(Exception ex) {
+				DialogHelper.showErrorMessage(m_xContext, null, "Failed to get user data");
+				return;
+			}
+			
 			switch (action) {
 		    	case "actionTranslate":
-		    		new ActionTranslate(m_xContext, client).show();
+		    		new ActionTranslate(m_xContext, client, userData).show();
 		    		break;
 		    	case "actionAppend":
 		    		if(systemID == null) {
 		    			DialogHelper.showErrorMessage(m_xContext, null, "Please choose MT system");
-		    			new ActionTranslate(m_xContext, client).show();
+		    			new ActionTranslate(m_xContext, client, userData).show();
 		    		}
 		    		else {
 		    			new ActionAppend(m_xContext, client).process(systemID);
@@ -119,7 +129,7 @@ public final class TildeTranslatorImpl extends WeakBase
 		    	case "actionReplace":
 		    		if(systemID == null) {
 		    			DialogHelper.showErrorMessage(m_xContext, null, "Please choose MT system");	
-		    			new ActionTranslate(m_xContext, client).show();
+		    			new ActionTranslate(m_xContext, client, userData).show();
 		    		}
 		    		else {
 		    			new ActionReplace(m_xContext, client).process(systemID);

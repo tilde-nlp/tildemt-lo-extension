@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import com.google.gson.Gson;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 import com.tilde.mt.lotranslator.models.TildeMTTranslation;
+import com.tilde.mt.lotranslator.models.TildeMTUserData;
 
 public class TildeMTClient {
 	private String ClientID = null;
@@ -32,9 +33,9 @@ public class TildeMTClient {
 	public CompletableFuture<String> Translate(String systemID, String inputText) {
 		logger.info(String.format("translate text: system: %s, text: %s", systemID, inputText));
 		
-		String translationUrl = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), systemID, URLEncoder.encode(inputText, StandardCharsets.UTF_8));
+		String url = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), systemID, URLEncoder.encode(inputText, StandardCharsets.UTF_8));
 		
-		return this.Request(translationUrl).thenApply(translation -> {
+		return this.Request(url).thenApply(translation -> {
 			Gson gson = new Gson();
 			TildeMTTranslation translated = gson.fromJson(translation, TildeMTTranslation.class);
 			
@@ -43,6 +44,20 @@ public class TildeMTClient {
 		});
 	}
 
+	public CompletableFuture<TildeMTUserData> GetUserData(){
+		logger.info(String.format("fetching user data..."));
+		
+		String url = String.format(this.TranslationAPI + "/GetUserInfo?appID=%s", URLEncoder.encode(this.AppID, StandardCharsets.UTF_8));
+		
+		return this.Request(url).thenApply(data -> {
+			Gson gson = new Gson();
+			TildeMTUserData userData = gson.fromJson(data, TildeMTUserData.class);
+			
+			logger.info(String.format("user data: %s", userData));
+			return userData;
+		});
+	}
+	
 	public TildeMTSystemList GetSystemList() {
 		if(cachedSystemList == null) {
 			logger.info(String.format("Get systems"));
