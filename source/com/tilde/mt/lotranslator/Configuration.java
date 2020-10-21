@@ -9,17 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
-/**
- * This dialog is shown, if UserID cannot be found or is invalid.
- * User is asked to go to web site where UserID can be copied.
- * When user pastes the ID in the text box and presses the button,
- * this class checks whether it is valid.
- *   If it is, then data file and variable in TildeTranslatorImpl are updated.
- *   If not, user cannot use translation service.
- *
- * @author arta.zena
- */
-
 public class Configuration {
 	/**
 	 * This is public client id which is fallback when there are no private clientId set.

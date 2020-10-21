@@ -1,5 +1,10 @@
 package com.tilde.mt.lotranslator;
 
+/**
+ * Console logging helper
+ * @author guntars.puzulis
+ *
+ */
 public class Logger {
 	private String name;
 	
