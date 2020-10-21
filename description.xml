@@ -10,7 +10,7 @@
 		<default xlink:href="images/tilde-logo-42.png"/>
 	</icon>
 	<extension-description>
-		<src lang="en" xlink:href="description/en.txt"/>
+		<src lang="en" xlink:href="description/desc_en.txt"/>
 		<src lang="en-US" xlink:href="description/desc_en.txt"/>
 	</extension-description>
 </description>

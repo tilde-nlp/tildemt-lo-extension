@@ -1,1 +1,0 @@
-This extension allows to use Tilde Translator directly from Writer.
