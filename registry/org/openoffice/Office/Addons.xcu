@@ -90,8 +90,8 @@
 		<node oor:name="OfficeMenuBar">
 			<node oor:name="com.tilde.mt.lotranslator.tildetranslator.menubar" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
-					<value xml:lang="en-US">Tilde Translator</value>
-					<value xml:lang="lv">Tildes Tulkotājs</value>
+					<value xml:lang="en-US">VU Translator</value>
+					<value xml:lang="lv">VU Tulkotājs</value>
 				</prop>
 				<prop oor:name="Context" oor:type="xs:string">
 					<value>com.sun.star.text.TextDocument</value>
