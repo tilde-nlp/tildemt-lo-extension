@@ -22,7 +22,7 @@
 		<node oor:name="OfficeToolBar">
 			<node oor:name="com.tilde.mt.lotranslator.tildetranslator.toolbar" oor:op="replace">
 				<prop oor:name="Title" oor:type="xs:string">
-					<value>Tilde Translator</value>
+					<value>VU Translator</value>
 				</prop>
 				<node oor:name="t01" oor:op="replace">
 					<prop oor:name="URL" oor:type="xs:string">
