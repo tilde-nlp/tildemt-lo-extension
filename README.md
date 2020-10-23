@@ -20,6 +20,12 @@ This extension provides functionality to translate Libre Office documents with `
 7. The extension will be installed in LibreOffice (see Tools->Extension Manager)
 8. To translate ... TODO: describe this.
 
+## Running extension
+
+- Plugin will try to authenticate with Translation API using default built-in authentication
+- User can provide custom authentication token to gain access to more and custom resources
+- Plugin stores configuration in `{User home directory}/.tildeConfiguration.json`
+
 ## Debugging tips and tricks
 
 * When debugging, if you don't open `Libre Office writer`, just close the `Libre Office` aplication screen, it will cause problems as written below
