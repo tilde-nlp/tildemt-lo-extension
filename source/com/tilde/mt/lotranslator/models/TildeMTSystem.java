@@ -68,6 +68,6 @@ public class TildeMTSystem {
     @Override
     public String toString()
     {
-        return String.format("%s [Title: %s, ID: %s, SourceLang: %s, TargetLang: %s]", this.getClass().getName(), ID, SourceLanguage, TargetLanguage);
+        return String.format("%s [Title: %s, ID: %s, SourceLang: %s, TargetLang: %s]", this.getClass().getSimpleName(), ID, SourceLanguage, TargetLanguage);
     }
 }

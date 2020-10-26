@@ -17,6 +17,6 @@ public class TildeMTSystemLanguage {
     @Override
     public String toString()
     {
-        return String.format("%s [Code: %s Name: %s]", this.getClass().getName(), Code, Name);
+        return String.format("%s [Code: %s Name: %s]", this.getClass().getSimpleName(), Code, Name);
     }
 }

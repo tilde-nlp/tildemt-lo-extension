@@ -11,7 +11,7 @@ import com.tilde.mt.lotranslator.LetsMTConfiguration;
 import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 
-public class AuthDialog implements XDialogEventHandler{
+public class actionAuth implements XDialogEventHandler{
 	private XDialog dialog = null;
 	private static final String actionSignIn = "signInAction";
 	private static final String actionSignOut = "signOutAction";
@@ -23,7 +23,7 @@ public class AuthDialog implements XDialogEventHandler{
 	
 	private XComponentContext xContext;
 
-	public AuthDialog (XComponentContext xContext) {
+	public actionAuth (XComponentContext xContext) {
 		this.xContext = xContext;
 	}
 

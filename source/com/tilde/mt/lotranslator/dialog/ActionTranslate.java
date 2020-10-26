@@ -79,7 +79,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	}
 
 	public void show() {
-		configureListBoxOnOpening();
+		configureInitialSetup();
 		dialog.execute();
 	}
 
@@ -207,7 +207,7 @@ public class ActionTranslate implements XDialogEventHandler {
 				return system.getID();
 			}
 		}
-		DialogHelper.showInfoMessage(xContext, dialog, "System not available!");
+		DialogHelper.showWarningMessage(xContext, dialog, "Saved MT system not available!");
 		logger.info("System not found! Using default system to translate...");
 		targetTextField.setText("");
 		return null;
@@ -217,7 +217,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	 * Adds available system language lists to list boxes before the dialog is open.
 	 *
 	 */
-	private void configureListBoxOnOpening() {
+	private void configureInitialSetup() {
 		XFixedText userGroupLabel = DialogHelper.getLabel(dialog, "userGroupLabel");
 		userGroupLabel.setText(String.format("User group: %s", userData.ActiveGroup));
 		

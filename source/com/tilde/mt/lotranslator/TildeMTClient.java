@@ -7,12 +7,16 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.Gson;
+import com.tilde.mt.lotranslator.models.ErrorResult;
+import com.tilde.mt.lotranslator.models.TildeMTDocTranslateState;
+import com.tilde.mt.lotranslator.models.TildeMTStartDocTranslate;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 import com.tilde.mt.lotranslator.models.TildeMTTranslation;
 import com.tilde.mt.lotranslator.models.TildeMTUserData;
@@ -23,6 +27,7 @@ public class TildeMTClient {
     private final String TranslationAPI = "https://ltmt.tilde.lv/ws/Service.svc/json";
     private final String AppID = "TildeMT|Plugin|LibreOffice";
     private final Logger logger = new Logger(this.getClass().getName());
+    private final Gson gson = new Gson();
     
     private TildeMTSystemList cachedSystemList = null;
     
@@ -33,10 +38,13 @@ public class TildeMTClient {
 	public CompletableFuture<String> Translate(String systemID, String inputText) {
 		logger.info(String.format("translate text: system: %s, text: %s", systemID, inputText));
 		
-		String url = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), systemID, URLEncoder.encode(inputText, StandardCharsets.UTF_8));
+		String url = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", 
+				URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), 
+				systemID, 
+				URLEncoder.encode(inputText, StandardCharsets.UTF_8)
+		);
 		
-		return this.Request(url).thenApply(translation -> {
-			Gson gson = new Gson();
+		return this.Request(url, false, null).thenApply(translation -> {
 			TildeMTTranslation translated = gson.fromJson(translation, TildeMTTranslation.class);
 			
 			logger.info(String.format("translation: %s", translated.translation));
@@ -47,10 +55,11 @@ public class TildeMTClient {
 	public CompletableFuture<TildeMTUserData> GetUserData(){
 		logger.info(String.format("fetching user data..."));
 		
-		String url = String.format(this.TranslationAPI + "/GetUserInfo?appID=%s", URLEncoder.encode(this.AppID, StandardCharsets.UTF_8));
+		String url = String.format(this.TranslationAPI + "/GetUserInfo?appID=%s", 
+				URLEncoder.encode(this.AppID, StandardCharsets.UTF_8)
+		);
 		
-		return this.Request(url).thenApply(data -> {
-			Gson gson = new Gson();
+		return this.Request(url, false, null).thenApply(data -> {
 			TildeMTUserData userData = gson.fromJson(data, TildeMTUserData.class);
 			
 			logger.info(String.format("user data: %s", userData));
@@ -58,6 +67,75 @@ public class TildeMTClient {
 		});
 	}
 	
+	public CompletableFuture<ErrorResult> DownloadDocumentTranslation(String documentID){
+		logger.info("Download document translation");
+
+		String url = String.format(this.TranslationAPI + "/DownloadDocumentTranslation?appID=%s&id=%s", 
+			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8),
+			documentID
+		);
+		
+		return this.Request(url, false, null).thenApply(rawResult -> {
+			ErrorResult result = new ErrorResult();
+			
+			try {
+				TildeMTDocTranslateState tildeError = gson.fromJson(rawResult, TildeMTDocTranslateState.class);
+				result.Error = tildeError;
+			}
+			catch(Exception ex) {
+				result.Result = gson.fromJson(rawResult, byte[].class);
+			}
+			
+			logger.info(String.format("DocTranslate result: %s", result));
+			return result;
+		});
+	}
+
+	public CompletableFuture<ErrorResult> StartDocumentTranslation(TildeMTStartDocTranslate data){
+		logger.info("Start document translation");
+		
+		data.AppID = this.AppID;
+		String reqData = gson.toJson(data);
+		
+		String url = String.format(this.TranslationAPI + "/StartDocumentTranslation");
+		
+		return this.Request(
+			url, 
+			true, 
+			reqData
+		).thenApply(rawResult -> {
+			ErrorResult result = new ErrorResult();
+			
+			try {
+				TildeMTDocTranslateState tildeError = gson.fromJson(rawResult, TildeMTDocTranslateState.class);
+				result.Error = tildeError;
+			}
+			catch(Exception ex) {
+				result.Result = rawResult.replace("\"", "");
+			}
+			
+			logger.info(String.format("DocTranslate result: %s", result));
+			return result;
+		});
+	}
+	
+	public CompletableFuture<TildeMTDocTranslateState> GetDocumentTranslationState(String documentID){
+		logger.info("Document translation status");
+
+		String url = String.format(this.TranslationAPI + "/GetDocumentTranslationState?appID=%s&id=%s", 
+			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8),
+			documentID
+		);
+		
+		return this.Request(url, false, null).thenApply(rawResult -> {
+			TildeMTDocTranslateState result = gson.fromJson(rawResult, TildeMTDocTranslateState.class);
+
+			logger.info(String.format("DocTranslate result: %s", result));
+			return result;
+		});
+	}
+	
+
 	public TildeMTSystemList GetSystemList() {
 		if(cachedSystemList == null) {
 			logger.info(String.format("Get systems"));
@@ -65,10 +143,9 @@ public class TildeMTClient {
 			String systems;
 			try {
 				// TODO: convert GetSystemList to non-blocking
-				systems = this.Request(this.TranslationAPI + "/GetSystemList?appID=" + URLEncoder.encode(this.AppID, StandardCharsets.UTF_8)).get();
+				systems = this.Request(this.TranslationAPI + "/GetSystemList?appID=" + URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), false, null).get();
 				
 				if(systems != null && !systems.equals("")) {
-					Gson gson = new Gson();
 					TildeMTSystemList systemList = gson.fromJson(systems, TildeMTSystemList.class);
 					logger.info(systems);
 					logger.info(String.format("Systems found: %s", systemList.System.length));
@@ -87,7 +164,7 @@ public class TildeMTClient {
 		}
 	}
 	
-	private CompletableFuture<String> Request(String url) {
+	private CompletableFuture<String> Request(String url, Boolean isPOST, String postData) {
 		URI uri = null;
 		
 		try {
@@ -98,10 +175,15 @@ public class TildeMTClient {
 		}
 		
 		HttpClient client = HttpClient.newHttpClient();
-	    HttpRequest request = HttpRequest.newBuilder()
+		HttpRequest.Builder rawRequest = HttpRequest.newBuilder()
 	          .uri(uri)
-	          .header("client-id", this.ClientID)
-	          .build();
+	          .header("client-id", this.ClientID);
+		
+		if(isPOST) {
+			rawRequest.POST(BodyPublishers.ofString(postData));
+		}
+	          
+      	HttpRequest request = rawRequest.build();
 
 	    return client.sendAsync(request, BodyHandlers.ofString()).thenApply(HttpResponse::body);
 	}

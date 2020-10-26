@@ -17,6 +17,6 @@ public class TildeMTSystemMetadata {
     @Override
     public String toString()
     {
-        return String.format("%s [Key: %s Value: %s]", this.getClass().getName(), Key, Value);
+        return String.format("%s [Key: %s Value: %s]", this.getClass().getSimpleName(), Key, Value);
 	}
 }

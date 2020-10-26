@@ -17,6 +17,6 @@ public class TildeMTSystemLocalizedText {
     @Override
     public String toString()
     {
-        return String.format("%s [Language: %s, Text: %s]", this.getClass().getName(), Language, Text);
+        return String.format("%s [Language: %s, Text: %s]", this.getClass().getSimpleName(), Language, Text);
     }
 }

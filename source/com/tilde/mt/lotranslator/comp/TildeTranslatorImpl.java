@@ -12,7 +12,8 @@ import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.dialog.ActionAppend;
 import com.tilde.mt.lotranslator.dialog.ActionReplace;
 import com.tilde.mt.lotranslator.dialog.ActionTranslate;
-import com.tilde.mt.lotranslator.dialog.AuthDialog;
+import com.tilde.mt.lotranslator.dialog.ActionTranslateDocument;
+import com.tilde.mt.lotranslator.dialog.actionAuth;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 import com.tilde.mt.lotranslator.models.TildeMTUserData;
@@ -98,7 +99,7 @@ public final class TildeTranslatorImpl extends WeakBase
 		TildeMTSystemList systemList = client.GetSystemList();
 
 		String systemID = Configuration.getSystemID();
-		AuthDialog configDialog = new AuthDialog(this.m_xContext);
+		actionAuth configDialog = new actionAuth(this.m_xContext);
 		
 		if(systemList == null || systemList.System == null) {
 	        configDialog.show(true);
@@ -113,34 +114,34 @@ public final class TildeTranslatorImpl extends WeakBase
 				return;
 			}
 			
-			switch (action) {
-		    	case "actionTranslate":
-		    		new ActionTranslate(m_xContext, client, userData).show();
-		    		break;
-		    	case "actionAppend":
-		    		if(systemID == null) {
-		    			DialogHelper.showErrorMessage(m_xContext, null, "Please choose MT system");
-		    			new ActionTranslate(m_xContext, client, userData).show();
-		    		}
-		    		else {
+			
+			if(action.equals("actionTranslate")) {
+				new ActionTranslate(m_xContext, client, userData).show();
+			}
+			else if(action.equals("actionAuth")) {
+				configDialog.show(false);
+			}
+			else {
+				if(systemID == null) {
+					DialogHelper.showInfoMessage(m_xContext, null, "Please choose MT system and then try again.");	
+	    			new ActionTranslate(m_xContext, client, userData).show();
+				}
+				else {
+					if(action.equals("actionAppend")){
 		    			new ActionAppend(m_xContext, client).process(systemID);
-		    		}
-		    		break;
-		    	case "actionReplace":
-		    		if(systemID == null) {
-		    			DialogHelper.showErrorMessage(m_xContext, null, "Please choose MT system");	
-		    			new ActionTranslate(m_xContext, client, userData).show();
-		    		}
-		    		else {
+					}
+					else if(action.equals("actionReplace")){
 		    			new ActionReplace(m_xContext, client).process(systemID);
-		    		}
-	    			break;
-		    	case "actionAuth":
-		    		configDialog.show(false);
-	    			break;
-		    	default:
-		    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
-	    	}
+					}
+					else if(action.equals("actionTranslateDocument")){
+			    		new ActionTranslateDocument(m_xContext, client).show(systemID);
+					}
+					else {
+			    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);
+			    	}
+				}
+			}
+			
 		}
 	}
 }
