@@ -42,24 +42,25 @@ public class ActionTranslate implements XDialogEventHandler {
 	private XDialog dialog;
 	private XComponentContext xContext;
 	/** Known actions to react to */
-	private static final String actionClose = "actionClose";
-	private static final String actionTranslate = "translateNow";
-	private static final String actionInsert = "insertNow";
-	private static final String actionChangeSourceLang = "changeSourceLang";
-	private static final String actionChangeTargetLang = "changeTargetLang";
-	private static final String actionChangeDomain = "changeDomain";
+	private final String actionClose = "actionClose";
+	private final String actionTranslate = "translateNow";
+	private final String actionInsert = "insertNow";
+	private final String actionChangeSourceLang = "changeSourceLang";
+	private final String actionChangeTargetLang = "changeTargetLang";
+	private final String actionChangeDomain = "changeDomain";
 
 	/** Array of supported actions */
 	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert, actionChangeSourceLang, actionChangeTargetLang, actionChangeDomain };
 	/** Dialog fields */
-	private static XTextComponent sourceTextField;
-	private static XTextComponent targetTextField;
-	private static XListBox sourceLanguageBox;
-	private static XListBox targetLanguageBox;
-	private static XListBox domainBox;
-	private static String savedSourceLang = "";
-	private static String savedTargetLang = "";
-	private static String savedDomain = "";
+	private XTextComponent sourceTextField;
+	private XTextComponent targetTextField;
+	private XListBox sourceLanguageBox;
+	private XListBox targetLanguageBox;
+	private XListBox domainBox;
+	private String savedSourceLang = "";
+	private String savedTargetLang = "";
+	private String savedDomain = "";
+	private Boolean silentSelection = false;
 	
 	private TildeMTUserData userData;
 	
@@ -89,7 +90,12 @@ public class ActionTranslate implements XDialogEventHandler {
 		savedTargetLang = targetLanguageBox.getSelectedItem();
 		savedDomain = domainBox.getSelectedItem();
 
-		Configuration.setSystemID(getSystemID(savedSourceLang, savedTargetLang, savedDomain));
+		logger.info("--- Saving system configuration ---");
+		logger.info("Source language:\t" + savedSourceLang);
+		logger.info("Target language:\t" + savedTargetLang);
+		logger.info("Domain:\t" + savedDomain);
+		
+		Configuration.setSystemID(getSystemID());
 	}
 
 	/**
@@ -100,7 +106,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	 */
 	private void onTranslateButtonPressed() throws Exception {
 		getFields();
-		String systemID = getSystemID(sourceLanguageBox.getSelectedItem(), targetLanguageBox.getSelectedItem(), domainBox.getSelectedItem());
+		String systemID = getSystemID();
 		String text = sourceTextField.getText();
 		
 		targetTextField.setText(this.apiClient.Translate(systemID, text).get());
@@ -115,12 +121,12 @@ public class ActionTranslate implements XDialogEventHandler {
 		if (!targetTextField.getText().equals("")) {
 			com.sun.star.text.XTextDocument xTextDoc = DocumentHelper.getCurrentDocument(xContext);
 			com.sun.star.frame.XController xController = xTextDoc.getCurrentController();
-			com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier = DocumentHelper
-					.getCursorSupplier(xController);
+			com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier = DocumentHelper.getCursorSupplier(xController);
 			com.sun.star.text.XTextViewCursor xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
 
 			xTextViewCursor.setString(targetTextField.getText());
-		} else {
+		} 
+		else {
 			DialogHelper.showInfoMessage(this.xContext, null, "Please translate text you wish to replace");
 		}
 	}
@@ -131,41 +137,51 @@ public class ActionTranslate implements XDialogEventHandler {
 	 * for the new source language it stays the same. Else it is set to the first
 	 * one in the list.
 	 */
-	private void onSourceLangChanged() {
+	private void onQueryChanged() {
+		logger.info("Source language changed");
+		
+		silentSelection = true;
 		getFields();
 		
 		String selectedSourceLang = sourceLanguageBox.getSelectedItem();
+		savedSourceLang = selectedSourceLang;
+		
 		String selectedTargetLang = targetLanguageBox.getSelectedItem();
 		String selectedDomain = domainBox.getSelectedItem();
 		
-		SortedSet<String> domains = getDomains(selectedSourceLang, selectedTargetLang);
 		SortedSet<String> targetLanguages = getTargetLanguages(selectedSourceLang);
-
-		domainBox.removeItems((short)0, domainBox.getDropDownLineCount());
-		domainBox.addItems(domains.toArray(String[]::new), (short) domains.size());
 		
 		targetLanguageBox.removeItems((short)0, targetLanguageBox.getDropDownLineCount());
 		targetLanguageBox.addItems(targetLanguages.toArray(String[]::new), (short) targetLanguages.size());
-
-		domainBox.setDropDownLineCount((short) domains.size());
 		targetLanguageBox.setDropDownLineCount((short) targetLanguages.size());
-		sourceLanguageBox.setDropDownLineCount((short) getSourceLanguages().length);
 		
 		if(targetLanguages.contains(selectedTargetLang)) {
 			targetLanguageBox.selectItem(selectedTargetLang, true);
+			savedTargetLang = selectedTargetLang;
 		}
 		else {
 			targetLanguageBox.selectItemPos((short) 0, true);
+			savedTargetLang = targetLanguageBox.getItems()[0];
 		}
+		
+		SortedSet<String> domains = getDomains(selectedSourceLang, savedTargetLang);
+		
+		domainBox.removeItems((short)0, domainBox.getDropDownLineCount());
+		domainBox.addItems(domains.toArray(String[]::new), (short) domains.size());
+		domainBox.setDropDownLineCount((short) domains.size());
 		
 		if(domains.contains(selectedDomain)) {
 			domainBox.selectItem(selectedDomain, true);
+			savedDomain = selectedDomain;
 		}
 		else {
 			domainBox.selectItemPos((short) 0, true);
+			savedDomain = domainBox.getItems()[0];
 		}
 		
 		saveConfiguration();
+		
+		silentSelection = false;
 	}
 
 	/**
@@ -177,12 +193,6 @@ public class ActionTranslate implements XDialogEventHandler {
 		sourceLanguageBox = DialogHelper.getListBox(this.dialog, "SourceLanguages");
 		targetLanguageBox = DialogHelper.getListBox(this.dialog, "TargetLanguages");
 		domainBox = DialogHelper.getListBox(this.dialog, "Domains");
-
-		logger.info("--------");
-		logger.info("Translation text:\t" + sourceTextField.getText());
-		logger.info("Source language:\t" + sourceLanguageBox.getSelectedItem());
-		logger.info("Target language:\t" + targetLanguageBox.getSelectedItem());
-		logger.info("To Domain:\t" + domainBox.getSelectedItem());
 	}
 
 	/**
@@ -193,7 +203,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	 * @param targetLang
 	 * @return String containing system id
 	 */
-	private String getSystemID(String selectedSourceLang, String selectedTargetLang, String selectedDomain) {
+	private String getSystemID() {
 		TildeMTSystem[] systems = this.apiClient.GetSystemList().System;
 
 		for (int i = 0; i < systems.length; i++) {
@@ -203,7 +213,7 @@ public class ActionTranslate implements XDialogEventHandler {
 			String domain = system.getDomain();
 			
 			// check whether languages fit
-			if (sourceLang.equals(selectedSourceLang) && targetLang.equals(selectedTargetLang) && domain.equals(selectedDomain) && system.IsAvailable()){
+			if (sourceLang.equals(savedSourceLang) && targetLang.equals(savedTargetLang) && domain.equals(savedDomain) && system.IsAvailable()){
 				return system.getID();
 			}
 		}
@@ -259,6 +269,7 @@ public class ActionTranslate implements XDialogEventHandler {
 				}
 			}
 			sourceLangBoxProps.setPropertyValue("SelectedItems", selectedNr);
+			this.savedSourceLang = selectedSourceLanguage;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -280,6 +291,7 @@ public class ActionTranslate implements XDialogEventHandler {
 				}
 			}
 			targetLangBoxProps.setPropertyValue("SelectedItems", selectedNr);
+			this.savedTargetLang = selectedTargetLanguage;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -289,14 +301,17 @@ public class ActionTranslate implements XDialogEventHandler {
 		XPropertySet domainBoxProps = UnoRuntime.queryInterface(XPropertySet.class, domainBoxControl.getModel());
 		try {
 			domainBoxProps.setPropertyValue("StringItemList", domains);
+			String selectedDomain = domains[0];
 			short[] selectedNr = new short[] { (short) 0 };
 			for (int i = 0; i < domains.length; i++) {
 				if (domains[i].contentEquals(savedDomain)) {
 					selectedNr[0] = (short) i;
+					selectedDomain = savedDomain;
 					break;
 				}
 			}
 			domainBoxProps.setPropertyValue("SelectedItems", selectedNr);
+			this.savedDomain = selectedDomain;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -391,15 +406,21 @@ public class ActionTranslate implements XDialogEventHandler {
 			onInsertButtonPressed();
 			return true;
 		} else if (methodName.contentEquals(actionChangeSourceLang)) {
-			onSourceLangChanged();
+			if(!silentSelection) {
+				onQueryChanged();
+			}
 			return true;
 		}
 		else if (methodName.contentEquals(actionChangeTargetLang)) {
-			saveConfiguration();
+			if(!silentSelection) {
+				onQueryChanged();
+			}
 			return true;
 		}
 		else if (methodName.contentEquals(actionChangeDomain)) {
-			saveConfiguration();
+			if(!silentSelection) {
+				saveConfiguration();
+			}
 			return true;
 		}
 		return false; // Event was not handled
