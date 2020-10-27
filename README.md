@@ -58,3 +58,8 @@ This extension provides functionality to translate Libre Office documents with `
 ## Distribution / Testing
 
 * Built extension is located in `/dist/*.oxt`. You can double click it and it should automatically open install wizard in Libre Office.
+
+## TODO
+* Proper build process for CI, probably through `gradle`
+* java libraries shall be versioned properly
+* Localization of texts

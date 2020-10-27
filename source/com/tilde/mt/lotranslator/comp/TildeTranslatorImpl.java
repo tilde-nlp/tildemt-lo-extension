@@ -66,8 +66,9 @@ public final class TildeTranslatorImpl extends WeakBase
         int len = m_serviceNames.length;
 
         for( int i=0; i < len; i++) {
-            if (sService.equals(m_serviceNames[i]))
+            if (sService.equals(m_serviceNames[i])) {
                 return true;
+            }
         }
         return false;
     }
@@ -134,7 +135,7 @@ public final class TildeTranslatorImpl extends WeakBase
 		    			new ActionReplace(m_xContext, client, systemID).show();
 					}
 					else if(action.equals("actionTranslateDocument")){
-			    		new ActionTranslateDocument(m_xContext, client).show(systemID);
+			    		new ActionTranslateDocument(m_xContext, client, systemID).show();
 					}
 					else {
 			    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);

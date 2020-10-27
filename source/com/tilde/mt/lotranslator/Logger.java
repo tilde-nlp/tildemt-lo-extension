@@ -1,7 +1,7 @@
 package com.tilde.mt.lotranslator;
 
 /**
- * Console logging helper
+ * Console logging helper for simple logging in Eclipse console
  * @author guntars.puzulis
  *
  */

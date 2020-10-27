@@ -1,5 +1,10 @@
 package com.tilde.mt.lotranslator.models;
 
+/**
+ * Document translation result
+ * @author guntars.puzulis
+ *
+ */
 public class TildeMTDocTranslateState extends TildeMTError{
     public String Filename;
     public String Id;

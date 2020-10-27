@@ -13,6 +13,11 @@ import com.tilde.mt.lotranslator.helper.ContentHelper;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 import com.tilde.mt.lotranslator.models.TildeMTTranslation;
 
+/**
+ * Action to display dialog with translation progress and cancel it.
+ * @author guntars.puzulis
+ *
+ */
 public abstract class ActionTranslateWithProgress implements XDialogEventHandler {
 	private XComponentContext xContext;
 	protected XDialog dialog;

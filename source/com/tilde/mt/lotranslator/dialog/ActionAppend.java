@@ -5,6 +5,11 @@ import com.sun.star.uno.XComponentContext;
 import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.helper.DocumentHelper;
 
+/**
+ * Action for direct translation and insertion of translation result after selected text in document
+ * @author guntars.puzulis
+ *
+ */
 public class ActionAppend extends ActionTranslateWithProgress {
 	private XComponentContext xContext;
 

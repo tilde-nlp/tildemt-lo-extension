@@ -8,12 +8,18 @@ import com.sun.star.uno.XComponentContext;
 import com.tilde.mt.lotranslator.Logger;
 import com.tilde.mt.lotranslator.models.SelectedText;
 
+/**
+ * Helper class for document text content.
+ * @author guntars.puzulis
+ *
+ */
 public class ContentHelper {
 	private static Logger logger = new Logger(ContentHelper.class.getName());
+
 	/**
-	 * Gets the user translatable input text
-	 *
-	 * @return	String that user wrote in dialog's translation box
+	 * Get current text selection
+	 * @param xContext
+	 * @return
 	 */
 	public static SelectedText getSelectedText(XComponentContext xContext) {
 		SelectedText selection = new SelectedText();
@@ -42,6 +48,11 @@ public class ContentHelper {
 		return selection;
 	}
 
+	/**
+	 * Get current text newline type - [\n|\r\n] a.k.a. [Unix|Win]
+	 * @param text
+	 * @return
+	 */
 	public static String getTextNewlineType(String text) {
 		String newLine = "\n";
 		if(text.indexOf("\r\n") > -1) {

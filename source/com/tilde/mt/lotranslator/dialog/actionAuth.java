@@ -10,23 +10,32 @@ import com.tilde.mt.lotranslator.Configuration;
 import com.tilde.mt.lotranslator.LetsMTConfiguration;
 import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
+import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 
+/**
+ * Authentication of users with custom clientID
+ * @author guntars.puzulis
+ *
+ */
 public class actionAuth implements XDialogEventHandler{
+	private XComponentContext xContext;
 	private XDialog dialog = null;
+	/** Dialog events */
 	private static final String actionSignIn = "signInAction";
 	private static final String actionSignOut = "signOutAction";
-	/** String of known actions */
 	private String[] supportedActions = new String[] { actionSignIn, actionSignOut };
-	/** User entered client id */
-	private String id;
+
 	private Boolean isPrivateConfig;
 	
-	private XComponentContext xContext;
-
 	public actionAuth (XComponentContext xContext) {
 		this.xContext = xContext;
 	}
 
+	/**
+	 * Get UI dialog for different scenarios [authenticated | non-authenticated | invalid-authentication]
+	 * @param authIsNotValid
+	 * @return
+	 */
 	private XDialog getDialog(Boolean authIsNotValid) {
 		isPrivateConfig = Configuration.IsPrivateConfiguration();
 		XDialog dialog;
@@ -60,6 +69,9 @@ public class actionAuth implements XDialogEventHandler{
 		dialog.execute();
 	}
 
+	/**
+	 * Sign out user
+	 */
 	private void signOut() {
 		LetsMTConfiguration config = Configuration.Read();
 		config.ClientID = null;
@@ -68,20 +80,17 @@ public class actionAuth implements XDialogEventHandler{
 	}
 	
 	/**
-	 * When user presses button, input id is checked.
-	 * If it's valid, then it is saved in a file and set to variable.
-	 *   Dialog has ended and user can use translation services.
-	 * If id is not valid, user has to try again in order to
-	 *   translate anything. Info field is set to explain.
+	 * Sign in user with clientID that user has provided
 	 */
 	private void signIn() {
 		XTextComponent idField = DialogHelper.getEditField( this.dialog, "clientIDField" );
-		id = idField.getText();
+		String userClientID = idField.getText();
 		
-		TildeMTClient client = new TildeMTClient(id);
-		if(client.GetSystemList() != null) {
+		TildeMTClient client = new TildeMTClient(userClientID);
+		TildeMTSystemList systemList = client.GetSystemList();
+		if(systemList != null && systemList.System != null) {
 			LetsMTConfiguration config = new LetsMTConfiguration();
-			config.ClientID = id;
+			config.ClientID = userClientID;
 			
 			Configuration.Write(config);
 			

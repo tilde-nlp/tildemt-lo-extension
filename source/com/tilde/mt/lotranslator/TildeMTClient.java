@@ -21,6 +21,11 @@ import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 import com.tilde.mt.lotranslator.models.TildeMTTranslation;
 import com.tilde.mt.lotranslator.models.TildeMTUserData;
 
+/**
+ * API wrapper for Tilde MT API in Java
+ * @author guntars.puzulis
+ *
+ */
 public class TildeMTClient {
 	private String ClientID = null;
     
@@ -29,6 +34,9 @@ public class TildeMTClient {
     private final Logger logger = new Logger(this.getClass().getName());
     private final Gson gson = new Gson();
     
+    /**
+     * System list cache, quick optimization as this extension will not be in memory for long anyways.
+     */
     private TildeMTSystemList cachedSystemList = null;
     
     public TildeMTClient(String clientID) {
@@ -36,7 +44,7 @@ public class TildeMTClient {
     }
     
 	public CompletableFuture<TildeMTTranslation> Translate(String systemID, String inputText) {
-		logger.info(String.format("translate text: system: %s, text: %s", systemID, inputText));
+		logger.info(String.format("Translate... system: %s, text: %s", systemID, inputText));
 		
 		String url = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", 
 			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), 
@@ -47,28 +55,28 @@ public class TildeMTClient {
 		return this.Request(url, false, null).thenApply(rawResult -> {
 			TildeMTTranslation result = gson.fromJson(rawResult, TildeMTTranslation.class);
 			
-			logger.info(String.format("translation: %s", rawResult));
+			logger.info("Translate: " + rawResult);
 			return result;
 		});
 	}
 
 	public CompletableFuture<TildeMTUserData> GetUserData(){
-		logger.info(String.format("fetching user data..."));
+		logger.info(String.format("GetUserData..."));
 		
 		String url = String.format(this.TranslationAPI + "/GetUserInfo?appID=%s", 
 			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8)
 		);
 		
-		return this.Request(url, false, null).thenApply(data -> {
-			TildeMTUserData userData = gson.fromJson(data, TildeMTUserData.class);
+		return this.Request(url, false, null).thenApply(rawData -> {
+			TildeMTUserData userData = gson.fromJson(rawData, TildeMTUserData.class);
 			
-			logger.info(String.format("user data: %s", userData));
+			logger.info("GetUserData: " + rawData);
 			return userData;
 		});
 	}
 	
 	public CompletableFuture<ErrorResult<byte[]>> DownloadDocumentTranslation(String documentID){
-		logger.info("Download document translation");
+		logger.info("DownloadDocumentTranslation...");
 
 		String url = String.format(this.TranslationAPI + "/DownloadDocumentTranslation?appID=%s&id=%s", 
 			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8),
@@ -85,24 +93,20 @@ public class TildeMTClient {
 				result.Result = gson.fromJson(rawResult, byte[].class);
 			}
 			
-			logger.info(String.format("DocTranslate result: %s", result));
+			logger.info(String.format("DocTranslate: %s", result));
 			return result;
 		});
 	}
 
 	public CompletableFuture<ErrorResult<String>> StartDocumentTranslation(TildeMTStartDocTranslate data){
-		logger.info("Start document translation");
+		logger.info("StartDocumentTranslation...");
 		
 		data.AppID = this.AppID;
 		String reqData = gson.toJson(data);
 		
 		String url = String.format(this.TranslationAPI + "/StartDocumentTranslation");
 		
-		return this.Request(
-			url, 
-			true, 
-			reqData
-		).thenApply(rawResult -> {
+		return this.Request(url, true, reqData).thenApply(rawResult -> {
 			ErrorResult<String> result = new ErrorResult<String>();
 			
 			try {
@@ -113,13 +117,13 @@ public class TildeMTClient {
 				result.Result = rawResult.replace("\"", "");
 			}
 			
-			logger.info(String.format("DocTranslate result: %s", result));
+			logger.info(String.format("StartDocumentTranslation: %s", rawResult));
 			return result;
 		});
 	}
 	
 	public CompletableFuture<TildeMTDocTranslateState> GetDocumentTranslationState(String documentID){
-		logger.info("Document translation status");
+		logger.info("GetDocumentTranslationState...");
 
 		String url = String.format(this.TranslationAPI + "/GetDocumentTranslationState?appID=%s&id=%s", 
 			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8),
@@ -129,25 +133,23 @@ public class TildeMTClient {
 		return this.Request(url, false, null).thenApply(rawResult -> {
 			TildeMTDocTranslateState result = gson.fromJson(rawResult, TildeMTDocTranslateState.class);
 
-			logger.info(String.format("DocTranslate result: %s", result));
+			logger.info(String.format("GetDocumentTranslationState: %s", rawResult));
 			return result;
 		});
 	}
 	
-
 	public TildeMTSystemList GetSystemList() {
 		if(cachedSystemList == null) {
-			logger.info(String.format("Get systems"));
+			logger.info(String.format("GetSystemList..."));
 		
 			String systems;
 			try {
-				// TODO: convert GetSystemList to non-blocking
 				systems = this.Request(this.TranslationAPI + "/GetSystemList?appID=" + URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), false, null).get();
 				
 				if(systems != null && !systems.equals("")) {
 					TildeMTSystemList systemList = gson.fromJson(systems, TildeMTSystemList.class);
-					logger.info(systems);
-					logger.info(String.format("Systems found: %s", systemList.System.length));
+
+					logger.info(String.format("GetSystemList: ", systems));
 					this.cachedSystemList = systemList;
 					return systemList;
 				}

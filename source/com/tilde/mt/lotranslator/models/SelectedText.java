@@ -13,6 +13,6 @@ public class SelectedText {
 	
 	@Override
     public String toString() {
-		return String.format("Selected text [Locale: %s, Text: %s]", Locale.Language, Text);
+		return String.format("%s [Locale: %s, Text: %s]", this.getClass().getSimpleName(), Locale.Language, Text);
 	}
 }

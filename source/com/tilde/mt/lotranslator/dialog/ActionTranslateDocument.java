@@ -32,36 +32,30 @@ import com.tilde.mt.lotranslator.models.TildeMTDocTranslateState;
 import com.tilde.mt.lotranslator.models.TildeMTStartDocTranslate;
 
 /**
- * This action opens a set up (MT system's ID) and translation dialog. From here
- * user can change translation languages and insert the translated text in the
- * selected area of the text.
+ * Dialog where user can translate whole document automatically and then open it in new window. 
+ * @author guntars.puzulis
  *
- * @author arta.zena
  */
 
 public class ActionTranslateDocument implements XDialogEventHandler {
-
-	/** Translate dialog */
 	private XDialog dialog;
 	private XComponentContext xContext;
-	/** Known actions to react to */
+	private XTextDocument document;
+	/** Dialog events */
 	private static String cancelTranslationAction = "cancelTranslationAction";
 	private static String statusTranslationAction = "statusTranslationAction";
-
-	/** Array of supported actions */
 	private String[] supportedActions = new String[] { cancelTranslationAction, statusTranslationAction };
 	/** Dialog fields */
-
-	private XTextDocument document;
+	private XFixedText progressInfoLabel = null;
+	
 	private Boolean translationStarted = false;
 	private TildeMTClient apiClient;
-
 	private String documentPath = null;
 	private String translationDocumentID = null;
 	private Boolean initialized = false;	
-	private XFixedText progressInfoLabel = null;
 	private Boolean disposed = false;
 	private CompletableFuture<Void> statusCheck = null;
+	private String systemID;
 	/**
 	 * Refresh interval in seconds
 	 */
@@ -69,14 +63,18 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 	
 	private Logger logger = new Logger(this.getClass().getName());
 
-	public ActionTranslateDocument(XComponentContext xContext, TildeMTClient apiClient) {
+	public ActionTranslateDocument(XComponentContext xContext, TildeMTClient apiClient, String systemID) {
 		this.dialog = DialogHelper.createDialog("DocumentTranslationDialog.xdl", xContext, this);
 		this.xContext = xContext;
 		this.apiClient = apiClient;
 		this.document = DocumentHelper.getCurrentDocument(xContext);
+		this.systemID = systemID;
 	}
 
-	public void show(String systemID) {
+	/**
+	 * Show dialog and translate current file
+	 */
+	public void show() {
 		if (startTranslation(systemID)) {
 			dialog.execute();
 			// make sure that translation is stopped when we close dialog.
@@ -185,6 +183,12 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 		return false;
 	}
 
+	/**
+	 * Send document to translation API
+	 * @param documentPath
+	 * @param systemID
+	 * @return
+	 */
 	private Boolean sendDocumentToTranslation(String documentPath, String systemID) {
 		String filename = getDocumentTitle();
 		
@@ -194,6 +198,7 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 
 			reqData.Content = new short[fileContent.length]; //new byte[] { 65, 65, 65 };
 			
+			// In Java, byte is signed version, but as translation API is written in c#, we need unsigned bytes
 			for(int i = 0; i < fileContent.length; i++) {
 				reqData.Content[i] = (short) Byte.toUnsignedInt(fileContent[i]);
 			}
@@ -250,8 +255,11 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 		 */
 	}
 
+	/**
+	 * Save and open translated document
+	 */
 	private void showTranslatedDocument() {
-		logger.info("Displaying translated document");
+		logger.info("Displaying translated document...");
 		
 		ErrorResult<byte[]> result = null;
 		try {
@@ -277,8 +285,6 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 			Path path = Path.of(String.join(".", splittedPath));
 			logger.info("Translated file location: " + path.toString());
 			
-			logger.info(translatedFileContents.toString());
-			
 			try {
 				Files.write(path, translatedFileContents);
 				
@@ -291,6 +297,9 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 		dialog.endExecute();
 	}
 	
+	/**
+	 * Cancel translation
+	 */
 	private void stopTranslation() {
 		if(disposed) {
 			logger.info("Already disposed");
@@ -310,6 +319,10 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 		dialog.endExecute();
 	}
 
+	/**
+	 * Update translation status in dialog
+	 * @return
+	 */
 	private CompletableFuture<Void> updateStatus() {
 		return CompletableFuture.runAsync(() -> {
 			while (true) {
@@ -327,7 +340,7 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 						break;
 					}
 					else if(status.Status.equals("error")) {
-						DialogHelper.showErrorMessage(xContext, dialog, String.format("Error: %s", status.ErrorCode));
+						DialogHelper.showErrorMessage(xContext, dialog, String.format("Error: %s", status.toErrorMessage()));
 						this.dialog.endExecute();
 						break;
 					}

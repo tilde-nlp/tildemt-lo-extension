@@ -6,20 +6,25 @@ import java.io.FileWriter;
 import java.io.Writer;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 public class Configuration {
 	/**
 	 * This is public client id which is fallback when there are no private clientId set.
+	 * This shall be set in build time.
 	 */
 	private static final String publicClientID = "x-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx";
 	
 	private static final Logger logger = new Logger(Configuration.class.getName());
 	private static final String configurationFile = System.getProperty("user.home") + File.separator + ".tildeConfiguration.json";
+	private static final Gson gson = new Gson();
 	
 	private static String systemID = null;
 
+	/**
+	 * Configuration file exists
+	 * @return
+	 */
 	private static Boolean Exists() {
 		File f = new File(configurationFile);
 		if(f.exists() && !f.isDirectory()) { 
@@ -28,16 +33,25 @@ public class Configuration {
 		return false;
 	}
 	
-	public static void Write(LetsMTConfiguration config) {
+	/**
+	 * Write configuration to permanent storage
+	 * @param config
+	 */
+	public static Boolean Write(LetsMTConfiguration config) {
 		try (Writer writer = new FileWriter(configurationFile)) {
-		    Gson gson = new GsonBuilder().create();
 		    gson.toJson(config, writer);
+		    return true;
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
+	/**
+	 * Read configuration from permanent storage
+	 * @return
+	 */
 	public static LetsMTConfiguration Read() {
 		logger.info("Reading configuration...");
 		logger.info(String.format("Configuration file: %s", configurationFile));
@@ -46,7 +60,6 @@ public class Configuration {
 		LetsMTConfiguration config = new LetsMTConfiguration();
 		if(Exists()) {
 			try {
-				Gson gson = new Gson();
 				JsonReader reader = new JsonReader(new FileReader(configurationFile));
 				config = gson.fromJson(reader, LetsMTConfiguration.class);
 			}
@@ -80,11 +93,19 @@ public class Configuration {
 		return config.ClientID != Configuration.publicClientID;
 	}
 	
+	/**
+	 * Save MT system id for current document session
+	 * @param systemID
+	 */
 	public static void setSystemID(String systemID) {
 		logger.info(String.format("Set active system id: %s", systemID));
 		Configuration.systemID = systemID;
 	}
 	
+	/**
+	 * Read MT system for this document session
+	 * @return
+	 */
 	public static String getSystemID() {
 		logger.info(String.format("Active system id: %s", Configuration.systemID));
 		return Configuration.systemID;

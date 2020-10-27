@@ -28,28 +28,23 @@ import com.tilde.mt.lotranslator.models.SelectedText;
 import com.tilde.mt.lotranslator.models.TildeMTSystem;
 import com.tilde.mt.lotranslator.models.TildeMTUserData;
 
+
 /**
- * This action opens a set up (MT system's ID) and translation dialog. From here
- * user can change translation languages and insert the translated text in the
- * selected area of the text.
+ * Translation workspace dialog with ability to choose MT system and translate custom texts.
+ * @author guntars.puzulis, arta.zena
  *
- * @author arta.zena
  */
-
 public class ActionTranslate implements XDialogEventHandler {
-
-	/** Translate dialog */
 	private XDialog dialog;
 	private XComponentContext xContext;
-	/** Known actions to react to */
+	private XControlContainer m_xControlContainer;
+	/** Dialog events */
 	private final String actionClose = "actionClose";
 	private final String actionTranslate = "translateNow";
 	private final String actionInsert = "insertNow";
 	private final String actionChangeSourceLang = "changeSourceLang";
 	private final String actionChangeTargetLang = "changeTargetLang";
 	private final String actionChangeDomain = "changeDomain";
-
-	/** Array of supported actions */
 	private String[] supportedActions = new String[] { actionClose, actionTranslate, actionInsert, actionChangeSourceLang, actionChangeTargetLang, actionChangeDomain };
 	/** Dialog fields */
 	private XTextComponent sourceTextField;
@@ -57,19 +52,15 @@ public class ActionTranslate implements XDialogEventHandler {
 	private XListBox sourceLanguageBox;
 	private XListBox targetLanguageBox;
 	private XListBox domainBox;
+	
 	private String savedSourceLang = "";
 	private String savedTargetLang = "";
 	private String savedDomain = "";
 	private Boolean silentSelection = false;
-	
 	private TildeMTUserData userData;
-	
 	private HashMap<String, String> namedSourceLangCodes = new HashMap<String, String>();
 	
-	private XControlContainer m_xControlContainer;
-
 	private TildeMTClient apiClient;
-
 	private Logger logger = new Logger(this.getClass().getName());
 
 	public ActionTranslate(XComponentContext xContext, TildeMTClient apiClient, TildeMTUserData userData) {
@@ -98,13 +89,11 @@ public class ActionTranslate implements XDialogEventHandler {
 		Configuration.setSystemID(getSystemID());
 	}
 
+
 	/**
-	 * If selected system exists, sends input text to the translation class and sets
-	 * returned value to appear in output text field.
-	 *
-	 * @throws Exception getting translation failed
+	 * Translate user text
 	 */
-	private void onTranslateButtonPressed() throws Exception {
+	private void onTranslateButtonPressed() {
 		getFields();
 		String systemID = getSystemID();
 		String text = sourceTextField.getText();
@@ -121,8 +110,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	
 
 	/**
-	 * If translation is not empty, get the cursor and insert translated text where
-	 * the it is located in the document Else do nothing
+	 * Insert translation in document where user cursor is
 	 */
 	private void onInsertButtonPressed() {
 		if (!targetTextField.getText().equals("")) {
@@ -139,13 +127,10 @@ public class ActionTranslate implements XDialogEventHandler {
 	}
 
 	/**
-	 * When source language is changed, target language list box is updated to fit
-	 * the new source language. If previously set target language is available also
-	 * for the new source language it stays the same. Else it is set to the first
-	 * one in the list.
+	 * When query parameters [srcLang|trgLang|domain] changes, update other fields, so that together query makes valid MT system.
 	 */
 	private void onQueryChanged() {
-		logger.info("Source language changed");
+		logger.info("Query changed...");
 		
 		silentSelection = true;
 		getFields();
@@ -232,7 +217,6 @@ public class ActionTranslate implements XDialogEventHandler {
 
 	/**
 	 * Adds available system language lists to list boxes before the dialog is open.
-	 *
 	 */
 	private void configureInitialSetup() {
 		XFixedText userGroupLabel = DialogHelper.getLabel(dialog, "userGroupLabel");
@@ -326,6 +310,12 @@ public class ActionTranslate implements XDialogEventHandler {
 		saveConfiguration();
 	}
 
+	/**
+	 * Get all available domains for currently selected sourceLanguage and targetLanguage
+	 * @param selectedSourceLang
+	 * @param selectedTargetLang
+	 * @return
+	 */
 	private SortedSet<String> getDomains(String selectedSourceLang, String selectedTargetLang) {
 		TildeMTSystem[] systems = this.apiClient.GetSystemList().System;
 		
@@ -346,11 +336,9 @@ public class ActionTranslate implements XDialogEventHandler {
 	}
 	
 	/**
-	 * Based on given source language returns non-repeating language list with all
-	 * available target languages for systems that are running.
-	 *
+	 * Get all available target languages for currently selected sourceLanguage
 	 * @param selectedSourceLang
-	 * @return String array with target languages
+	 * @return
 	 */
 	private SortedSet<String> getTargetLanguages(String selectedSourceLang) {
 		TildeMTSystem[] systems = this.apiClient.GetSystemList().System;
@@ -371,9 +359,8 @@ public class ActionTranslate implements XDialogEventHandler {
 	}
 
 	/**
-	 * Extracts available source languages that have at least one running system.
-	 * 
-	 * @return String[] with non-repeating source languages
+	 * Get all available sourceLanguages
+	 * @return
 	 */
 	private String[] getSourceLanguages() {
 		TildeMTSystem[] systems = this.apiClient.GetSystemList().System;
@@ -403,11 +390,7 @@ public class ActionTranslate implements XDialogEventHandler {
 			dialog.endExecute();
 			return true;
 		} else if (methodName.equals(actionTranslate)) {
-			try {
-				onTranslateButtonPressed();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			onTranslateButtonPressed();
 			return true;
 		} else if (methodName.equals(actionInsert)) {
 			onInsertButtonPressed();
