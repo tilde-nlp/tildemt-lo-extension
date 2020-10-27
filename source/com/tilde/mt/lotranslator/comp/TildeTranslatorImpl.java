@@ -128,10 +128,10 @@ public final class TildeTranslatorImpl extends WeakBase
 				}
 				else {
 					if(action.equals("actionAppend")){
-		    			new ActionAppend(m_xContext, client).process(systemID);
+		    			new ActionAppend(m_xContext, client, systemID).show();
 					}
 					else if(action.equals("actionReplace")){
-		    			new ActionReplace(m_xContext, client).process(systemID);
+		    			new ActionReplace(m_xContext, client, systemID).show();
 					}
 					else if(action.equals("actionTranslateDocument")){
 			    		new ActionTranslateDocument(m_xContext, client).show(systemID);

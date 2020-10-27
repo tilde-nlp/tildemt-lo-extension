@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dlg:window PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "dialog.dtd">
+<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="SignInDialog" dlg:left="163" dlg:top="55" dlg:width="155" dlg:height="65" dlg:closeable="true" dlg:moveable="true" dlg:title="VU Translator - Progress">
+    <dlg:bulletinboard>
+
+        <dlg:text dlg:id="infoField" dlg:tab-index="1" dlg:left="10" dlg:top="10" dlg:width="120" dlg:height="11" dlg:value="Translating text" />
+        <dlg:text dlg:id="inputDescription" dlg:tab-index="2" dlg:left="10" dlg:top="25" dlg:width="120" dlg:height="11" dlg:value="" />
+        
+        <dlg:button dlg:id="cancelTranslationButton" dlg:tab-index="4" dlg:left="90" dlg:top="40" dlg:width="50" dlg:height="12" dlg:value="Cancel">
+        	<script:event script:event-name="on-focus" script:macro-name="vnd.sun.star.UNO:dialogOpenAction" script:language="UNO" />
+            <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:dialogCancelAction" script:language="UNO" />
+        </dlg:button>
+        
+    </dlg:bulletinboard>
+</dlg:window>

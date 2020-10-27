@@ -4,15 +4,10 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +23,6 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.util.CloseVetoException;
-import com.sun.star.util.Date;
 import com.tilde.mt.lotranslator.Logger;
 import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
@@ -207,9 +201,9 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 			reqData.FileName = filename; // "test.txt";
 			reqData.SystemID = systemID;
 
-			ErrorResult result = this.apiClient.StartDocumentTranslation(reqData).get();
+			ErrorResult<String> result = this.apiClient.StartDocumentTranslation(reqData).get();
 			if (result.Result != null) {
-				translationDocumentID = (String) result.Result;
+				translationDocumentID = result.Result;
 				logger.info(String.format("Translation started, docid: %s", translationDocumentID));
 			} 
 			else {
@@ -259,7 +253,7 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 	private void showTranslatedDocument() {
 		logger.info("Displaying translated document");
 		
-		ErrorResult result = null;
+		ErrorResult<byte[]> result = null;
 		try {
 			result = this.apiClient.DownloadDocumentTranslation(translationDocumentID).get();
 		} catch (Exception e) {
@@ -267,7 +261,7 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 		}
 		
 		if(result.Error != null) {
-			DialogHelper.showErrorMessage(xContext, dialog, result.Error.ErrorCode);
+			DialogHelper.showErrorMessage(xContext, dialog, result.Error.toErrorMessage());
 		}
 		else {
 			byte[] translatedFileContents = (byte[])result.Result;

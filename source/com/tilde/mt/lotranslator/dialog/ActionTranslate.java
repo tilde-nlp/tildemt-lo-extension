@@ -109,7 +109,14 @@ public class ActionTranslate implements XDialogEventHandler {
 		String systemID = getSystemID();
 		String text = sourceTextField.getText();
 		
-		targetTextField.setText(this.apiClient.Translate(systemID, text).get());
+		this.apiClient.Translate(systemID, text).thenAccept((result) -> {
+			if(result.hasError()) {
+				DialogHelper.showErrorMessage(xContext, dialog, result.toErrorMessage());
+			}
+			else {
+				targetTextField.setText(result.translation);
+			}			
+		});
 	}
 	
 

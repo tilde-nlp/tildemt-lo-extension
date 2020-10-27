@@ -1,8 +1,33 @@
 package com.tilde.mt.lotranslator.models;
 
-public class ErrorResult {
-	public Object Result = null;
-	public TildeMTDocTranslateState Error = null;
+import com.google.gson.Gson;
+
+public class ErrorResult<T> {
+	public T Result = null;
+	public TildeMTError Error = null;
+	
+	public ErrorResult() {
+		
+	}
+	
+	public ErrorResult(String rawResult, Class<T> templateClass) {
+		
+		Gson gson = new Gson();
+		
+		try {
+			Result = gson.fromJson(rawResult, templateClass);
+		}
+		catch(Exception ex) {
+			Error = gson.fromJson(rawResult, TildeMTError.class);
+		}
+	}
+	
+	public Boolean hasError() {
+		if(Error == null || (Error.ErrorCode == 0 && Error.ErrorMessage.trim().equals(""))) {
+			return false;
+		}
+		return true;
+	}
 	
 	@Override
 	public String toString() {

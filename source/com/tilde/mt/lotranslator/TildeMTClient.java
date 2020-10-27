@@ -35,20 +35,20 @@ public class TildeMTClient {
     	this.ClientID = clientID;
     }
     
-	public CompletableFuture<String> Translate(String systemID, String inputText) {
+	public CompletableFuture<TildeMTTranslation> Translate(String systemID, String inputText) {
 		logger.info(String.format("translate text: system: %s, text: %s", systemID, inputText));
 		
 		String url = String.format(this.TranslationAPI + "/TranslateEx?appID=%s&systemID=%s&text=%s", 
-				URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), 
-				systemID, 
-				URLEncoder.encode(inputText, StandardCharsets.UTF_8)
+			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8), 
+			systemID, 
+			URLEncoder.encode(inputText, StandardCharsets.UTF_8)
 		);
 		
-		return this.Request(url, false, null).thenApply(translation -> {
-			TildeMTTranslation translated = gson.fromJson(translation, TildeMTTranslation.class);
+		return this.Request(url, false, null).thenApply(rawResult -> {
+			TildeMTTranslation result = gson.fromJson(rawResult, TildeMTTranslation.class);
 			
-			logger.info(String.format("translation: %s", translated.translation));
-			return translated.translation;
+			logger.info(String.format("translation: %s", rawResult));
+			return result;
 		});
 	}
 
@@ -56,7 +56,7 @@ public class TildeMTClient {
 		logger.info(String.format("fetching user data..."));
 		
 		String url = String.format(this.TranslationAPI + "/GetUserInfo?appID=%s", 
-				URLEncoder.encode(this.AppID, StandardCharsets.UTF_8)
+			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8)
 		);
 		
 		return this.Request(url, false, null).thenApply(data -> {
@@ -67,7 +67,7 @@ public class TildeMTClient {
 		});
 	}
 	
-	public CompletableFuture<ErrorResult> DownloadDocumentTranslation(String documentID){
+	public CompletableFuture<ErrorResult<byte[]>> DownloadDocumentTranslation(String documentID){
 		logger.info("Download document translation");
 
 		String url = String.format(this.TranslationAPI + "/DownloadDocumentTranslation?appID=%s&id=%s", 
@@ -76,11 +76,10 @@ public class TildeMTClient {
 		);
 		
 		return this.Request(url, false, null).thenApply(rawResult -> {
-			ErrorResult result = new ErrorResult();
+			ErrorResult<byte[]> result = new ErrorResult<byte[]>();
 			
 			try {
-				TildeMTDocTranslateState tildeError = gson.fromJson(rawResult, TildeMTDocTranslateState.class);
-				result.Error = tildeError;
+				result.Error = gson.fromJson(rawResult, TildeMTDocTranslateState.class);
 			}
 			catch(Exception ex) {
 				result.Result = gson.fromJson(rawResult, byte[].class);
@@ -91,7 +90,7 @@ public class TildeMTClient {
 		});
 	}
 
-	public CompletableFuture<ErrorResult> StartDocumentTranslation(TildeMTStartDocTranslate data){
+	public CompletableFuture<ErrorResult<String>> StartDocumentTranslation(TildeMTStartDocTranslate data){
 		logger.info("Start document translation");
 		
 		data.AppID = this.AppID;
@@ -104,7 +103,7 @@ public class TildeMTClient {
 			true, 
 			reqData
 		).thenApply(rawResult -> {
-			ErrorResult result = new ErrorResult();
+			ErrorResult<String> result = new ErrorResult<String>();
 			
 			try {
 				TildeMTDocTranslateState tildeError = gson.fromJson(rawResult, TildeMTDocTranslateState.class);

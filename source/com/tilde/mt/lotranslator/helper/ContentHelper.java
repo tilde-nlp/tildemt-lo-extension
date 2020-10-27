@@ -1,15 +1,11 @@
 package com.tilde.mt.lotranslator.helper;
 
-
-import java.util.ArrayList;
-
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.Locale;
 import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.uno.XComponentContext;
 import com.tilde.mt.lotranslator.Logger;
-import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.models.SelectedText;
 
 public class ContentHelper {
@@ -46,37 +42,12 @@ public class ContentHelper {
 		return selection;
 	}
 
-	/**
-	 * To avoid errors from "\n" characters in translatable text,
-	 * each paragraph is translated separately.
-	 * To make insertion of translated text as one step for user,
-	 * all translated paragraphs are combined in a single variable.
-	 */
-	public static String combineTranslatedParagraphs(XComponentContext xContext, TildeMTClient apiClient, String systemID)  {
-		ArrayList<String> result = new ArrayList<String>();
-		
-		String selectedText = ContentHelper.getSelectedText(xContext).Text;
+	public static String getTextNewlineType(String text) {
 		String newLine = "\n";
-		if(selectedText.indexOf("\r\n") > -1) {
+		if(text.indexOf("\r\n") > -1) {
 			newLine = "\r\n";
 		}
 		
-		if(selectedText.length() > 0) {
-			String paragraphs[] = selectedText.split("\\r?\\n");
-			int paragraphLength = paragraphs.length;
-			
-			for(int i = 0; i != paragraphLength; i++) {
-				String translation = "";
-				try {
-					translation = apiClient.Translate(systemID, paragraphs[i]).get();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				result.add(translation);
-			}
-		} 
-		
-		return String.join(newLine, result);
+		return newLine;
 	}
 }

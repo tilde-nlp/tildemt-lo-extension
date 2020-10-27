@@ -1,9 +1,6 @@
 package com.tilde.mt.lotranslator.models;
 
-public class TildeMTDocTranslateState {
-	public String ErrorCode;
-	public String ErrorMessage;
-	
+public class TildeMTDocTranslateState extends TildeMTError{
     public String Filename;
     public String Id;
     public int Segments;
