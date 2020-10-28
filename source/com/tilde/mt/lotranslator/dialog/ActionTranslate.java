@@ -62,6 +62,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	
 	private TildeMTClient apiClient;
 	private Logger logger = new Logger(this.getClass().getName());
+	private Boolean disposed = false;
 
 	public ActionTranslate(XComponentContext xContext, TildeMTClient apiClient, TildeMTUserData userData) {
 		this.dialog = DialogHelper.createDialog("TranslationDialog.xdl", xContext, this);
@@ -73,6 +74,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	public void show() {
 		configureInitialSetup();
 		dialog.execute();
+		disposed = true;
 	}
 
 	private void saveConfiguration() {
@@ -99,12 +101,14 @@ public class ActionTranslate implements XDialogEventHandler {
 		String text = sourceTextField.getText();
 		
 		this.apiClient.Translate(systemID, text).thenAccept((result) -> {
-			if(result.hasError()) {
-				DialogHelper.showErrorMessage(xContext, dialog, result.toErrorMessage());
+			if(!disposed) {
+				if(result.hasError()) {
+					DialogHelper.showErrorMessage(xContext, dialog, result.toErrorMessage());
+				}
+				else {
+					targetTextField.setText(result.translation);
+				}			
 			}
-			else {
-				targetTextField.setText(result.translation);
-			}			
 		});
 	}
 	
