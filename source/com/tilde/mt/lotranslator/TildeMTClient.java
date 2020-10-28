@@ -149,7 +149,7 @@ public class TildeMTClient {
 				if(systems != null && !systems.equals("")) {
 					TildeMTSystemList systemList = gson.fromJson(systems, TildeMTSystemList.class);
 
-					logger.info(String.format("GetSystemList: ", systems));
+					logger.info(String.format("GetSystemList: %s", systems));
 					this.cachedSystemList = systemList;
 					return systemList;
 				}
