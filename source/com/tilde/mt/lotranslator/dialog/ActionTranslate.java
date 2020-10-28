@@ -88,7 +88,8 @@ public class ActionTranslate implements XDialogEventHandler {
 		logger.info("Target language:\t" + savedTargetLang);
 		logger.info("Domain:\t" + savedDomain);
 		
-		Configuration.setSystemID(getSystemID());
+		
+		Configuration.setSystem(getCurrentSystemInfo());
 	}
 
 
@@ -97,10 +98,10 @@ public class ActionTranslate implements XDialogEventHandler {
 	 */
 	private void onTranslateButtonPressed() {
 		getFields();
-		String systemID = getSystemID();
+		TildeMTSystem system = getCurrentSystemInfo();
 		String text = sourceTextField.getText();
 		
-		this.apiClient.Translate(systemID, text).thenAccept((result) -> {
+		this.apiClient.Translate(system.getID(), text).thenAccept((result) -> {
 			if(!disposed) {
 				if(result.hasError()) {
 					DialogHelper.showErrorMessage(xContext, dialog, result.toErrorMessage());
@@ -124,6 +125,8 @@ public class ActionTranslate implements XDialogEventHandler {
 			com.sun.star.text.XTextViewCursor xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
 
 			xTextViewCursor.setString(targetTextField.getText());
+			
+			ContentHelper.setSelectedTextLanguage(xContext, Configuration.getSystem().getTargetLanguage().getCode());
 		} 
 		else {
 			DialogHelper.showInfoMessage(this.xContext, null, "Please translate text you wish to replace");
@@ -199,7 +202,7 @@ public class ActionTranslate implements XDialogEventHandler {
 	 * @param targetLang
 	 * @return String containing system id
 	 */
-	private String getSystemID() {
+	private TildeMTSystem getCurrentSystemInfo() {
 		TildeMTSystem[] systems = this.apiClient.GetSystemList().System;
 
 		for (int i = 0; i < systems.length; i++) {
@@ -210,7 +213,7 @@ public class ActionTranslate implements XDialogEventHandler {
 			
 			// check whether languages fit
 			if (sourceLang.equals(savedSourceLang) && targetLang.equals(savedTargetLang) && domain.equals(savedDomain) && system.IsAvailable()){
-				return system.getID();
+				return system;
 			}
 		}
 		DialogHelper.showWarningMessage(xContext, dialog, "Saved MT system not available!");

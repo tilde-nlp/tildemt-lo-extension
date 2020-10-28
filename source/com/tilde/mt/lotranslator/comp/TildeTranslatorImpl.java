@@ -15,6 +15,7 @@ import com.tilde.mt.lotranslator.dialog.ActionTranslate;
 import com.tilde.mt.lotranslator.dialog.ActionTranslateDocument;
 import com.tilde.mt.lotranslator.dialog.actionAuth;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
+import com.tilde.mt.lotranslator.models.TildeMTSystem;
 import com.tilde.mt.lotranslator.models.TildeMTSystemList;
 import com.tilde.mt.lotranslator.models.TildeMTUserData;
 
@@ -99,7 +100,7 @@ public final class TildeTranslatorImpl extends WeakBase
 		TildeMTClient client = new TildeMTClient(config.ClientID);
 		TildeMTSystemList systemList = client.GetSystemList();
 
-		String systemID = Configuration.getSystemID();
+		TildeMTSystem system = Configuration.getSystem();
 		actionAuth configDialog = new actionAuth(this.m_xContext);
 		
 		if(systemList == null || systemList.System == null) {
@@ -123,19 +124,19 @@ public final class TildeTranslatorImpl extends WeakBase
 				configDialog.show(false);
 			}
 			else {
-				if(systemID == null) {
+				if(system == null) {
 					DialogHelper.showInfoMessage(m_xContext, null, "Please choose MT system and then try again.");	
 	    			new ActionTranslate(m_xContext, client, userData).show();
 				}
 				else {
 					if(action.equals("actionAppend")){
-		    			new ActionAppend(m_xContext, client, systemID).show();
+		    			new ActionAppend(m_xContext, client, system.getID()).show();
 					}
 					else if(action.equals("actionReplace")){
-		    			new ActionReplace(m_xContext, client, systemID).show();
+		    			new ActionReplace(m_xContext, client, system.getID()).show();
 					}
 					else if(action.equals("actionTranslateDocument")){
-			    		new ActionTranslateDocument(m_xContext, client, systemID).show();
+			    		new ActionTranslateDocument(m_xContext, client, system.getID()).show();
 					}
 					else {
 			    		DialogHelper.showErrorMessage(m_xContext, null, "Unknown action: " + action);

@@ -2,7 +2,9 @@ package com.tilde.mt.lotranslator.dialog;
 
 import com.sun.star.text.XTextViewCursor;
 import com.sun.star.uno.XComponentContext;
+import com.tilde.mt.lotranslator.Configuration;
 import com.tilde.mt.lotranslator.TildeMTClient;
+import com.tilde.mt.lotranslator.helper.ContentHelper;
 import com.tilde.mt.lotranslator.helper.DocumentHelper;
 
 /**
@@ -30,5 +32,7 @@ public class ActionReplace extends ActionTranslateWithProgress{
 		XTextViewCursor xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
 		
 		xTextViewCursor.setString(wholeTranslation);
+		
+		ContentHelper.setSelectedTextLanguage(xContext, Configuration.getSystem().getTargetLanguage().getCode());
 	}
 }

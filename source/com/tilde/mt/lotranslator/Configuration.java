@@ -7,6 +7,7 @@ import java.io.Writer;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import com.tilde.mt.lotranslator.models.TildeMTSystem;
 
 public class Configuration {
 	/**
@@ -19,7 +20,7 @@ public class Configuration {
 	private static final String configurationFile = System.getProperty("user.home") + File.separator + ".tildeConfiguration.json";
 	private static final Gson gson = new Gson();
 	
-	private static String systemID = null;
+	private static TildeMTSystem system = null;
 
 	/**
 	 * Configuration file exists
@@ -97,17 +98,17 @@ public class Configuration {
 	 * Save MT system id for current document session
 	 * @param systemID
 	 */
-	public static void setSystemID(String systemID) {
-		logger.info(String.format("Set active system id: %s", systemID));
-		Configuration.systemID = systemID;
+	public static void setSystem(TildeMTSystem system) {
+		logger.info(String.format("Set active system: %s", system));
+		Configuration.system = system;
 	}
 	
 	/**
 	 * Read MT system for this document session
 	 * @return
 	 */
-	public static String getSystemID() {
-		logger.info(String.format("Active system id: %s", Configuration.systemID));
-		return Configuration.systemID;
+	public static TildeMTSystem getSystem() {
+		logger.info(String.format("Active system: %s", Configuration.system));
+		return Configuration.system;
 	}
 }

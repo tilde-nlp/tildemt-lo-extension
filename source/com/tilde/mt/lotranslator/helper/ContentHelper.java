@@ -47,7 +47,23 @@ public class ContentHelper {
 		
 		return selection;
 	}
-
+	
+	public static void setSelectedTextLanguage(XComponentContext xContext, String languageCode) {
+		com.sun.star.text.XTextDocument xTextDoc = DocumentHelper.getCurrentDocument(xContext);
+		com.sun.star.frame.XController xController = xTextDoc.getCurrentController();
+		com.sun.star.text.XTextViewCursorSupplier xTextViewCursorSupplier = DocumentHelper.getCursorSupplier(xController);
+		XTextViewCursor xTextViewCursor = xTextViewCursorSupplier.getViewCursor();
+		XPropertySet xCursorProps = DocumentHelper.getPageCursorProps(xTextViewCursor);
+		
+		try {			
+			Locale charLocale = LocaleHelper.makeLibreLocale(languageCode);
+			xCursorProps.setPropertyValue("CharLocale", charLocale);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Get current text newline type - [\n|\r\n] a.k.a. [Unix|Win]
 	 * @param text
