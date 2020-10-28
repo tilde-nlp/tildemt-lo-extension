@@ -1,7 +1,7 @@
 package com.tilde.mt.lotranslator.models;
 
 public class TildeMTError {
-	public int ErrorCode;
+	public String ErrorCode;
 	public String ErrorMessage;
 	
 	public String toErrorMessage() {
@@ -9,7 +9,7 @@ public class TildeMTError {
 	}
 	
 	public Boolean hasError() {
-		if(ErrorCode == 0 && ErrorMessage.trim().equals("")) {
+		if((ErrorCode == null || ErrorCode.trim().equals("") || ErrorCode.trim().equals("0")) && (ErrorMessage == null || ErrorMessage.trim().equals(""))) {
 			return false;
 		}
 		return true;

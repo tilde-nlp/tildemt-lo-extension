@@ -11,10 +11,7 @@ public class ErrorResult<T> {
 	public TildeMTError Error = null;
 	
 	public Boolean hasError() {
-		if(Error == null || (Error.ErrorCode == 0 && Error.ErrorMessage.trim().equals(""))) {
-			return false;
-		}
-		return true;
+		return Error.hasError();
 	}
 	
 	@Override

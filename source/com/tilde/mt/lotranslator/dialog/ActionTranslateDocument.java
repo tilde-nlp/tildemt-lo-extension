@@ -163,7 +163,7 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 		final String filePreamble = "file:///";
 		String documentURL = document.getURL();
 		if(!documentURL.contains(filePreamble)) {
-			DialogHelper.showErrorMessage(xContext, dialog, "Please save document locally before preceding with translation");
+			DialogHelper.showErrorMessage(xContext, dialog, "Please save document locally before preceding with document translation");
 			return false;
 		}
 		documentPath = java.net.URLDecoder.decode(documentURL.substring(filePreamble.length()), StandardCharsets.UTF_8);
