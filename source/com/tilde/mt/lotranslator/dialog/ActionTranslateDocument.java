@@ -212,11 +212,12 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 				logger.info(String.format("Translation started, docid: %s", translationDocumentID));
 			} 
 			else {
-				DialogHelper.showErrorMessage(xContext, dialog, result.Error.ErrorMessage);
+				DialogHelper.showErrorMessage(xContext, dialog, result.Error.toErrorMessage());
+				return false;
 			}
 
 			return true;
-		} catch (InterruptedException | ExecutionException | java.io.IOException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return false;
