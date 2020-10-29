@@ -122,6 +122,19 @@ public class TildeMTClient {
 		});
 	}
 	
+	public CompletableFuture<Boolean> RemoveDocumentTranslation(String documentID){
+		logger.info("RemoveDocumentTranslation...");
+		String url = String.format(this.TranslationAPI + "/RemoveDocumentTranslation?appID=%s&id=%s", 
+			URLEncoder.encode(this.AppID, StandardCharsets.UTF_8),
+			documentID
+		);
+		
+		return this.Request(url, false, null).thenApply(rawResult -> {
+			logger.info(String.format("RemoveDocumentTranslation: %s", rawResult));
+			return true;
+		});
+	}
+	
 	public CompletableFuture<TildeMTDocTranslateState> GetDocumentTranslationState(String documentID){
 		logger.info("GetDocumentTranslationState...");
 

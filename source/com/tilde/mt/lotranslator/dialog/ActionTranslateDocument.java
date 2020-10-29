@@ -316,6 +316,12 @@ public class ActionTranslateDocument implements XDialogEventHandler {
 			e.printStackTrace();
 		}
 		
+		try {
+			this.apiClient.RemoveDocumentTranslation(this.translationDocumentID).get();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		logger.info("Translation canceled");
 		dialog.endExecute();
 	}
