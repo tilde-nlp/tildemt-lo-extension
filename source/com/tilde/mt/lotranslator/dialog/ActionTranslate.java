@@ -27,6 +27,7 @@ import com.tilde.mt.lotranslator.helper.DocumentHelper;
 import com.tilde.mt.lotranslator.models.SelectedText;
 import com.tilde.mt.lotranslator.models.TildeMTSystem;
 import com.tilde.mt.lotranslator.models.TildeMTUserData;
+import com.tilde.mt.lotranslator.models.TranslationDialogResult;
 
 
 /**
@@ -34,7 +35,7 @@ import com.tilde.mt.lotranslator.models.TildeMTUserData;
  * @author guntars.puzulis, arta.zena
  *
  */
-public class ActionTranslate implements XDialogEventHandler {
+public class ActionTranslate implements XDialogEventHandler  {
 	private XDialog dialog;
 	private XComponentContext xContext;
 	private XControlContainer m_xControlContainer;
@@ -62,7 +63,6 @@ public class ActionTranslate implements XDialogEventHandler {
 	
 	private TildeMTClient apiClient;
 	private Logger logger = new Logger(this.getClass().getName());
-	private Boolean disposed = false;
 
 	public ActionTranslate(XComponentContext xContext, TildeMTClient apiClient, TildeMTUserData userData) {
 		this.dialog = DialogHelper.createDialog("TranslationDialog.xdl", xContext, this);
@@ -74,7 +74,6 @@ public class ActionTranslate implements XDialogEventHandler {
 	public void show() {
 		configureInitialSetup();
 		dialog.execute();
-		disposed = true;
 	}
 
 	private void saveConfiguration() {
@@ -99,18 +98,13 @@ public class ActionTranslate implements XDialogEventHandler {
 	private void onTranslateButtonPressed() {
 		getFields();
 		TildeMTSystem system = getCurrentSystemInfo();
-		String text = sourceTextField.getText();
 		
-		this.apiClient.Translate(system.getID(), text).thenAccept((result) -> {
-			if(!disposed) {
-				if(result.hasError()) {
-					DialogHelper.showErrorMessage(xContext, dialog, result.toErrorMessage());
-				}
-				else {
-					targetTextField.setText(result.translation);
-				}			
-			}
-		});
+		ActionTranslateWithProgress translationDialog = new ActionTranslateWithProgress(this.xContext, this.apiClient, system.getID());
+		TranslationDialogResult translationResult = translationDialog.show();
+		
+		if(translationResult != null) {
+			targetTextField.setText(String.join(translationResult.textSeperator, translationResult.translations));
+		}
 	}
 	
 

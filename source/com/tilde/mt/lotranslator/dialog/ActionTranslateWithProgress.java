@@ -12,13 +12,16 @@ import com.tilde.mt.lotranslator.TildeMTClient;
 import com.tilde.mt.lotranslator.helper.ContentHelper;
 import com.tilde.mt.lotranslator.helper.DialogHelper;
 import com.tilde.mt.lotranslator.models.TildeMTTranslation;
+import com.tilde.mt.lotranslator.models.TranslationDialogResult;
 
 /**
  * Action to display dialog with translation progress and cancel it.
  * @author guntars.puzulis
  *
  */
-public abstract class ActionTranslateWithProgress implements XDialogEventHandler {
+public class ActionTranslateWithProgress implements XDialogEventHandler {
+	private final int TRANSLATION_WORD_LIMIT = 500;
+	
 	private XComponentContext xContext;
 	protected XDialog dialog;
 	
@@ -34,6 +37,8 @@ public abstract class ActionTranslateWithProgress implements XDialogEventHandler
 	private TildeMTClient apiClient;
 	private String systemID;
 	
+	TranslationDialogResult translationResult = null;
+	
 	XFixedText descriptionLabel;
 	
 	public ActionTranslateWithProgress(XComponentContext xContext, TildeMTClient apiClient, String systemID) {
@@ -44,8 +49,10 @@ public abstract class ActionTranslateWithProgress implements XDialogEventHandler
 		this.dialog = DialogHelper.createDialog("ProgressDialog.xdl", xContext, this);
 	}
 	
-	public final void show() {
+	public final TranslationDialogResult show() {
 		dialog.execute();
+		
+		return translationResult;
 	}
 	
 	public final void onDialogCancel() {
@@ -80,41 +87,56 @@ public abstract class ActionTranslateWithProgress implements XDialogEventHandler
 			String[] result = new String[paragraphs.length];
 			
 			if(selectedText.length() > 0) {
+				for(int i = 0; i < paragraphs.length; i++) {
+					if(paragraphs[i].length() >= TRANSLATION_WORD_LIMIT) {
+						disposed = true;
+						DialogHelper.showErrorMessage(xContext, dialog, String.format("Youre trying to translate too large paragraphs, please select paragraphs with no more than %s words", TRANSLATION_WORD_LIMIT));
+						break;
+					}
+				}
 				
-				for(int i = 0; i != paragraphs.length; i++) {
-					String translation = "";
-					try {
-						TildeMTTranslation translationResult = apiClient.Translate(systemID, paragraphs[i]).get();
-						logger.info("Received next paragraph");
-						if(disposed) {
-							break;
-						}
-						if(translationResult.hasError()) {
-							DialogHelper.showErrorMessage(xContext, dialog, translationResult.toErrorMessage());
+				if(!disposed) {
+					for(int i = 0; i < paragraphs.length; i++) {
+						String translation = "";
+						try {
+							TildeMTTranslation translationResult = apiClient.Translate(systemID, paragraphs[i]).get();
+							logger.info("Received next paragraph");
+							if(disposed) {
+								break;
+							}
+							if(translationResult.hasError()) {
+								DialogHelper.showErrorMessage(xContext, dialog, translationResult.toErrorMessage());
+								disposed = true;
+								break;
+							}
+							else {
+								translation = translationResult.translation;
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+							
+							if(disposed) {
+								DialogHelper.showErrorMessage(xContext, dialog, "Failed to translate content");
+							}
 							disposed = true;
 							break;
 						}
-						else {
-							translation = translationResult.translation;
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
 						
-						if(disposed) {
-							DialogHelper.showErrorMessage(xContext, dialog, "Failed to translate content");
-						}
-						disposed = true;
-						break;
+						result[i] = translation;
+						
+						showProgress(i * 100 / paragraphs.length);
 					}
-					
-					result[i] = translation;
-					
-					showProgress(i * 100 / paragraphs.length);
 				}
 			} 
 			
 			if(!disposed) {
 				showProgress(100);
+				
+				translationResult = new TranslationDialogResult();
+				
+				translationResult.textSeperator = newLineType;
+				translationResult.translations = result;
+				
 				onProgressResult(newLineType, result);
 			}
 			
@@ -128,7 +150,9 @@ public abstract class ActionTranslateWithProgress implements XDialogEventHandler
 		descriptionLabel.setText(String.format("Progress: %d%%", percentDone));
 	}
 	
-	public abstract void onProgressResult(String seperator, String[] translation);
+	public void onProgressResult(String seperator, String[] translations) {
+		// You can override this if you want callback
+	}
 	
 	@Override
 	public final boolean callHandlerMethod(XDialog dialog, Object eventObject, String methodName) throws WrappedTargetException {
