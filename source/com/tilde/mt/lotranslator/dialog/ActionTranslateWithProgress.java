@@ -20,7 +20,7 @@ import com.tilde.mt.lotranslator.models.TranslationDialogResult;
  *
  */
 public class ActionTranslateWithProgress implements XDialogEventHandler {
-	private final int TRANSLATION_WORD_LIMIT = 500;
+	private final int TRANSLATION_CHARACTER_LIMIT = 3500;
 	
 	private XComponentContext xContext;
 	protected XDialog dialog;
@@ -88,9 +88,9 @@ public class ActionTranslateWithProgress implements XDialogEventHandler {
 			
 			if(selectedText.length() > 0) {
 				for(int i = 0; i < paragraphs.length; i++) {
-					if(paragraphs[i].length() >= TRANSLATION_WORD_LIMIT) {
+					if(paragraphs[i].length() >= TRANSLATION_CHARACTER_LIMIT) {
 						disposed = true;
-						DialogHelper.showErrorMessage(xContext, dialog, String.format("Youre trying to translate too large paragraphs, please select paragraphs with no more than %s words", TRANSLATION_WORD_LIMIT));
+						DialogHelper.showErrorMessage(xContext, dialog, "One of selected paragraphs too long. Split the paragraphs into smaller ones or translate part of them.");
 						break;
 					}
 				}
