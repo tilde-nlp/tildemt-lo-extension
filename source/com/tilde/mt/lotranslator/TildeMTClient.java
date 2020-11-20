@@ -29,7 +29,7 @@ import com.tilde.mt.lotranslator.models.TildeMTUserData;
 public class TildeMTClient {
 	private String ClientID = null;
     
-    private final String TranslationAPI = "https://ltmt.tilde.lv/ws/Service.svc/json";
+    private final String TranslationAPI = "https://vertimas.vu.lt/ws/Service.svc/json";
     private final String AppID = "TildeMT|Plugin|LibreOffice";
     private final Logger logger = new Logger(this.getClass().getName());
     private final Gson gson = new Gson();
