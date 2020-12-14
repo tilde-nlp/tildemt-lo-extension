@@ -1,12 +1,12 @@
 #UNO project configuration file
-#Wed May 15 14:33:12 EEST 2019
-project.srcdir=/source
-regclassname=org.libreoffice.example.comp.RegistrationHandler
-javaversion=java5
-project.sdk=6.2.0.3
-project.ooo=LibreOffice 6.2
+#Thu Oct 08 11:06:38 EEST 2020
+project.prefix=org.libreoffice.example
+project.ooo=LibreOffice 7.0
+project.language=Java
+regclassname=com.tilde.mt.lotranslator.comp.RegistrationHandler
+project.idl=/idl
 project.implementation=comp
 project.build=build
-project.language=Java
-project.prefix=org.libreoffice.example
-project.idl=/idl
+project.sdk=7.0.1.2
+project.srcdir=/source
+javaversion=java5

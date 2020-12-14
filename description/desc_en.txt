@@ -1,1 +1,1 @@
-This extension allows to use Tilde Translator directly from Writer.
+This extension allows to use Vilnius University Translator directly from Writer to translate text fragments in document.

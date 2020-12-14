@@ -7,17 +7,17 @@
 			<node oor:name="com.sun.star.text.TextDocument">
 				<node oor:name="1_SHIFT_MOD1" oor:op="replace">
 					<prop oor:name="Command">
-						<value xml:lang="en-US">service:org.libreoffice.example.TildeTranslator?actionOne</value>
+						<value xml:lang="en-US">service:com.tilde.mt.lotranslator.tildetranslator?actionTranslate</value>
 					</prop>
 				</node>
 				<node oor:name="2_SHIFT_MOD1" oor:op="replace">
 					<prop oor:name="Command">
-						<value xml:lang="en-US">service:org.libreoffice.example.TildeTranslator?actionTwo</value>
+						<value xml:lang="en-US">service:com.tilde.mt.lotranslator.tildetranslator?actionAppend</value>
 					</prop>
 				</node>
 				<node oor:name="3_SHIFT_MOD1" oor:op="replace">
 					<prop oor:name="Command">
-						<value xml:lang="en-US">service:org.libreoffice.example.TildeTranslator?actionThree</value>
+						<value xml:lang="en-US">service:com.tilde.mt.lotranslator.tildetranslator?actionReplace</value>
 					</prop>
 				</node>
 			</node>
